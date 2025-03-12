@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="login-box">
             <h2>LOGIN</h2>
             <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
-            <form action="" method="POST">
+            <form action="Dashboard.php" method="POST">
                 <div class="input-box">
                     <span class="icon">&#128100;</span>
                     <input type="text" name="username" placeholder="Username" required>
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <button type="submit">Login</button>
             </form>
-            <p>Don't have an account? <a href="signup.php">Sign up</a></p>
+            <p>Don't have an account? <a href="../pages/register.php">Sign up</a></p>
         </div>
         <div class="side-box">
             <img src="../img/LMS_logo.png" alt="Library Logo">

@@ -1,10 +1,10 @@
 <?php
 
 include '../validate/db.php';
+require('../fpdf/fpdf.php');  // Path to the FPDF library
 
 $email = $name = $address = $contact = $student_id = $book_id = $date_borrowed = $return_date = "";
 $errors = [];
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate and sanitize email
@@ -16,95 +16,91 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errors["email"] = "Invalid email format";
         }
     }
-    
 
     if (empty($_POST["name"])) {
         $errors["name"] = "Name is required";
     } else {
         $name = htmlspecialchars($_POST["name"]);
     }
-    
 
     if (empty($_POST["address"])) {
         $errors["address"] = "Address is required";
     } else {
         $address = htmlspecialchars($_POST["address"]);
     }
-    
 
     if (empty($_POST["contact"])) {
         $errors["contact"] = "Contact number is required";
     } else {
         $contact = htmlspecialchars($_POST["contact"]);
-
     }
-    
 
     if (empty($_POST["student_id"])) {
         $errors["student_id"] = "Student ID is required";
     } else {
         $student_id = htmlspecialchars($_POST["student_id"]);
     }
-    
 
     if (empty($_POST["book_id"])) {
         $errors["book_id"] = "Book ID is required";
     } else {
         $book_id = htmlspecialchars($_POST["book_id"]);
     }
-    
 
     if (empty($_POST["date_borrowed"])) {
         $errors["date_borrowed"] = "Date borrowed is required";
     } else {
         $date_borrowed = htmlspecialchars($_POST["date_borrowed"]);
-
     }
-    
 
     if (empty($_POST["return_date"])) {
         $errors["return_date"] = "Return date is required";
     } else {
         $return_date = htmlspecialchars($_POST["return_date"]);
-
     }
-    
 
     if (empty($errors)) {
-
-        // $servername = "localhost";
-        // $username = "username";
-        // $password = "password";
-        // $dbname = "library";
-        
-
-        // $conn = new mysqli($servername, $username, $password, $dbname);
-        
-
-        // if ($conn->connect_error) {
-        //     die("Connection failed: " . $conn->connect_error);
-        // }
-        
-      
         $stmt = $conn->prepare("INSERT INTO transactions (email, name, address, contact_number, student_id, book_id, date_borrowed, return_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssssss", $email, $name, $address, $contact, $student_id, $book_id, $date_borrowed, $return_date);
-        
+
         if ($stmt->execute()) {
             $transaction_id = $conn->insert_id;
-            
 
-            if (isset($_POST["print"])) {
-                header("Location: print_transaction.php?id=" . $transaction_id);
-                exit;
-            }
-            
+            // Generate PDF
+            $pdf = new FPDF();
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', 'B', 16);
+            $pdf->Cell(40, 10, 'Transaction Information');
+            $pdf->Ln(10);
+            $pdf->SetFont('Arial', '', 12);
+            $pdf->Cell(40, 10, "Email: $email");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Name: $name");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Address: $address");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Contact: $contact");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Student ID: $student_id");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Book ID: $book_id");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Date Borrowed: $date_borrowed");
+            $pdf->Ln(10);
+            $pdf->Cell(40, 10, "Return Date: $return_date");
+
+            $pdf->Output("../pdfs/transaction_$transaction_id.pdf", 'F');
+
+            // Redirect to PDF
+            header("Location: ../pdfs/transaction_$transaction_id.pdf");
+            exit;
 
             $email = $name = $address = $contact = $student_id = $book_id = $date_borrowed = $return_date = "";
             $success_message = "Transaction recorded successfully!";
         } else {
             $error_message = "Error: " . $stmt->error;
         }
-        
+
         $stmt->close();
         $conn->close();
     }
@@ -238,11 +234,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-row">
                     <label for="book_id">Book ID</label>
                     <input type="text" id="book_id" name="book_id" value="<?php echo $book_id; ?>">
-                </div>
-                <?php if (isset($errors["book_id"])): ?>
-                    <div class="error"><?php echo $errors["book_id"]; ?></div>
-                <?php endif; ?>
-                
+                </
                 <div class="form-row">
                     <label for="date_borrowed">Date Borrowed</label>
                     <input type="date" id="date_borrowed" name="date_borrowed" value="<?php echo $date_borrowed; ?>">
@@ -250,7 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if (isset($errors["date_borrowed"])): ?>
                     <div class="error"><?php echo $errors["date_borrowed"]; ?></div>
                 <?php endif; ?>
-                
+
                 <div class="form-row">
                     <label for="return_date">Return Date</label>
                     <input type="date" id="return_date" name="return_date" value="<?php echo $return_date; ?>">
@@ -259,18 +251,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="error"><?php echo $errors["return_date"]; ?></div>
                 <?php endif; ?>
             </div>
-            
+
             <div class="btn-container">
-                <button type="submit" name="print" class="btn-print">Print</button>
+                <button type="submit" class="btn-print">Print Transaction</button>
             </div>
         </form>
     </div>
-
-
-    <script>
-        document.querySelector('.btn-print').addEventListener('click', function(e) {
-
-        });
-    </script>
 </body>
 </html>
