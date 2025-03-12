@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>Selected Book:</p>
         <img src="../img/books.png" alt="Book" width="50" class="book-img">
         <p><strong>Book Title</strong></p>
-        <form method="POST">
+        <form method="POST" action="../pages/print.php">
             <input type="text" name="email" placeholder="Email" required>
             <input type="text" name="name" placeholder="Name" required>
             <input type="text" name="address" placeholder="Address" required>
