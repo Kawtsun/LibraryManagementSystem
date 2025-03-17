@@ -1,18 +1,5 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'] ?? '';
-    $name = $_POST['name'] ?? '';
-    $address = $_POST['address'] ?? '';
-    $contact = $_POST['contact'] ?? '';
-    $book_title = $_POST['book_title'] ?? '';
-    
-    echo "<h3>Transaction Details</h3>";
-    echo "<p><strong>Book Title:</strong> $book_title</p>";
-    echo "<p><strong>Email:</strong> $email</p>";
-    echo "<p><strong>Name:</strong> $name</p>";
-    echo "<p><strong>Address:</strong> $address</p>";
-    echo "<p><strong>Contact Number:</strong> $contact</p>";
-}
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Transaction</title>
+    <title>Library Transaction</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,26 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             width: 80px;
             margin-left: 20px;
         }
-        .search-container {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-        }
-        .search-box {
-            width: 60%;
-            padding: 8px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-        }
-        .search-icon {
-            margin-left: -30px;
-            cursor: pointer;
-        }
-        .refresh-icon {
-            width: 30px;
-            margin-right: 20px;
-            cursor: pointer;
-        }
         .container {
             width: 50%;
             margin: auto;
@@ -68,62 +35,98 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px 0px gray;
+            text-align: left;
         }
-
-        .container .book-img {
-            width: 150px;
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
         }
         input {
-            width: 80%;
-            padding: 12px;
-            margin: 10px 0;
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 5px;
             display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
         button {
-            width: 40%;
-            padding: 8px;
+            width: 100%;
+            padding: 10px;
             background-color: blue;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            display: block;
-            margin: 20px auto 0;
+            margin-top: 20px;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
         button:hover {
             background-color: darkblue;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <img src="../img/LMS_logo.png" alt="Logo" class="logo">
-        <div class="search-container">
-            <input type="text" class="search-box" placeholder="Search...">
-            <img src="search-icon.png" alt="Search" class="search-icon">
-        </div>
-        <img src="refresh-icon.png" alt="Refresh" class="refresh-icon">
+        <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
+        <h2>Library Management System</h2>
     </div>
-    
+
     <div class="container">
-        <h2>Transaction</h2>
-        <p>Selected Book:</p>
-        <img src="../img/books.png" alt="Book" width="50" class="book-img">
-        <p><strong>Book Title</strong></p>
-        <form method="POST" action="../pages/print.php">
-            <input type="text" name="email" placeholder="Email" required>
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="text" name="address" placeholder="Address" required>
-            <input type="text" name="contact" placeholder="Contact Number" required>
-            <input type="hidden" name="book_title" value="Book Title">
-            <button type="submit">Submit</button>
+        <h2>Transaction Details</h2>
+        <form id="transactionForm" method="POST" action="print.php">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="name">Borrower Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="contact">Contact Number:</label>
+            <input type="text" id="contact" name="contact" required>
+
+            <label for="student_id">Borrower ID:</label>
+            <input type="text" id="student_id" name="student_id" required>
+
+            <label for="book_id">Book Title:</label>
+            <input type="text" id="book_id" name="book_id" required>
+
+            <label for="date_borrowed">Date Borrowed:</label>
+            <input type="date" id="date_borrowed" name="date_borrowed" required>
+
+            <label for="return_date">Return Date:</label>
+            <input type="date" id="return_date" name="return_date" required>
+
+            <button type="submit">Proceed to Overview</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split('T')[0];
+            let dateBorrowed = document.getElementById("date_borrowed");
+            let returnDate = document.getElementById("return_date");
+
+            dateBorrowed.value = today;
+            dateBorrowed.min = today;
+            returnDate.min = today;
+
+            dateBorrowed.addEventListener("change", function () {
+                returnDate.min = dateBorrowed.value;
+            });
+
+            returnDate.addEventListener("change", function () {
+                if (returnDate.value < dateBorrowed.value) {
+                    alert("Return date cannot be earlier than the borrowed date!");
+                    returnDate.value = dateBorrowed.value;
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>
