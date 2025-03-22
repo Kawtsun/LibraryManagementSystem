@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +44,7 @@
 
         .logo {
             width: 80px;
+            /* height: 50px; */
             /* background-color: #eee; */
             margin-right: 20px;
         }
@@ -147,10 +146,10 @@
 <body>
 
     <header>
-       
         <div class="logo">
-        <img src="../img/LMS_logo.png" alt="Logo" class="logo">
-        </div> <input type="text" class="search-bar" placeholder="Search...">
+            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
+        </div> 
+        <input type="text" class="search-bar" placeholder="Search...">
     </header>
 
     <nav>
@@ -159,14 +158,14 @@
             <li class="dropdown">
                 <a href="categories.php">Categories <span class="down-arrow"></span></a>
                 <div class="dropdown-content">
-                    <a href="#">Math</a>
-                    <a href="#">English</a>
-                    <a href="#">Science</a>
-                    <a href="#">Araling Panlipunan</a>
-                    <a href="#">Edukasyon Sa Pagpapakatao</a>
-                    <a href="#">Physical Education</a>
-                    <a href="#">Filipino</a>
-                    <a href="#">Technology and livelihood Education</a>
+                    <a href="genre/math.php">Math</a>
+                    <a href="genre/english.php">English</a>
+                    <a href="genre/science.php">Science</a>
+                    <a href="genre/ap.php">Araling Panlipunan</a>
+                    <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
+                    <a href="genre/physical-education.php">Physical Education</a>
+                    <a href="genre/filipino.php">Filipino</a>
+                    <a href="genre/tle.php">Technology and livelihood Education</a>
                 </div>
             </li>
             <li><a href="Authors.php">Authors</a></li>

@@ -3,6 +3,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,9 +47,9 @@
         }
 
         .logo {
-            width: 50px;
-            height: 50px;
-            background-color: #eee;
+            width: 80px;
+            /* height: 50px; */
+            /* background-color: #eee; */
             margin-right: 20px;
         }
 
@@ -120,7 +121,7 @@
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
         }
 
@@ -146,10 +147,14 @@
         }
     </style>
 </head>
+
 <body>
 
     <header>
-        <div class="logo"></div> <input type="text" class="search-bar" placeholder="Search...">
+        <div class="logo">
+            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
+        </div>
+        <input type="text" class="search-bar" placeholder="Search...">
     </header>
 
     <nav>
@@ -158,14 +163,14 @@
             <li class="dropdown">
                 <a href="categories.php">Categories <span class="down-arrow"></span></a>
                 <div class="dropdown-content">
-                    <a href="#">Math</a>
-                    <a href="#">English</a>
-                    <a href="#">Science</a>
-                    <a href="#">Araling Panlipunan</a>
-                    <a href="#">Edukasyon Sa Pagpapakatao</a>
-                    <a href="#">Physical Education</a>
-                    <a href="#">Filipino</a>
-                    <a href="#">Technology and livelihood Education</a>
+                    <a href="genre/math.php">Math</a>
+                    <a href="genre/english.php">English</a>
+                    <a href="genre/science.php">Science</a>
+                    <a href="genre/ap.php">Araling Panlipunan</a>
+                    <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
+                    <a href="genre/physical-education.php">Physical Education</a>
+                    <a href="genre/filipino.php">Filipino</a>
+                    <a href="genre/tle.php">Technology and livelihood Education</a>
                 </div>
             </li>
             <li><a href="Authors.php">Authors</a></li>
@@ -177,19 +182,52 @@
             <h2>Genre</h2>
             <div class="book-grid">
                 <?php
-                $genres = ["Mathematics", "Science", "English", "Filipino", "TLE", "MAPEH", "Araling Panlipunan", "ESP"];
+                $genres = ["Mathematics", "Science", "English", "Filipino", "TLE", "Physical Education", "Araling Panlipunan", "ESP"];
+
                 foreach ($genres as $genre) {
+                    switch ($genre) {
+                        case "Mathematics":
+                            $targetPage = "genre/math.php";
+                            break;
+                        case "Science":
+                            $targetPage = "genre/science.php";
+                            break;
+                        case "English":
+                            $targetPage = "genre/english.php";
+                            break;
+                        case "Filipino":
+                            $targetPage = "genre/filipino.php";
+                            break;
+                        case "TLE":
+                            $targetPage = "genre/tle.php";
+                            break;
+                        case "Physical Education":
+                            $targetPage = "genre/physical-education.php";
+                            break;
+                        case "Araling Panlipunan":
+                            $targetPage = "genre/ap.php";
+                            break;
+                        case "ESP":
+                            $targetPage = "genre/esp.php";
+                            break;
+                        default:
+                            $targetPage = "genre.php?genre=" . urlencode($genre);
+                            break;
+                    }
                     echo '<div class="book-item">';
-                    echo '<a href="genre.php?genre=' . urlencode($genre) . '">';
+                    echo '<a href="' . $targetPage . '">';
                     echo '<img src="book-icon.png" alt="Book Icon">';
                     echo '<p>' . $genre . '</p>';
                     echo '</a>';
                     echo '</div>';
                 }
                 ?>
+
             </div>
         </section>
     </div>
 
+
 </body>
+
 </html>
