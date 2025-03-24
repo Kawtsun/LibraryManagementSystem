@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 17, 2025 at 07:18 AM
+-- Generation Time: Mar 24, 2025 at 02:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,8 +18,50 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `library`
+-- Database: `libarry`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `books`
+--
+
+CREATE TABLE `books` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `author` varchar(255) DEFAULT NULL,
+  `publication_year` int(4) DEFAULT NULL,
+  `cover_image` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `books`
+--
+
+INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`) VALUES
+(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, ''),
+(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, ''),
+(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, ''),
+(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, ''),
+(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, ''),
+(40, 'Biology: The Living World', 'Science', 'Charles Darwin', 2023, ''),
+(41, 'Mastering Grammar', 'English', 'Emily White', 2020, ''),
+(42, 'Shakespeare’s Classics', 'English', 'William S.', 2017, ''),
+(43, 'Creative Writing Techniques', 'English', 'Ernest H.', 2021, ''),
+(44, 'Ibong Adarna', 'Filipino', 'Jose Corazon', 2015, ''),
+(45, 'Florante at Laura', 'Filipino', 'Francisco Balagtas', 2018, ''),
+(46, 'Mga Piling Tula', 'Filipino', 'Andres Bonifacio', 2022, ''),
+(47, 'Basic Cooking Techniques', 'TLE', 'Chef Gordon', 2020, ''),
+(48, 'Entrepreneurship 101', 'TLE', 'Mark Cuban', 2021, ''),
+(49, 'Computer Hardware Basics', 'TLE', 'Steve Jobs', 2022, ''),
+(50, 'Fitness and Health', 'Physical Education', 'Arnold Fitman', 2019, ''),
+(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, ''),
+(52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, ''),
+(53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, ''),
+(54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, ''),
+(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '');
 
 -- --------------------------------------------------------
 
@@ -73,11 +115,21 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `student_id`) VALUES
 (1, 'setsu', '$2y$10$dyH3LvpxdUetz4wUkHxGqeUp8YYHp5R3naVJHpCLxzIzxRmIXp4u6', 'setsu@gmail.com', 'BSCS', '2025-0001'),
 (2, 'morpheus', '$2y$10$ZIt/8G.Qx3t9kokHK8B0RO6YqU6Q8nbwl3k11Pg2twaAGuR9lPztu', 'morpheus@gmail.com', 'BSCS', '2025-0002'),
-(3, 'test', '$2y$10$wDxcK1Z2eaQ7gYYDVHnsF.n00ERZDiq1P25W5DdFTJLgl82SgYs9u', 'test@gmail.com', 'BSCS', '2025-0002');
+(3, 'test', '$2y$10$wDxcK1Z2eaQ7gYYDVHnsF.n00ERZDiq1P25W5DdFTJLgl82SgYs9u', 'test@gmail.com', 'BSCS', '2025-0002'),
+(4, 'austria', '$2y$10$LeiLX.QVWkL7QP.eyFQwKuSl3R7Aq5LET1YWSQg4xAjgJ/XlqiGIm', 'johnluizaustria@gmail.com', 'BSCS', 'M2022-0234'),
+(5, 'JohnAustria', '$2y$10$tn8iGO6dRmAUKwRpRu8A0eOSw7Bdm3Zb4R8d/an.aAPw5M1gAT/sC', 'john121@gmail.com', 'BSCS', 'M2022-0234'),
+(6, 'ausss', '$2y$10$R7pfy.LvuCwOByc6mEwIj.DnjfVsnwqxdtSXCrZd92WpCmzU9wpwq', 'joheaweew@gmail.com', 'BSCS', 'M2022-0234'),
+(7, 'austria3232', '$2y$10$0ncrihogkCyvi.z/8aRro.W74vJwkFL.ylGWOtzVh36rW9CTM5Ue2', 'eqeqeew@gmail.com', 'BSCS', 'M2022-0234');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `books`
+--
+ALTER TABLE `books`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `transactions`
@@ -96,6 +148,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `books`
+--
+ALTER TABLE `books`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+
+--
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
@@ -105,7 +163,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
