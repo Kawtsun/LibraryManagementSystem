@@ -1,79 +1,100 @@
 <?php
-// categories.php
+// english.php
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Categories</title>
+    <title>English Books</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .container {
-            width: 80%;
+            width: 90%;
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         header {
-            width: 100%;
-            margin-left: 0;
-            margin-right: 0;
-            border-radius: 0;
             background-color: #3498db;
             color: white;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 10px;
+            padding: 10px 20px;
+            border-radius: 0;
         }
 
-        .search-bar {
-            width: 50%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+        .header-left {
+            display: flex;
+            align-items: center;
         }
 
         .logo {
-            width: 80px;
-            /* height: 50px; */
-            /* background-color: #eee; */
-            margin-right: 20px;
+            width: 60px;
+            margin-right: 10px;
         }
 
-        nav {
-            background-color: #ecf0f1;
-            padding: 10px;
-            border-radius: 0 0 8px 8px;
+        .system-title {
+            font-size: 2.1em;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
-        nav ul {
+        .search-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+
+        .search-bar {
+            width: 55%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            margin-left: auto;
+        }
+
+        .nav-links ul {
             list-style-type: none;
             margin: 0;
             padding: 0;
-            text-align: right;
+            display: flex;
         }
 
-        nav ul li {
-            display: inline-block;
-            margin-left: 20px;
+        .nav-links ul li {
+            margin-left: 15px;
         }
 
-        nav ul li a {
+        .nav-links ul li a {
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links ul li a:hover {
+            color: #ecf0f1;
         }
 
         .book-section {
@@ -81,41 +102,60 @@
         }
 
         .book-section h2 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
         }
 
         .book-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            justify-items: center;
         }
 
         .book-item {
-    background-color: #3498db;
-    color: white;
-    padding: 20px;
-    border-radius: 12px; /* Slightly rounded corners */
-    text-align: center;
-    width: 150px; /* Set equal width */
-    height: 150px; /* Set equal height to make it a square */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add some depth */
-}
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
+        .book-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
 
-        .book-item img {
-            width: 50px;
-            height: 50px;
+        .book-icon {
+            width: 80px;
+            height: 80px;
             margin-bottom: 10px;
         }
 
-        .book-item a {
-            display: block;
-            text-decoration: none;
+        .book-title {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .borrow-btn {
+            background-color: #2ecc71;
             color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .borrow-btn:hover {
+            background-color: #27ae60;
         }
 
         .dropdown {
@@ -126,17 +166,25 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            background-color: #3498db;
+            min-width: 150px;
+            box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
             z-index: 1;
+            border-radius: 6px;
+            padding: 8px 0;
         }
 
         .dropdown-content a {
             color: black;
-            padding: 12px 16px;
+            padding: 10px 15px;
             text-decoration: none;
             display: block;
+            transition: background-color 0.3s ease;
+            font-size: 15px;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgb(30, 90, 131);
         }
 
         .dropdown:hover .dropdown-content {
@@ -153,50 +201,28 @@
             margin-left: 5px;
         }
 
-        .book-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 30px; /* Adjust spacing between items */
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
+        @media (max-width: 768px) {
+            .book-grid {
+                grid-template-columns: 1fr;
+            }
 
-.book-item {
-    background-color: #3498db;
-    color: white;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    width: 140px;
-    height: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.book-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    justify-content: start; /* Aligns grid items to the left */
-}
-
-
+            .book-item {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
-        <div class="logo">
-            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
-        </div>
+    <div class="header-left">
+        <img src="../genre/LMS_logo.png" alt="Library Logo" class="logo">
+        <span class="system-title">AklatURSM Management System</span>
+    </div>
+    <div class="search-container">
         <input type="text" class="search-bar" placeholder="Search...">
-    </header>
-
-    <nav>
+    </div>
+    <div class="nav-links">
         <ul>
             <li><a href="../dashboard.php">Dashboard</a></li>
             <li class="dropdown">
@@ -214,85 +240,57 @@
             </li>
             <li><a href="../Authors.php">Authors</a></li>
         </ul>
-    </nav>
+    </div>
+</header>
 
-    <div class="container">
-        <section class="book-section">
-            <h2>Genre: English</h2>
-            <div class="book-grid">
-                <div class="book-item">
-                    <a href="book1.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 1</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book2.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 2</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book3.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 3</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book4.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 4</p>
-                    </a>
-                </div>
-                <div class="book-grid">
-                <div class="book-item">
-                    <a href="book5.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 5</p>
-                    </a>
+<div class="container">
+    <section class="book-section">
+        <h2>Genre: English</h2>
+        <div class="book-grid">
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 1</p>
+                <form action="transaction.php" method
+                "get">
+                    <input type="hidden" name="book_id" value="1">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
             </div>
-            
-            
-        </section>
-    </div>
-
-    <div class="container">
-        <section class="book-section">
-            <div class="book-grid">
-                <div class="book-item">
-                    <a href="book6.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 1</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book7.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 2</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book8.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 3</p>
-                    </a>
-                </div>
-                <div class="book-item">
-                    <a href="book9.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 4</p>
-                    </a>
-                </div>
-                <div class="book-grid">
-                <div class="book-item">
-                    <a href="book10.php">
-                        <img src="book-icon.png" alt="Book Icon">
-                        <p>English Book 5</p>
-                    </a>
-        </section>
-    </div>
-
-    
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 2</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="2">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 3</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="3">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 4</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="4">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 5</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="5">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
 
 </body>
 </html>

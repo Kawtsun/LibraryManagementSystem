@@ -11,14 +11,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $errors = array();
 
-    if (empty($username) || empty($password) || empty($email) || empty($course) || empty($student_id)) {
+    // Check if any field is empty
+    if (empty($username) || empty($_POST['password']) || empty($email) || empty($course) || empty($student_id)) {
         array_push($errors, "All fields are required.");
     }
 
+    // Validate email format
     if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         array_push($errors, "Invalid email format.");
     }
 
+    // Check if username or email already exists
     $sql = "SELECT * FROM users WHERE email = ? OR username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $email, $username);
@@ -29,16 +32,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         array_push($errors, "Email or username already exists.");
     }
 
+    // Redirect if errors exist
     if (count($errors) > 0) {
         $_SESSION['errors'] = $errors;
         header("Location: ../pages/register.php");
         exit();
     } else {
+        // Insert data into database
         $stmt = $conn->prepare("INSERT INTO users (username, password, email, course, student_id) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $username, $password, $email, $course, $student_id);
 
         if ($stmt->execute()) {
-            header("Location: ../pages/login.php");
+            $_SESSION['success'] = "🎉Account created successfully! You can now log in.🎉";
+            header("Location: ../pages/register.php");
             exit();
         } else {
             array_push($errors, "Error: " . $stmt->error);
