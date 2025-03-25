@@ -21,7 +21,7 @@ function displayBooks($result) {
         while ($row = $result->fetch_assoc()) {
             ?>
             <div class="book-item">
-                <img src="/pages/booksicon.png" alt="Book Icon" class="book-icon">
+                <img src="booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title"><?php echo $row['title']; ?></p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="<?php echo $row['id']; ?>">

@@ -69,23 +69,47 @@ if ($result) {
     <section class="book-section">
         <h2>Genre: English</h2>
         <div class="book-grid">
-            <?php
-            if (!empty($books)) {
-                foreach ($books as $book) {
-                    echo '<div class="book-item">';
-                    echo '<img src="./english-icon.png" alt="Book Icon" class="book-icon">';
-                    echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
-                    echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
-                    echo '<form action="../transaction.php" method="get">'; // Change to transaction.php
-                    echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">'; // Pass book_id
-                    echo '<button type="submit" class="borrow-btn">Borrow Book</button>'; // Borrow Book button
-                    echo '</form>';
-                    echo '</div>';
-                }
-            } else {
-                echo "<p>No books found in this category.</p>";
-            }
-            ?>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 1</p>
+                <form action="transaction.php" method
+                "get">
+                    <input type="hidden" name="book_id" value="1">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 2</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="2">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 3</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="3">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 4</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="4">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <div class="book-item">
+                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <p class="book-title">English Book 5</p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="5">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
         </div>
     </section>
 </div>
