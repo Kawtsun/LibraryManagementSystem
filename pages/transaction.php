@@ -174,7 +174,7 @@ if (isset($_GET['book_id'])) {
     </div>
 <div class="container">
         <div class="book-display">
-            <img src="<?php echo $bookCoverImage ? $bookCoverImage : '/pages/booksicon.png'; ?>" alt="Book Cover">
+            <img src="<?php echo $bookCoverImage ? $bookCoverImage : 'booksicon.png'; ?>" alt="Book Cover">
             <p class="book-title"><?php echo $bookTitle; ?></p>
         </div>
 
