@@ -163,6 +163,7 @@
 
         if (isset($_SESSION['success'])) {
             echo "<div class='alert success'><i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "</div>";
+            unset($_SESSION['success']); // Clear the success message immediately after displaying
         }
         ?>
 

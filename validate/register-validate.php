@@ -22,14 +22,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if username or email already exists
-    $sql = "SELECT * FROM users WHERE email = ? OR username = ?";
+    $sql = "SELECT * FROM users WHERE email = ? OR student_id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $username);
+    $stmt->bind_param("ss", $email, $student_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        array_push($errors, "Email or username already exists.");
+        array_push($errors, "Email or Student ID already exists.");
     }
 
     // Redirect if errors exist

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 25, 2025 at 05:52 AM
+-- Generation Time: Mar 25, 2025 at 02:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -264,35 +264,161 @@ CREATE TABLE `books` (
   `subject` varchar(100) NOT NULL,
   `author` varchar(255) DEFAULT NULL,
   `publication_year` int(4) DEFAULT NULL,
-  `cover_image` varchar(255) NOT NULL
+  `cover_image` varchar(255) NOT NULL,
+  `category_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `books`
 --
 
-INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`) VALUES
-(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, ''),
-(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, ''),
-(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, ''),
-(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, ''),
-(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, ''),
-(40, 'Biology: The Living World', 'Science', 'Charles Darwin', 2023, ''),
-(41, 'Mastering Grammar', 'English', 'Emily White', 2020, ''),
-(42, 'Shakespeare’s Classics', 'English', 'William S.', 2017, ''),
-(43, 'Creative Writing Techniques', 'English', 'Ernest H.', 2021, ''),
-(44, 'Ibong Adarna', 'Filipino', 'Jose Corazon', 2015, ''),
-(45, 'Florante at Laura', 'Filipino', 'Francisco Balagtas', 2018, ''),
-(46, 'Mga Piling Tula', 'Filipino', 'Andres Bonifacio', 2022, ''),
-(47, 'Basic Cooking Techniques', 'TLE', 'Chef Gordon', 2020, ''),
-(48, 'Entrepreneurship 101', 'TLE', 'Mark Cuban', 2021, ''),
-(49, 'Computer Hardware Basics', 'TLE', 'Steve Jobs', 2022, ''),
-(50, 'Fitness and Health', 'Physical Education', 'Arnold Fitman', 2019, ''),
-(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, ''),
-(52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, ''),
-(53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, ''),
-(54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, ''),
-(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '');
+INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`, `category_id`) VALUES
+(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL),
+(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL),
+(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL),
+(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL),
+(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL),
+(40, 'Biology: The Living World', 'Science', 'Charles Darwin', 2023, '', NULL),
+(41, 'Mastering Grammar', 'English', 'Emily White', 2020, '', NULL),
+(42, 'Shakespeare’s Classics', 'English', 'William S.', 2017, '', NULL),
+(43, 'Creative Writing Techniques', 'English', 'Ernest H.', 2021, '', NULL),
+(44, 'Ibong Adarna', 'Filipino', 'Jose Corazon', 2015, '', NULL),
+(45, 'Florante at Laura', 'Filipino', 'Francisco Balagtas', 2018, '', NULL),
+(46, 'Mga Piling Tula', 'Filipino', 'Andres Bonifacio', 2022, '', NULL),
+(47, 'Basic Cooking Techniques', 'TLE', 'Chef Gordon', 2020, '', NULL),
+(48, 'Entrepreneurship 101', 'TLE', 'Mark Cuban', 2021, '', NULL),
+(49, 'Computer Hardware Basics', 'TLE', 'Steve Jobs', 2022, '', NULL),
+(50, 'Fitness and Health', 'Physical Education', 'Arnold Fitman', 2019, '', NULL),
+(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, '', NULL),
+(52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, '', NULL),
+(53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, '', NULL),
+(54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, '', NULL),
+(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`) VALUES
+(1, 'Mathematics'),
+(2, 'Science'),
+(3, 'English'),
+(4, 'Filipino'),
+(5, 'TLE'),
+(6, 'Physical Education'),
+(7, 'Araling Panlipunan'),
+(8, 'Edukasyon sa Pagpapakatao');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `library_books`
+--
+
+CREATE TABLE `library_books` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `topic` varchar(255) DEFAULT NULL,
+  `cover_image` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `library_books`
+--
+
+INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image`) VALUES
+(1, 'Algebra Fundamentals', 1, 'Algebra', NULL),
+(2, 'Geometry Basics', 1, 'Shapes and Theorems', NULL),
+(3, 'Trigonometry Explained', 1, 'Angles and Functions', NULL),
+(4, 'Probability & Statistics', 1, 'Data Analysis', NULL),
+(5, 'Calculus for Beginners', 1, 'Derivatives and Integrals', NULL),
+(6, 'Number Theory Essentials', 1, 'Prime Numbers and Patterns', NULL),
+(7, 'Linear Algebra Concepts', 1, 'Vectors and Matrices', NULL),
+(8, 'Mathematical Logic', 1, 'Proofs and Reasoning', NULL),
+(9, 'Graph Theory Overview', 1, 'Networks and Paths', NULL),
+(10, 'Advanced Calculus', 1, 'Multivariable Functions', NULL),
+(11, 'Physics Fundamentals', 2, 'Motion and Forces', NULL),
+(12, 'Chemistry Essentials', 2, 'Atoms and Molecules', NULL),
+(13, 'Biology Overview', 2, 'Cells and Organisms', NULL),
+(14, 'Earth Science', 2, 'Rocks and Minerals', NULL),
+(15, 'Astronomy Basics', 2, 'Stars and Galaxies', NULL),
+(16, 'Environmental Science', 2, 'Ecosystems and Conservation', NULL),
+(17, 'Genetics and Evolution', 2, 'DNA and Heredity', NULL),
+(18, 'Organic Chemistry', 2, 'Carbon Compounds', NULL),
+(19, 'Electricity and Magnetism', 2, 'Current and Circuits', NULL),
+(20, 'Thermodynamics', 2, 'Heat and Energy Transfer', NULL),
+(21, 'Grammar and Composition', 3, 'Sentence Structure', NULL),
+(22, 'Literature Classics', 3, 'Famous Novels', NULL),
+(23, 'Creative Writing', 3, 'Poetry and Storytelling', NULL),
+(24, 'Public Speaking', 3, 'Speech and Communication', NULL),
+(25, 'Essay Writing', 3, 'Persuasive and Analytical Essays', NULL),
+(26, 'Syntax and Semantics', 3, 'Language Analysis', NULL),
+(27, 'English for Beginners', 3, 'Basic Vocabulary', NULL),
+(28, 'Shakespearean Works', 3, 'Plays and Sonnets', NULL),
+(29, 'Modern English Usage', 3, 'Idioms and Expressions', NULL),
+(30, 'Critical Thinking in Literature', 3, 'Analyzing Texts', NULL),
+(31, 'Panitikan ng Pilipinas', 4, 'Kwentong Bayan', NULL),
+(32, 'Alamat at Mitolohiya', 4, 'Mga Sinaunang Kuwento', NULL),
+(33, 'Balagtasan at Tula', 4, 'Pagsusuri ng Panitikan', NULL),
+(34, 'Pagsulat ng Sanaysay', 4, 'Pagbuo ng Argumento', NULL),
+(35, 'Wika at Gramatika', 4, 'Balarila at Kayarian ng Wika', NULL),
+(36, 'Kasaysayan ng Wikang Filipino', 4, 'Pinagmulan at Pag-unlad', NULL),
+(37, 'Maikling Kwento', 4, 'Mga Kwentong Bayan', NULL),
+(38, 'Filipino Journalism', 4, 'Pamamahayag sa Filipino', NULL),
+(39, 'Pagpapahalaga sa Panitikan', 4, 'Interpretasyon ng Akda', NULL),
+(40, 'Modernong Panitikang Pilipino', 4, 'Mga Makabagong Akda', NULL),
+(41, 'Basic Cooking', 5, 'Food Preparation', NULL),
+(42, 'Entrepreneurship', 5, 'Starting a Business', NULL),
+(43, 'Woodworking Techniques', 5, 'Carpentry Skills', NULL),
+(44, 'Automotive Basics', 5, 'Car Maintenance', NULL),
+(45, 'Information Technology', 5, 'Basic Coding', NULL),
+(46, 'Electronics Fundamentals', 5, 'Circuits and Devices', NULL),
+(47, 'Fashion and Textiles', 5, 'Sewing and Design', NULL),
+(48, 'Graphic Design Essentials', 5, 'Visual Communication', NULL),
+(49, 'Agriculture Basics', 5, 'Farming Techniques', NULL),
+(50, 'Plumbing and House Repairs', 5, 'Home Maintenance', NULL),
+(51, 'Sports Rules and Strategies', 6, 'Basketball, Soccer, etc.', NULL),
+(52, 'Fitness and Wellness', 6, 'Exercise Routines', NULL),
+(53, 'Yoga and Mindfulness', 6, 'Meditation and Relaxation', NULL),
+(54, 'Anatomy for Athletes', 6, 'Muscles and Movements', NULL),
+(55, 'Strength Training', 6, 'Weightlifting Basics', NULL),
+(56, 'Cardiovascular Health', 6, 'Running and Aerobics', NULL),
+(57, 'Martial Arts Guide', 6, 'Self-Defense Techniques', NULL),
+(58, 'Nutrition for Athletes', 6, 'Diet and Performance', NULL),
+(59, 'Outdoor Recreation', 6, 'Hiking and Camping', NULL),
+(60, 'Teamwork in Sports', 6, 'Communication and Strategy', NULL),
+(61, 'Kasaysayan ng Pilipinas', 7, 'Historical Events', NULL),
+(62, 'Sibika at Kultura', 7, 'Traditions and Customs', NULL),
+(63, 'World History', 7, 'Ancient Civilizations', NULL),
+(64, 'Economic Development', 7, 'Trade and Industry', NULL),
+(65, 'Political Science', 7, 'Government and Laws', NULL),
+(66, 'Global Issues', 7, 'Poverty and Climate Change', NULL),
+(67, 'Philippine Geography', 7, 'Regions and Provinces', NULL),
+(68, 'Sociology and Culture', 7, 'Human Interactions', NULL),
+(69, 'Social Movements', 7, 'Revolutions and Reforms', NULL),
+(70, 'Contemporary Issues', 7, 'Modern Social Challenges', NULL),
+(71, 'Values Formation', 8, 'Ethics and Morality', NULL),
+(72, 'Character Development', 8, 'Building Integrity', NULL),
+(73, 'Respect and Responsibility', 8, 'Social Ethics', NULL),
+(74, 'Leadership and Service', 8, 'Helping Others', NULL),
+(75, 'Family and Community', 8, 'Roles in Society', NULL),
+(76, 'Decision Making and Consequences', 8, 'Ethical Choices', NULL),
+(77, 'Love and Respect', 8, 'Healthy Relationships', NULL),
+(78, 'Social Justice', 8, 'Fairness and Equality', NULL),
+(79, 'Empathy and Kindness', 8, 'Understanding Others', NULL),
+(80, 'Personal Growth', 8, 'Self-Improvement and Reflection', NULL);
 
 -- --------------------------------------------------------
 
@@ -346,11 +472,12 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `student_id`) VALUES
 (1, 'setsu', '$2y$10$dyH3LvpxdUetz4wUkHxGqeUp8YYHp5R3naVJHpCLxzIzxRmIXp4u6', 'setsu@gmail.com', 'BSCS', '2025-0001'),
 (2, 'morpheus', '$2y$10$ZIt/8G.Qx3t9kokHK8B0RO6YqU6Q8nbwl3k11Pg2twaAGuR9lPztu', 'morpheus@gmail.com', 'BSCS', '2025-0002'),
-(3, 'test', '$2y$10$wDxcK1Z2eaQ7gYYDVHnsF.n00ERZDiq1P25W5DdFTJLgl82SgYs9u', 'test@gmail.com', 'BSCS', '2025-0002'),
 (4, 'austria', '$2y$10$LeiLX.QVWkL7QP.eyFQwKuSl3R7Aq5LET1YWSQg4xAjgJ/XlqiGIm', 'johnluizaustria@gmail.com', 'BSCS', 'M2022-0234'),
 (5, 'JohnAustria', '$2y$10$tn8iGO6dRmAUKwRpRu8A0eOSw7Bdm3Zb4R8d/an.aAPw5M1gAT/sC', 'john121@gmail.com', 'BSCS', 'M2022-0234'),
-(6, 'ausss', '$2y$10$R7pfy.LvuCwOByc6mEwIj.DnjfVsnwqxdtSXCrZd92WpCmzU9wpwq', 'joheaweew@gmail.com', 'BSCS', 'M2022-0234'),
-(7, 'austria3232', '$2y$10$0ncrihogkCyvi.z/8aRro.W74vJwkFL.ylGWOtzVh36rW9CTM5Ue2', 'eqeqeew@gmail.com', 'BSCS', 'M2022-0234');
+(8, 'austrialuiz', '$2y$10$13PnjFzDcQczOTF1HuqbFODg7EAp0qLdBavvb/ZS4jzQntESlQAxm', 'johnluiiz123@gmail.com', 'BSCS', 'M2022-0244'),
+(9, 'austria', '$2y$10$IpLz4Q/6VJ38ltX8PZ1U8e/T4HZPZG0YWvGR2.avAhYNqwv.vESra', '123133232@gmaill.com', 'abad', 'M2022-0234'),
+(10, '123austria', '$2y$10$/eTGtZcI/fyPWll0oJ59F.6MpgW9lhy/JYxrUco97NWMGQhA33in6', 'Johnbenedictaustria@gmail.com', 'BSCS', 'M2022-2034'),
+(11, 'austria', '$2y$10$kJ0kgZCjM1AxwDUNdfSFMunMKF2RDWSk.PZfZT1IRtOoxGRGoJRQ6', 'johnluiz1234@gmail.com', 'BSCS', 'M2022-0334');
 
 --
 -- Indexes for dumped tables
@@ -367,6 +494,19 @@ ALTER TABLE `author_books`
 --
 ALTER TABLE `books`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `library_books`
+--
+ALTER TABLE `library_books`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Indexes for table `transactions`
@@ -397,6 +537,18 @@ ALTER TABLE `books`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `library_books`
+--
+ALTER TABLE `library_books`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+
+--
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
@@ -406,7 +558,17 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `library_books`
+--
+ALTER TABLE `library_books`
+  ADD CONSTRAINT `library_books_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
