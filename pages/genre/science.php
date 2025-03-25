@@ -248,7 +248,7 @@
         <h2>Genre: Science</h2>
         <div class="book-grid">
             <div class="book-item">
-                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title">Science Book 1</p>
                 <form action="transaction.php" method="get">
                 <input type="hidden" name="book_id" value="1">
@@ -256,7 +256,7 @@
                 </form>
             </div>
             <div class="book-item">
-                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title">Science Book 2</p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="2">
@@ -264,7 +264,7 @@
                 </form>
             </div>
             <div class="book-item">
-                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title">Science Book 3</p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="3">
@@ -272,7 +272,7 @@
                 </form>
             </div>
             <div class="book-item">
-                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title">Science Book 4</p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="4">
@@ -280,7 +280,7 @@
                 </form>
             </div>
             <div class="book-item">
-                <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                 <p class="book-title">Science Book 5</p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="5">

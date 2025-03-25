@@ -250,7 +250,7 @@
             <h2>Genre: Physical Education</h2>
             <div class="book-grid">
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 1</p>
                     <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="21">
@@ -258,7 +258,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 2</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="22">
@@ -266,7 +266,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 3</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="23">
@@ -274,7 +274,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 4</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="24">
@@ -282,7 +282,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 5</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="25">
@@ -290,7 +290,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 6</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="26">
@@ -298,7 +298,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 7</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="27">
@@ -306,7 +306,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 8</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="28">
@@ -314,7 +314,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 9</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="29">
@@ -322,7 +322,7 @@
                     </form>
                 </div>
                 <div class="book-item">
-                    <img src="book-icon.png" alt="Book Icon" class="book-icon">
+                    <img src="../booksicon.png" alt="Book Icon" class="book-icon">
                     <p class="book-title">Physical Education 10</p>
                     <form action="transaction.php" method="get">
                         <input type="hidden" name="book_id" value="30">
