@@ -27,6 +27,8 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         $sql = "SELECT title, cover_image FROM books WHERE id = ?";
     } elseif ($source === 'library_books') {
         $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
+    } elseif ($source === 'author_books') {
+        $sql = "SELECT title, NULL AS cover_image FROM author_books WHERE id = ?";
     } else {
         die("Invalid source.");
     }
@@ -39,14 +41,13 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $bookTitle = $row['title'];
-        $bookCoverImage = $row['cover_image'];
+        $bookCoverImage = $row['cover_image']; // This will be NULL for author_books
     } else {
         die("Book not found.");
     }
 } else {
     die("Book ID or source is missing.");
 }
-
 
 
 ?>
