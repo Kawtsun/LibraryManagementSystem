@@ -7,27 +7,34 @@ $bookCoverImage = "";
 $email = "";
 $student_id = "";
 
+// Get user session details
 if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
     $email = $_SESSION['email'];
     $student_id = $_SESSION['student_id'];
 }
 
+// Get book title from URL if borrowed from author_detail.php
+if (isset($_GET['book_title'])) {
+    $bookTitle = htmlspecialchars($_GET['book_title']);
+}
+
+// Get book details from the database if book_id is provided
 if (isset($_GET['book_id'])) {
     $bookId = $_GET['book_id'];
-
-    // Fetch the book title and cover image from the database using the book_id
+    
     $sql = "SELECT title, cover_image FROM books WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $bookId);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $bookTitle = $row['title'];
         $bookCoverImage = $row['cover_image'];
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +49,7 @@ if (isset($_GET['book_id'])) {
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
-            background-image: url('../img/background-transaction.jpg'); /* Corrected image path */
+            background-image: url('../img/background-transaction.jpg');
             background-size: cover;
             background-attachment: fixed;
             display: flex;
@@ -57,7 +64,6 @@ if (isset($_GET['book_id'])) {
             align-items: center;
             justify-content: flex-start;
             padding: 10px 20px;
-            border-radius: 0;
             position: relative;
             z-index: 10;
         }
@@ -71,7 +77,6 @@ if (isset($_GET['book_id'])) {
             margin: 0;
             font-size: 2.1em;
             font-weight: 600;
-            white-space: nowrap;
             color: white;
         }
 
@@ -86,13 +91,13 @@ if (isset($_GET['book_id'])) {
             text-align: left;
             border: 1px solid #e0e0f0;
             box-sizing: border-box;
-            backdrop-filter: blur(5px); /* Emboss effect */
+            backdrop-filter: blur(5px);
         }
 
         .book-display {
-            background-color:  #3498db; /* Light blue background */
-            color: #333;
-            padding: 10px; /* Reduced padding */
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
             border-radius: 8px;
             text-align: center;
             margin-bottom: 20px;
@@ -105,16 +110,15 @@ if (isset($_GET['book_id'])) {
         }
 
         .book-display img {
-            width: 80px; /* Reduced image size */
-            height: 80px; /* Reduced image size */
+            width: 80px;
+            height: 80px;
             margin-bottom: 8px;
         }
 
-        .book-display .book-title {
-            font-size: 1em; /* Reduced font size */
+        .book-title {
+            font-size: 1em;
             margin-bottom: 0;
-            padding: 4px; /* Reduced padding */
-            color: white;
+            padding: 4px;
         }
 
         label {
@@ -159,36 +163,33 @@ if (isset($_GET['book_id'])) {
         }
 
         .info-row div {
-            width: 48%; /* Adjust width for spacing */
+            width: 48%;
         }
-
     </style>
 </head>
 <body>
-
-    <div class="header">
+<div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         <h2>AklatURSM Management System</h2>
     </div>
-
-    <div class="container">
+<div class="container">
         <div class="book-display">
-            <img src="/pages/booksicon.png" alt="Book Icon">
+            <img src="<?php echo $bookCoverImage ? $bookCoverImage : '/pages/booksicon.png'; ?>" alt="Book Cover">
             <p class="book-title"><?php echo $bookTitle; ?></p>
         </div>
+
         <h2>Transaction Details</h2>
         <form id="transactionForm" method="POST" action="print.php">
             <div class="info-row">
                 <div>
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?php echo $email; ?>" readonly required>
+                    <input type="email" id="email" name="email" value="<?php echo $email; ?>" readonly>
                 </div>
                 <div>
                     <label for="student_id">Student ID:</label>
-                    <input type="text" id="student_id" name="student_id" value="<?php echo $student_id; ?>" readonly required>
+                    <input type="text" id="student_id" name="student_id" value="<?php echo $student_id; ?>" readonly>
                 </div>
             </div>
-
             <div class="info-row">
                 <div>
                     <label for="name">Borrower Name:</label>
@@ -199,13 +200,10 @@ if (isset($_GET['book_id'])) {
                     <input type="text" id="contact" name="contact" required>
                 </div>
             </div>
-
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" required>
-
             <label for="book_id">Book Title:</label>
             <input type="text" id="book_id" name="book_id" value="<?php echo $bookTitle; ?>" readonly>
-
             <div class="info-row">
                 <div>
                     <label for="date_borrowed">Date Borrowed:</label>
@@ -216,33 +214,27 @@ if (isset($_GET['book_id'])) {
                     <input type="date" id="return_date" name="return_date" required>
                 </div>
             </div>
-
             <button type="submit">Proceed to Print Transaction</button>
         </form>
     </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let today = new Date().toISOString().split('T')[0];
             let dateBorrowed = document.getElementById("date_borrowed");
             let returnDate = document.getElementById("return_date");
-
             dateBorrowed.value = today;
             dateBorrowed.min = today;
             returnDate.min = today;
-
             dateBorrowed.addEventListener("change", function () {
                 returnDate.min = dateBorrowed.value;
             });
-
             returnDate.addEventListener("change", function () {
                 if (returnDate.value < dateBorrowed.value) {
-                    alert("Return date cannot be earlier from the borrowed date!");
+                    alert("Return date cannot be earlier than the borrowed date!");
                     returnDate.value = dateBorrowed.value;
                 }
             });
         });
     </script>
-
 </body>
 </html>

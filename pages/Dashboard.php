@@ -134,7 +134,7 @@ function displayBooks($result) {
     .nav-links ul li a:hover {
         color: #ecf0f1;
     }
-
+  
     .book-section {
         margin-top: 20px;
     }
@@ -282,7 +282,7 @@ function displayBooks($result) {
 
 <div class="container">
     <section class="book-section">
-        <h2>Featured Books</h2>
+        <h2 style="font-size: 30px;">Featured Books</h2>
         <div class="book-grid">
             <?php
             $featuredBooks = getFeaturedBooks($conn, 10);
@@ -292,7 +292,7 @@ function displayBooks($result) {
     </section>
 
     <section class="book-section">
-        <h2>Recently Added Books</h2>
+        <h2 style="font-size: 30px;">Recently Added Books</h2>
         <div class="book-grid">
             <?php
             $recentBooks = getRecentBooks($conn, 10);

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 var_dump($_SESSION); // Debug: Check session values
 
-                header('Location: dashboard.php');  // Redirect to dashboard
+                header('Location: getstarted.php');  // Redirect to dashboard
                 exit();
             } else {
                 // Invalid password
