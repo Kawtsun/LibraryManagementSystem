@@ -295,7 +295,8 @@ if (!empty($books)) {
         echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
         echo '<form action="transaction.php" method="get">';
         echo '<input type="hidden" name="book_id" value="' . htmlspecialchars($book['id']) . '">'; 
-        echo '<input type="hidden" name="book_title" value="' . htmlspecialchars($book['title']) . '">'; 
+        echo '<input type="hidden" name="book_title" value="' . htmlspecialchars($book['title']) . '">';
+        echo '<input type="hidden" name="source" value="author_books">'; 
         echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
         echo '</form>';
         echo '</div>';

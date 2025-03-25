@@ -8,9 +8,16 @@ if (!isset($conn)) {
 }
 
 // Fetch books from library_books table that belong to 'Mathematics' category
-$sql = "SELECT library_books.* FROM library_books
-        JOIN categories ON library_books.category_id = categories.id
-        WHERE categories.name = 'Mathematics'";
+$sql = "
+    SELECT id, title, topic, 'library_books' AS source 
+    FROM library_books 
+    WHERE category_id = (SELECT id FROM categories WHERE name = 'Mathematics')
+    UNION ALL
+    SELECT id, title, NULL AS topic, 'books' AS source 
+    FROM books 
+    WHERE subject = 'Mathematics'
+";
+
 
 $result = $conn->query($sql);
 
@@ -80,6 +87,7 @@ if ($result) {
                         echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
                         echo '<form action="../transaction.php" method="get">';
                         echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">';
+                        echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
                         echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
                         echo '</form>';
                         echo '</div>';

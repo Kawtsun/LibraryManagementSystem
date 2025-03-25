@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 25, 2025 at 02:22 PM
+-- Generation Time: Mar 25, 2025 at 04:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -453,6 +453,18 @@ INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `conta
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `unified_books`
+-- (See below for the actual view)
+--
+CREATE TABLE `unified_books` (
+`id` int(11)
+,`title` varchar(255)
+,`source` varchar(13)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -477,7 +489,17 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `stud
 (8, 'austrialuiz', '$2y$10$13PnjFzDcQczOTF1HuqbFODg7EAp0qLdBavvb/ZS4jzQntESlQAxm', 'johnluiiz123@gmail.com', 'BSCS', 'M2022-0244'),
 (9, 'austria', '$2y$10$IpLz4Q/6VJ38ltX8PZ1U8e/T4HZPZG0YWvGR2.avAhYNqwv.vESra', '123133232@gmaill.com', 'abad', 'M2022-0234'),
 (10, '123austria', '$2y$10$/eTGtZcI/fyPWll0oJ59F.6MpgW9lhy/JYxrUco97NWMGQhA33in6', 'Johnbenedictaustria@gmail.com', 'BSCS', 'M2022-2034'),
-(11, 'austria', '$2y$10$kJ0kgZCjM1AxwDUNdfSFMunMKF2RDWSk.PZfZT1IRtOoxGRGoJRQ6', 'johnluiz1234@gmail.com', 'BSCS', 'M2022-0334');
+(11, 'austria', '$2y$10$kJ0kgZCjM1AxwDUNdfSFMunMKF2RDWSk.PZfZT1IRtOoxGRGoJRQ6', 'johnluiz1234@gmail.com', 'BSCS', 'M2022-0334'),
+(12, 'Kawtsun', '$2y$10$qpedbbZhRdDO.HF.ViVv4ucEZ8Sr1ufld2nG4u4QF4aqCc.jxjM2q', 'kawtsun@gmail.com', 'BSCS', '2025-0005');
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `unified_books`
+--
+DROP TABLE IF EXISTS `unified_books`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `unified_books`  AS SELECT `books`.`id` AS `id`, `books`.`title` AS `title`, 'Books' AS `source` FROM `books`union all select `library_books`.`id` AS `id`,`library_books`.`title` AS `title`,'Library Books' AS `source` from `library_books`  ;
 
 --
 -- Indexes for dumped tables
@@ -558,7 +580,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
