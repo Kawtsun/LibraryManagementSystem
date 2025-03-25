@@ -16,15 +16,16 @@ function getRecentBooks($conn, $limit = 10) {
 }
 
 // Function to display books
-function displayBooks($result) {
+function displayBooks($result, $source) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             ?>
             <div class="book-item">
                 <img src="booksicon.png" alt="Book Icon" class="book-icon">
-                <p class="book-title"><?php echo $row['title']; ?></p>
+                <p class="book-title"><?php echo htmlspecialchars($row['title']); ?></p>
                 <form action="transaction.php" method="get">
-                    <input type="hidden" name="book_id" value="<?php echo $row['id']; ?>">
+                    <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                    <input type="hidden" name="source" value="<?php echo htmlspecialchars($source); ?>">
                     <button type="submit" class="borrow-btn">Borrow Book</button>
                 </form>
             </div>
@@ -286,7 +287,8 @@ function displayBooks($result) {
         <div class="book-grid">
             <?php
             $featuredBooks = getFeaturedBooks($conn, 10);
-            displayBooks($featuredBooks);
+            displayBooks($featuredBooks, 'books');
+            
             ?>
         </div>
     </section>
@@ -296,7 +298,8 @@ function displayBooks($result) {
         <div class="book-grid">
             <?php
             $recentBooks = getRecentBooks($conn, 10);
-            displayBooks($recentBooks);
+            displayBooks($recentBooks, 'books');
+            
             ?>
         </div>
     </section>

@@ -19,21 +19,35 @@ if (isset($_GET['book_title'])) {
 }
 
 // Get book details from the database if book_id is provided
-if (isset($_GET['book_id'])) {
+if (isset($_GET['book_id']) && isset($_GET['source'])) {
     $bookId = $_GET['book_id'];
-    
-    $sql = "SELECT title, cover_image FROM books WHERE id = ?";
+    $source = $_GET['source'];
+
+    if ($source === 'books') {
+        $sql = "SELECT title, cover_image FROM books WHERE id = ?";
+    } elseif ($source === 'library_books') {
+        $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
+    } else {
+        die("Invalid source.");
+    }
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $bookId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $bookTitle = $row['title'];
         $bookCoverImage = $row['cover_image'];
+    } else {
+        die("Book not found.");
     }
+} else {
+    die("Book ID or source is missing.");
 }
+
+
 
 ?>
 
