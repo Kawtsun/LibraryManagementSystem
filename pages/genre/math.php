@@ -90,7 +90,6 @@ if ($result) {
                         echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
                         echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
                         echo '</form>';
-
                         echo '</div>';
                     }
                 } else {
