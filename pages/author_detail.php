@@ -1,16 +1,26 @@
 <?php
-// authors.php
+// author_detail.php
 include '../validate/db.php'; // Include your database connection
 
-// Fetch unique author names from the books table
-$sql = "SELECT DISTINCT author FROM books";
-$result = $conn->query($sql);
+if (isset($_GET['author'])) {
+    $author = urldecode($_GET['author']);
 
-$authors = [];
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $authors[] = $row['author'];
+    // Corrected SQL query to fetch from 'author_books'
+    $sql = "SELECT * FROM author_books WHERE author = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $author);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $books = [];
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $books[] = $row;
+        }
     }
+} else {
+    echo "Author not specified.";
+    exit;
 }
 ?>
 
@@ -18,10 +28,9 @@ if ($result && $result->num_rows > 0) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Authors</title>
+    <meta name="viewport" content="width=device-width, initial--scale=1.0">
+    <title><?php echo htmlspecialchars($author); ?> - Books</title>
     <style>
-        /* ... your existing CSS styles ... */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -33,12 +42,10 @@ if ($result && $result->num_rows > 0) {
         }
 
         .container {
-            width: 75%;
-            margin-top: 30px;
-            margin-bottom: 30px;
-            margin-left: 200px;
+            width: 72%; /* Reduce width from 90% to 80% */
+            margin: 100px auto; /* Increase top margin to move it down */
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -123,12 +130,14 @@ if ($result && $result->num_rows > 0) {
             color: #333;
             font-size: 20px;
             font-weight: 600;
+            text-align: center; /* Center the heading */
         }
 
         .book-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(5, 1fr); /* 5 columns */
+            gap: 20px;
+            justify-items: center; /* Center items horizontally */
         }
 
         .book-item {
@@ -138,6 +147,12 @@ if ($result && $result->num_rows > 0) {
             border-radius: 8px;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 218px; /* Set a fixed width */
+            height: 210px; /* Set a fixed height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space title and button */
+            align-items: center;
         }
 
         .book-item:hover {
@@ -152,35 +167,36 @@ if ($result && $result->num_rows > 0) {
         }
 
         .book-item a {
-            text-decoration: none; /* Remove underline */
-            color: white; /* Set text color to white */
+            text-decoration: none;
+            color: white;
         }
 
         .book-title {
             margin-bottom: 10px;
             font-size: 16px;
             font-weight: 600;
-            text-decoration: none; /* Remove underline */
-            color: white; /* Change color to white */
         }
 
-        .see-books-btn {
+        .book-details {
+            font-size: 14px;
+        }
+
+        .borrow-btn {
             background-color: #2ecc71;
             color: white;
-            padding: 8px 15px;
+            padding: 15px 25px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             transition: background-color 0.3s ease;
             text-decoration: none;
         }
 
-        .see-books-btn:hover {
+        .borrow-btn:hover {
             background-color: #27ae60;
         }
-
 
         .dropdown {
             position: relative;
@@ -247,7 +263,7 @@ if ($result && $result->num_rows > 0) {
         <input type="text" class="search-bar" placeholder="Search...">
         <div class="nav-links">
             <ul>
-                <li><a href="dashboard.php">Dashboard</a></li>
+            <li><a href="dashboard.php">Dashboard</a></li>
                 <li class="dropdown">
                     <a href="categories.php">Categories <span class="down-arrow"></span></a>
                     <div class="dropdown-content">
@@ -268,26 +284,30 @@ if ($result && $result->num_rows > 0) {
 </header>
 
 <div class="container">
-        <section class="book-section">
-            <h2>Authors</h2>
-            <div class="book-grid">
-                <?php
-                if (!empty($authors)) {
-                    foreach ($authors as $author) {
-                        $filename = 'author_detail.php?author=' . urlencode($author); // URL-encode the author name
+    <section class="book-section">
+        <h2 style="font-size: 30px;">Books by <?php echo htmlspecialchars($author); ?></h2>
+        <div class="book-grid">
+        <?php
+if (!empty($books)) {
+    foreach ($books as $book) {
+        echo '<div class="book-item">';
+        echo '<img src="authorbook-icon.png" alt="Book Icon" class="book-icon">';
+        echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
+        echo '<form action="transaction.php" method="get">';
+        echo '<input type="hidden" name="book_id" value="' . htmlspecialchars($book['id']) . '">'; 
+        echo '<input type="hidden" name="book_title" value="' . htmlspecialchars($book['title']) . '">';
+        echo '<input type="hidden" name="source" value="author_books">'; 
+        echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
+        echo '</form>';
+        echo '</div>';
+    }
+} else {
+    echo "<p>No books found by this author.</p>";
+}
+?>
+        </div>
+    </section>
+</div>
 
-                        echo '<div class="book-item">';
-                        echo '<img src="author-icon.png" alt="Author Icon" class="book-icon">';
-                        echo '<p class="book-title">' . $author . '</p>';
-                        echo '<a href="' . $filename . '" class="see-books-btn">SEE BOOKS</a>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo "<p>No authors found.</p>";
-                }
-                ?>
-            </div>
-        </section>
-    </div>
 </body>
 </html>
