@@ -57,11 +57,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
         }
 
         .login-header {
-            background-color: #98d8ef; /* Blue banner color */
+            background-color: #98d8ef;
+            /* Blue banner color */
             padding: 20px;
             text-align: center;
         }
@@ -73,17 +73,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .login-body {
-            padding: 20px;
+            padding: 15px;
         }
 
         .login-body input {
             display: block;
-            width: 100%;
-            padding: 12px 0px;
-            margin-bottom: 15px;
+            width: calc(100% - 30px);
+            /* Adjust width to stay within container padding */
+            padding: 12px;
+            margin: 0 auto 15px;
+            /* Center the input and add space below */
             font-size: 16px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease-in-out;
+            box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .login-body input:focus {
+            background-color: #ffffff;
+            border: 1px solid #007BFF;
+            box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+            outline: none;
         }
 
         .login-body button {
@@ -96,6 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
         }
 
         .login-body button:hover {
@@ -116,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         </div>
     </header>
-    
+
     <div class="login-container">
         <!-- Blue header banner -->
         <div class="login-header">
