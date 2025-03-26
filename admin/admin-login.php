@@ -1,34 +1,39 @@
 <?php
 session_start();
 
-include '../../validate/db.php';
+include '../validate/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Input sanitization
-    $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+    // Manual sanitization for the username
+    $username = htmlspecialchars(trim($username), ENT_QUOTES, 'UTF-8');
 
     // Query to validate admin credentials
-    $sql = "SELECT * FROM admins WHERE email = '$email'";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM admins WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         // Verify the hashed password
         if (password_verify($password, $row['password'])) {
-            $_SESSION['admin'] = $email;
+            $_SESSION['admin'] = $username;
             header("Location: admin-dashboard.php");
             exit;
         } else {
-            echo "<script>alert('Invalid email or password.');</script>";
+            echo "<script>alert('Invalid username or password.');</script>";
         }
     } else {
-        echo "<script>alert('Invalid email or password.');</script>";
+        echo "<script>alert('Invalid username or password.');</script>";
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -56,8 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .login-header {
-            background-color: #98d8ef;
-            /* Blue banner color */
+            background-color: #98d8ef; /* Blue banner color */
             padding: 20px;
             text-align: center;
         }
@@ -105,11 +109,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-<body>
 
+<body>
     <header>
         <div class="logo">
-            <img src="../../img/LMS_logo.png" alt="Library Logo" class="logo">
+            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         </div>
     </header>
     
@@ -121,10 +125,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- Login form -->
         <div class="login-body">
             <form method="POST" action="">
-                <label for="">Email Address</label>
-                <input type="email" name="email" required>
-                <label for="">Password</label>
-                <input type="password" name="password" required>
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
                 <button type="submit">Login</button>
             </form>
         </div>
