@@ -120,6 +120,7 @@ $conn->close();
             border-radius: 5px;
             cursor: pointer;
             box-sizing: border-box;
+            transition: background-color 0.3s, padding-left 0.3s;
         }
 
         .sidebar ul li:hover {
@@ -146,7 +147,7 @@ $conn->close();
             /* Ensure text remains readable */
             border-left: 5px solid #3498db;
             /* Add a visual indicator on the left */
-            padding-left: 10px;
+            padding-left: 15px;
             /* Offset text to account for the border */
         }
 
@@ -282,7 +283,7 @@ $conn->close();
                     <p>Total Users</p>
                 </div>
                 <div class="stat-box">
-                <h2><?php echo $total_books; ?></h2>
+                    <h2><?php echo $total_books; ?></h2>
                     <p>Registered Books</p>
                 </div>
                 <div class="stat-box">
@@ -333,6 +334,21 @@ $conn->close();
     <script>
         lucide.createIcons();
     </script>
+    <script>
+        // Select all sidebar list items
+        const sidebarItems = document.querySelectorAll('.sidebar ul li');
+
+        // Add a click event listener to each item
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove the 'active' class from all items
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                // Add the 'active' class to the clicked item
+                this.classList.add('active');
+            });
+        });
+    </script>
+
 </body>
 
 </html>
