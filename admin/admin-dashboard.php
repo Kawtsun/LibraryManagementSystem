@@ -18,6 +18,21 @@ if ($result->num_rows > 0) {
     $total_users = 0;
 }
 
+
+// Query to get the total number of books
+$sql = "SELECT 
+            (SELECT COUNT(*) FROM unified_books) + 
+            (SELECT COUNT(*) FROM author_books) AS total_books";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Fetch the total number of books
+    $row = $result->fetch_assoc();
+    $total_books = $row['total_books'];
+} else {
+    $total_books = 0;
+}
+
 $conn->close();
 ?>
 
@@ -267,7 +282,7 @@ $conn->close();
                     <p>Total Users</p>
                 </div>
                 <div class="stat-box">
-                    <h2>227</h2>
+                <h2><?php echo $total_books; ?></h2>
                     <p>Registered Books</p>
                 </div>
                 <div class="stat-box">
