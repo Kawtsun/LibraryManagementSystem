@@ -1,6 +1,20 @@
 <?php
+if (isset($_GET['status'])) {
+    echo "<script>";
+    if ($_GET['status'] === 'added') {
+        echo "showAddUserAlert();";
+    } elseif ($_GET['status'] === 'edited') {
+        echo "showEditUserAlert();";
+    } elseif ($_GET['status'] === 'deleted') {
+        echo "showDeleteUserAlert();";
+    }
+    echo "</script>";
+}
+
 include '../validate/db.php';
 session_start();
+
+
 
 // Get the current page for pagination
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -159,7 +173,7 @@ $conn->close();
         .main-content {
             margin-left: 250px;
             padding: 20px;
-            padding-top: 130px;
+            margin-top: 60px;
             box-sizing: border-box;
             min-height: calc(100vh - 60px);
         }
@@ -240,11 +254,132 @@ $conn->close();
             color: #aaa;
             cursor: not-allowed;
         }
+
+        /* General Button Styling */
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        /* Add User Button */
+        #addUserBtn {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        #addUserBtn:hover {
+            background-color: #217dbb;
+            transform: scale(1.05);
+        }
+
+        /* Edit Button */
+        .edit-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #28a860;
+            transform: scale(1.05);
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+
+        /* Modal Background Overlay */
+        .modal {
+            display: none;
+            /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal Content Box */
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 400px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            text-align: left;
+        }
+
+        /* Close Button Styling */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        /* Form Fields and Buttons Inside Modals */
+        .modal-content label {
+            display: block;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .modal-content button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .modal-content button:hover {
+            background-color: #217dbb;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
+    <!-- Add a data attribute to pass the status -->
+    <div id="status-handler" data-status="<?php echo isset($_GET['status']) ? htmlspecialchars($_GET['status']) : ''; ?>"></div>
+
     <!-- Header -->
     <header>
         <div class="logo-container">
@@ -297,7 +432,7 @@ $conn->close();
             <!-- Search Bar and Add User Button -->
             <div class="search-bar-container">
                 <input type="text" placeholder="Search Users...">
-                <button>+ Add User</button>
+                <button id="addUserBtn">+ Add User</button>
             </div>
             <table class="users-table">
                 <thead>
@@ -307,12 +442,13 @@ $conn->close();
                         <th>Email</th>
                         <th>Course</th>
                         <th>Student ID</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($registered_users)): ?>
                         <tr>
-                            <td colspan="5" style="text-align: center;">No registered users found.</td>
+                            <td colspan="6" style="text-align: center;">No registered users found.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($registered_users as $user): ?>
@@ -322,11 +458,17 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($user['email']); ?></td>
                                 <td><?php echo htmlspecialchars($user['course']); ?></td>
                                 <td><?php echo htmlspecialchars($user['student_id']); ?></td>
+                                <td>
+                                    <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
+
+                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
+
 
             <div class="pagination">
                 <?php if ($page > 1): ?>
@@ -348,10 +490,148 @@ $conn->close();
             </div>
         </div>
     </div>
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
+            <h2>Add User</h2>
+            <form id="addUserForm" method="POST" action="add-user.php">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+                <label>Password:</label>
+                <input type="password" name="password" required>
+                <label>Email:</label>
+                <input type="email" name="email" required>
+                <label>Course:</label>
+                <input type="text" name="course" required>
+                <label>Student ID:</label>
+                <input type="text" name="student_id" required>
+                <button type="submit">Add User</button>
+            </form>
+        </div>
+    </div>
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('editUserModal').style.display='none'">&times;</span>
+            <h2>Edit User</h2>
+            <form id="editUserForm" method="POST" action="edit-user.php">
+                <input type="hidden" name="user_id" id="editUserId">
+                <label>Username:</label>
+                <input type="text" name="username" id="editUsername" required>
+                <label>Email:</label>
+                <input type="email" name="email" id="editEmail" required>
+                <label>Course:</label>
+                <input type="text" name="course" id="editCourse" required>
+                <label>Student ID:</label>
+                <input type="text" name="student_id" id="editStudentId" required>
+                <button type="submit">Update User</button>
+            </form>
+        </div>
+    </div>
+
 
     <script>
         lucide.createIcons();
     </script>
+
+    <script>
+        // Open Add User Modal
+        document.getElementById('addUserBtn').onclick = function() {
+            document.getElementById('addUserModal').style.display = 'flex';
+        };
+
+        // Open Edit User Modal
+        function openEditModal(user) {
+            const editModal = document.getElementById('editUserModal');
+            editModal.style.display = 'flex';
+
+            // Populate the form with user details
+            document.getElementById('editUserId').value = user.user_id;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editCourse').value = user.course;
+            document.getElementById('editStudentId').value = user.student_id;
+        }
+
+        function confirmDelete(userId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#3498db',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the delete-user.php script
+                    window.location.href = `delete-user.php?id=${userId}`;
+                }
+            });
+        }
+
+
+        // Close Modals
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.onclick = function() {
+                this.parentElement.parentElement.style.display = 'none';
+            };
+        });
+
+        // Close Modal When Clicking Outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addUserModal');
+            const editModal = document.getElementById('editUserModal');
+            if (event.target === addModal) {
+                addModal.style.display = 'none';
+            }
+            if (event.target === editModal) {
+                editModal.style.display = 'none';
+            }
+        };
+    </script>
+
+    <script>
+        // Get the status from the data attribute
+        const statusElement = document.getElementById('status-handler');
+        const status = statusElement.getAttribute('data-status');
+
+        // Check the status and trigger the appropriate SweetAlert2
+        if (status === 'added') {
+            Swal.fire({
+                icon: 'success',
+                title: 'User Added',
+                text: 'The new user was successfully added!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (status === 'edited') {
+            Swal.fire({
+                icon: 'success',
+                title: 'User Updated',
+                text: 'The user details were successfully updated!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (status === 'deleted') {
+            Swal.fire({
+                icon: 'success',
+                title: 'User Deleted',
+                text: 'The user was successfully deleted!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Remove the status query parameter from the URL
+        const url = new URL(window.location);
+        url.searchParams.delete('status');
+        window.history.replaceState({}, document.title, url);
+    </script>
+
+
+
 </body>
 
 </html>
