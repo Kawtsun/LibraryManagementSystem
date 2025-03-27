@@ -1,8 +1,24 @@
 <?php
+include '../validate/db.php';
 session_start();
 // if (isset($_SESSION['admin'])) {
 //     echo "Welcome, " . $_SESSION['admin'];
 // }
+
+
+// Query to get the total number of users
+$sql = "SELECT COUNT(*) AS total_users FROM users";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Fetch the total number of users
+    $row = $result->fetch_assoc();
+    $total_users = $row['total_users'];
+} else {
+    $total_users = 0;
+}
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -247,7 +263,7 @@ session_start();
         <div class="main-content">
             <div class="stats-container">
                 <div class="stat-box">
-                    <h2>727</h2>
+                    <h2><?php echo $total_users; ?></h2>
                     <p>Total Users</p>
                 </div>
                 <div class="stat-box">
