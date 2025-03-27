@@ -275,7 +275,7 @@ if ($result_recent_books->num_rows > 0) {
         }
 
         .pagination {
-            margin-top: 20px;
+            margin-top: 40px;
             text-align: center;
         }
 
