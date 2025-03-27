@@ -1,39 +1,83 @@
 <?php
 include '../validate/db.php';
 session_start();
-// if (isset($_SESSION['admin'])) {
-//     echo "Welcome, " . $_SESSION['admin'];
-// }
 
+// Get the total number of users
+$sql_users = "SELECT COUNT(*) AS total_users FROM users";
+$result_users = $conn->query($sql_users);
 
-// Query to get the total number of users
-$sql = "SELECT COUNT(*) AS total_users FROM users";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // Fetch the total number of users
-    $row = $result->fetch_assoc();
-    $total_users = $row['total_users'];
+if ($result_users->num_rows > 0) {
+    $row_users = $result_users->fetch_assoc();
+    $total_users = $row_users['total_users'];
 } else {
     $total_users = 0;
 }
 
+// Get the total number of books
+$sql_books = "SELECT 
+                (SELECT COUNT(*) FROM unified_books) + 
+                (SELECT COUNT(*) FROM author_books) AS total_books";
+$result_books = $conn->query($sql_books);
 
-// Query to get the total number of books
-$sql = "SELECT 
-            (SELECT COUNT(*) FROM unified_books) + 
-            (SELECT COUNT(*) FROM author_books) AS total_books";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // Fetch the total number of books
-    $row = $result->fetch_assoc();
-    $total_books = $row['total_books'];
+if ($result_books->num_rows > 0) {
+    $row_books = $result_books->fetch_assoc();
+    $total_books = $row_books['total_books'];
 } else {
     $total_books = 0;
 }
 
-$conn->close();
+// Get the current page for pagination
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max($page, 1); // Ensure the page number is at least 1
+
+// Records per page and offset calculation
+$records_per_page = 10;
+$offset = ($page - 1) * $records_per_page;
+
+// Get the total number of recently added books for pagination
+$sql_count = "
+SELECT COUNT(*) AS total_books 
+FROM (
+    SELECT `id` FROM `books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+    UNION ALL
+    SELECT `id` FROM `library_books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+    UNION ALL
+    SELECT `id` FROM `author_books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+) AS combined_books";
+$result_count = $conn->query($sql_count);
+$total_recent_books = $result_count->fetch_assoc()['total_books'];
+
+$total_pages = ceil($total_recent_books / $records_per_page);
+
+// Query to fetch recently added books with pagination
+$sql_recent_books = "
+SELECT `id`, `title`, `author`, `date_added` 
+FROM `books` 
+WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+
+UNION ALL
+
+SELECT `id`, `title`, 'N/A' AS `author`, `date_added` 
+FROM `library_books` 
+WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+
+UNION ALL
+
+SELECT `id`, `title`, `author`, `date_added`
+FROM `author_books`
+WHERE `date_added` >= NOW() - INTERVAL 7 DAY
+
+ORDER BY `date_added` DESC
+LIMIT $records_per_page OFFSET $offset";
+
+$result_recent_books = $conn->query($sql_recent_books);
+
+$recent_books = [];
+if ($result_recent_books->num_rows > 0) {
+    while ($row = $result_recent_books->fetch_assoc()) {
+        $recent_books[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +86,7 @@ $conn->close();
 <head>
     <title>Admin Dashboard</title>
     <style>
+        /* General styling */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -49,8 +94,17 @@ $conn->close();
             color: #333;
         }
 
-        /* Header */
+        /* Header - Full Width and Fixed at the Top */
         header {
+            position: fixed;
+            /* Keeps the header at the top */
+            top: 0;
+            left: 0;
+            /* Spans the full width */
+            width: 100%;
+            /* Full width of the viewport */
+            z-index: 1001;
+            /* Ensures it sits above content */
             background-color: #3498db;
             color: white;
             display: flex;
@@ -58,45 +112,52 @@ $conn->close();
             justify-content: space-between;
             padding: 10px 20px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            height: 60px;
+            /* Fixed header height */
         }
 
-        .header-left {
+        header .logo-container {
             display: flex;
             align-items: center;
         }
 
-        .logo {
-            width: 60px;
+        header .logo-container img {
+            width: 80px;
             margin-right: 10px;
+            /* Space between logo and title */
         }
 
-        .system-title {
-            font-size: 20px;
+        header .logo-container span {
+            font-size: 22px;
             font-weight: bold;
         }
 
-        /* Main Layout */
-        .container {
-            display: flex;
-            margin: 0;
-        }
-
-        /* Sidebar */
+        /* Sidebar - Fixed Below the Header */
         .sidebar {
+            position: fixed;
+            /* Locks it to the side */
+            top: 60px;
+            /* Pushes below the header */
+            left: 0;
+            height: calc(100vh - 60px);
+            /* Full height minus header */
             width: 250px;
+            /* Fixed sidebar width */
             background-color: #007BFF;
             color: white;
-            height: 100vh;
             padding: 20px;
             box-sizing: border-box;
-            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            /* Scrollable content if needed */
+            z-index: 1000;
+            /* Below the header */
         }
 
         .sidebar img {
             border-radius: 50%;
             width: 80px;
             display: block;
-            margin: 0 auto 10px;
+            margin: 30px auto 10px;
         }
 
         .sidebar h3 {
@@ -106,20 +167,19 @@ $conn->close();
         }
 
         .sidebar ul {
-            list-style: none;
             padding: 0;
+            margin: 0;
+            list-style: none;
         }
 
         .sidebar ul li {
             margin: 10px 0;
             padding: 15px;
-            width: 100%;
             display: flex;
             align-items: center;
             background-color: #0056b3;
             border-radius: 5px;
             cursor: pointer;
-            box-sizing: border-box;
             transition: background-color 0.3s, padding-left 0.3s;
         }
 
@@ -132,29 +192,14 @@ $conn->close();
             color: white;
             font-size: 16px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Space between icon and text */
         }
 
         .sidebar ul li.active {
             background-color: #004080;
-            /* Darker shade for active link */
             font-weight: bold;
-            /* Emphasize active link */
             color: white;
-            /* Ensure text remains readable */
             border-left: 5px solid #3498db;
-            /* Add a visual indicator on the left */
             padding-left: 15px;
-            /* Offset text to account for the border */
-        }
-
-        .sidebar ul li.active a {
-            color: white;
-            /* Keep active link text white */
-            text-decoration: none;
         }
 
         .lucide {
@@ -162,12 +207,16 @@ $conn->close();
             height: 20px;
         }
 
-
         /* Main Content */
         .main-content {
-            flex: 1;
+            margin-left: 250px;
+            /* Offsets the fixed sidebar */
             padding: 20px;
+            padding-top: 130px;
+            /* Adds space for the fixed header */
             box-sizing: border-box;
+            min-height: calc(100vh - 60px);
+            /* Ensures content fits below the header */
         }
 
         .stats-container {
@@ -224,17 +273,40 @@ $conn->close();
         .recent-table tr:hover {
             background-color: #f9f9f9;
         }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #007BFF;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .pagination a.disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 
-
 <body>
     <!-- Header -->
     <header>
-        <div class="header-left">
-            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
-            <span class="system-title">AklatURSM Management System</span>
+        <div class="logo-container">
+            <img src="../img/LMS_logo.png" alt="Library Logo">
+            <span>AklatURSM Management System</span>
         </div>
     </header>
 
@@ -273,8 +345,6 @@ $conn->close();
             </ul>
         </div>
 
-
-
         <!-- Main Content -->
         <div class="main-content">
             <div class="stats-container">
@@ -284,7 +354,7 @@ $conn->close();
                 </div>
                 <div class="stat-box">
                     <h2><?php echo $total_books; ?></h2>
-                    <p>Registered Books</p>
+                    <p>Total Books</p>
                 </div>
                 <div class="stat-box">
                     <h2>167</h2>
@@ -299,56 +369,61 @@ $conn->close();
                         <th>Book ID</th>
                         <th>Book Title</th>
                         <th>Author</th>
-                        <th>Added Date</th>
+                        <th>Date Added</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>B1-001</td>
-                        <td>Mathematics</td>
-                        <td>Andrew Leeos</td>
-                        <td>2024-03-03 17:09</td>
-                    </tr>
-                    <tr>
-                        <td>B1-002</td>
-                        <td>Science</td>
-                        <td>Andrew Leeos</td>
-                        <td>2024-03-03 17:09</td>
-                    </tr>
-                    <tr>
-                        <td>B1-003</td>
-                        <td>ESP</td>
-                        <td>Andrew Leeos</td>
-                        <td>2024-03-03 17:09</td>
-                    </tr>
-                    <tr>
-                        <td>B1-004</td>
-                        <td>Geometry</td>
-                        <td>Andrew Leeos</td>
-                        <td>2024-03-03 17:09</td>
-                    </tr>
+                    <?php if (empty($recent_books)): ?>
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No recently added books found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($recent_books as $book): ?>
+                            <tr>
+                                <td>B-<?php echo htmlspecialchars($book['id']); ?></td>
+                                <td><?php echo htmlspecialchars($book['title']); ?></td>
+                                <td><?php echo htmlspecialchars($book['author']); ?></td>
+                                <td><?php echo htmlspecialchars($book['date_added']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
+
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <!-- Previous button -->
+                    <a href="?page=<?php echo $page - 1; ?>">← Previous</a>
+                <?php else: ?>
+                    <a class="disabled">← Previous</a>
+                <?php endif; ?>
+
+                <!-- Current page indicator -->
+                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+                <?php if ($page < $total_pages): ?>
+                    <!-- Next button -->
+                    <a href="?page=<?php echo $page + 1; ?>">Next →</a>
+                <?php else: ?>
+                    <a class="disabled">Next →</a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
+
     <script>
         lucide.createIcons();
     </script>
     <script>
-        // Select all sidebar list items
+        // Sidebar navigation styling
         const sidebarItems = document.querySelectorAll('.sidebar ul li');
-
-        // Add a click event listener to each item
         sidebarItems.forEach(item => {
             item.addEventListener('click', function() {
-                // Remove the 'active' class from all items
                 sidebarItems.forEach(i => i.classList.remove('active'));
-                // Add the 'active' class to the clicked item
                 this.classList.add('active');
             });
         });
     </script>
-
 </body>
 
 </html>
