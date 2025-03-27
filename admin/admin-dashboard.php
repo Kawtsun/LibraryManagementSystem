@@ -316,14 +316,17 @@ if ($result_recent_books->num_rows > 0) {
         <div class="sidebar">
             <img src="admin.jpg" alt="Admin Avatar">
             <h3>Admin</h3>
+            <?php
+            $currentPage = basename($_SERVER['PHP_SELF']);
+            ?>
             <ul>
-                <li class="active">
-                    <a href="#">
+                <li class="<?php echo $currentPage === 'admin-dashboard.php' ? 'active' : ''; ?>">
+                    <a href="admin-dashboard.php">
                         <i class="lucide" data-lucide="home"></i> Dashboard
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="<?php echo $currentPage === 'admin-users.php' ? 'active' : ''; ?>">
+                    <a href="admin-users.php">
                         <i class="lucide" data-lucide="users"></i> Registered Users
                     </a>
                 </li>
@@ -413,16 +416,6 @@ if ($result_recent_books->num_rows > 0) {
 
     <script>
         lucide.createIcons();
-    </script>
-    <script>
-        // Sidebar navigation styling
-        const sidebarItems = document.querySelectorAll('.sidebar ul li');
-        sidebarItems.forEach(item => {
-            item.addEventListener('click', function() {
-                sidebarItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
     </script>
 </body>
 
