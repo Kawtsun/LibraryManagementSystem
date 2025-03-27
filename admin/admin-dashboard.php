@@ -78,6 +78,10 @@ if ($result_recent_books->num_rows > 0) {
         $recent_books[] = $row;
     }
 }
+
+// Close the database connection
+$conn->close();
+
 ?>
 
 <!DOCTYPE html>

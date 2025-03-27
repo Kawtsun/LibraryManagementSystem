@@ -2,6 +2,43 @@
 include '../validate/db.php';
 session_start();
 
+// Get the current page for pagination
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max($page, 1); // Ensure the page number is at least 1
+
+// Records per page and offset calculation
+$records_per_page = 10;
+$offset = ($page - 1) * $records_per_page;
+
+// Get the total number of users for pagination
+$sql_count = "
+SELECT COUNT(*) AS total_users 
+FROM users";
+$result_count = $conn->query($sql_count);
+$total_users = $result_count->fetch_assoc()['total_users'];
+
+$total_pages = ceil($total_users / $records_per_page);
+
+// Query to fetch registered users with pagination
+$sql_registered_users = "
+SELECT user_id, username, email, course, student_id 
+FROM users 
+ORDER BY user_id ASC
+LIMIT $records_per_page OFFSET $offset";
+
+$result_registered_users = $conn->query($sql_registered_users);
+
+$registered_users = [];
+if ($result_registered_users->num_rows > 0) {
+    while ($row = $result_registered_users->fetch_assoc()) {
+        $registered_users[] = $row;
+    }
+}
+
+
+// Close the database connection
+$conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -126,6 +163,83 @@ session_start();
             box-sizing: border-box;
             min-height: calc(100vh - 60px);
         }
+
+        /* Search Bar and Add User Button */
+        .search-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-bar-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .users-table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .users-table th {
+            background-color: #007BFF;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .users-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #007BFF;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .pagination a.disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -179,7 +293,59 @@ session_start();
 
         <!-- Main Content -->
         <div class="main-content">
+            <h2>Users</h2>
+            <!-- Search Bar and Add User Button -->
+            <div class="search-bar-container">
+                <input type="text" placeholder="Search Users...">
+                <button>+ Add User</button>
+            </div>
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Student ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($registered_users)): ?>
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No registered users found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($registered_users as $user): ?>
+                            <tr>
+                                <td>U-<?php echo htmlspecialchars($user['user_id']); ?></td>
+                                <td><?php echo htmlspecialchars($user['username']); ?></td>
+                                <td><?php echo htmlspecialchars($user['email']); ?></td>
+                                <td><?php echo htmlspecialchars($user['course']); ?></td>
+                                <td><?php echo htmlspecialchars($user['student_id']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
 
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <!-- Previous button -->
+                    <a href="?page=<?php echo $page - 1; ?>">← Previous</a>
+                <?php else: ?>
+                    <a class="disabled">← Previous</a>
+                <?php endif; ?>
+
+                <!-- Current page indicator -->
+                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+                <?php if ($page < $total_pages): ?>
+                    <!-- Next button -->
+                    <a href="?page=<?php echo $page + 1; ?>">Next →</a>
+                <?php else: ?>
+                    <a class="disabled">Next →</a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
