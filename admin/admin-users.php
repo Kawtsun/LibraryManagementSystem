@@ -403,38 +403,57 @@ $conn->close();
 
         /* Error Box Styling */
         .error-box {
-            background-color: #f8d7da;
-            /* Light red for error background */
-            color: #842029;
-            /* Dark red for text */
-            padding: 12px;
-            border: 1px solid #f5c2c7;
-            /* Softer red border */
-            border-radius: 8px;
-            margin-bottom: 16px;
+            background-color: #ffefef;
+            /* Light pink for error background */
+            color: #b71c1c;
+            /* Bold dark red for text */
+            padding: 16px;
+            /* Extra padding for breathing space */
+            border: 1px solid #f5c6cb;
+            /* Softer pink border */
+            border-radius: 12px;
+            /* More rounded corners for a softer look */
+            margin-bottom: 20px;
+            /* Spacing below the error box */
             display: none;
-            /* Initially hidden */
-            font-size: 14px;
-            position: relative;
+            /* Hidden by default */
+            font-size: 15px;
+            /* Slightly larger font for readability */
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+            /* Shadow for depth */
             animation: fadeIn 0.5s ease-in-out;
-            /* Smooth fade-in animation */
+            /* Smooth appearance animation */
         }
 
-        /* Error Icon */
-        .error-box::before {
-            content: '⚠️';
-            font-size: 16px;
-            margin-right: 8px;
+        /* Error List Styling */
+        .error-box ul {
+            list-style: none;
+            /* Remove bullets */
+            padding: 0;
+            margin: 0;
         }
+
+        .error-box li {
+            margin-bottom: 10px;
+            /* Space between individual errors */
+            font-weight: bold;
+            /* Highlight each error */
+            line-height: 1.6;
+            /* Improve readability with better spacing */
+        }
+
 
         /* Fade-in Animation */
         @keyframes fadeIn {
             from {
                 opacity: 0;
+                transform: translateY(-10px);
+                /* Slight slide effect */
             }
 
             to {
                 opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
@@ -499,7 +518,7 @@ $conn->close();
             <!-- Search Bar and Add User Button -->
             <div class="search-bar-container">
                 <input type="text" placeholder="Search Users...">
-                <button id="addUserBtn">+ Add User</button>
+                <button id="openAddUserModal">Add User</button>
             </div>
             <table class="users-table">
                 <thead>
@@ -562,19 +581,20 @@ $conn->close();
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
             <h2>Add User</h2>
+            <div id="errorMessages" class="error-box"></div> <!-- Error messages -->
             <form id="addUserForm" method="POST" action="add-user.php">
                 <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
                 <label>Username:</label>
-                <input type="text" name="username" required>
+                <input type="text" name="username" id="addUsername" required>
                 <label>Password:</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" id="addPassword" required>
                 <label>Email:</label>
-                <input type="email" name="email" required>
+                <input type="email" name="email" id="addEmail" required>
                 <label>Course:</label>
-                <input type="text" name="course" required>
+                <input type="text" name="course" id="addCourse" required>
                 <label>Student ID:</label>
-                <input type="text" name="student_id" required>
-                <button type="submit">Add User</button>
+                <input type="text" name="student_id" id="addStudentId" required>
+                <button type="button" id="addUserBtn">Add User</button>
             </form>
         </div>
     </div>
@@ -607,7 +627,7 @@ $conn->close();
 
     <script>
         // Open Add User Modal
-        document.getElementById('addUserBtn').onclick = function() {
+        document.getElementById('openAddUserModal').onclick = function() {
             document.getElementById('addUserModal').style.display = 'flex';
         };
 
@@ -665,11 +685,15 @@ $conn->close();
     </script>
 
     <script>
-        // EditModal Errors
-        document.getElementById('updateUserBtn').addEventListener('click', function() {
-            const form = document.getElementById('editUserForm');
+        // AddUser Modal Errors
+        document.getElementById('addUserBtn').addEventListener('click', function() {
+            const form = document.getElementById('addUserForm');
             const formData = new FormData(form);
             const errorMessages = document.getElementById('errorMessages');
+
+            // Reset error messages
+            errorMessages.style.display = 'none';
+            errorMessages.innerHTML = ''; // Clear previous errors
 
             fetch(form.action, {
                     method: 'POST',
@@ -679,16 +703,65 @@ $conn->close();
                 .then((data) => {
                     if (data.error) {
                         errorMessages.style.display = 'block'; // Show the error box
-                        errorMessages.innerHTML = data.error; // Update with error messages
+                        const errors = data.error.split('<br>'); // Split errors into an array
+                        const errorList = document.createElement('ul'); // Create an unordered list for errors
+
+                        errors.forEach((error) => {
+                            const listItem = document.createElement('li'); // Create list item for each error
+                            listItem.innerHTML = `⚠️ ${error}`; // Prepend the warning symbol to the error message
+                            errorList.appendChild(listItem);
+                        });
+
+                        errorMessages.appendChild(errorList); // Append the error list to the error box
                     } else {
-                        errorMessages.style.display = 'none'; // Hide the error box on success
-                        // Redirect or handle success
-                        window.location.href = `admin-users.php?status=edited&page=${formData.get('current_page')}`;
+                        errorMessages.style.display = 'none'; // Hide error box on success
+                        window.location.href = data.redirect; // Redirect to the success page
                     }
                 })
-                .catch((error) => {
-                    errorMessages.style.display = 'block';
-                    errorMessages.innerHTML = 'An unexpected error occurred.';
+                .catch(() => {
+                    errorMessages.style.display = 'block'; // Display the error box
+                    errorMessages.innerHTML = '<ul><li>⚠️ An unexpected error occurred.</li></ul>'; // Generic error message
+                });
+        });
+    </script>
+
+    <script>
+        // EditUser Modal Errors
+        document.getElementById('updateUserBtn').addEventListener('click', function() {
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const errorMessages = document.getElementById('errorMessages');
+
+            // Reset error box
+            errorMessages.style.display = 'none';
+            errorMessages.innerHTML = ''; // Clear previous content
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        errorMessages.style.display = 'block'; // Show the error box
+                        const errors = data.error.split('<br>'); // Split errors into individual items
+                        const errorList = document.createElement('ul'); // Create a list for errors
+
+                        errors.forEach((error) => {
+                            const listItem = document.createElement('li'); // Create a list item for each error
+                            listItem.innerHTML = `⚠️ ${error}`; // Prepend the warning symbol to each error
+                            errorList.appendChild(listItem);
+                        });
+
+                        errorMessages.appendChild(errorList); // Append the error list to the error box
+                    } else {
+                        errorMessages.style.display = 'none'; // Hide the error box on success
+                        window.location.href = `admin-users.php?status=edited&page=${formData.get('current_page')}`; // Redirect
+                    }
+                })
+                .catch(() => {
+                    errorMessages.style.display = 'block'; // Display the error box
+                    errorMessages.innerHTML = '<ul><li>⚠️ An unexpected error occurred.</li></ul>'; // Generic error
                 });
         });
     </script>
