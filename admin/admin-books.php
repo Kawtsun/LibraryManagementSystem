@@ -1,4 +1,5 @@
 <?php
+
 // Include your database connection.
 include '../validate/db.php';
 session_start();
