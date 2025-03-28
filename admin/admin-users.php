@@ -579,7 +579,7 @@ $conn->close();
                         <i class="lucide" data-lucide="users"></i> Registered Users
                     </li>
                 </a>
-                <a href="#">
+                <a href="admin-books.php" class="<?php echo $currentPage === 'admin-books.php' ? 'active' : ''; ?>">
                     <li>
                         <i class="lucide" data-lucide="book"></i> Registered Books
                     </li>
@@ -599,7 +599,7 @@ $conn->close();
 
         <!-- Main Content -->
         <div class="main-content">
-            <h2>Users</h2>
+            <h2>Registered Users</h2>
             <!-- Search Bar and Suggestions -->
             <div class="search-bar-container">
                 <div class="search-input-wrapper">

@@ -319,7 +319,7 @@ $conn->close();
                         <i class="lucide" data-lucide="users"></i> Registered Users
                     </li>
                 </a>
-                <a href="#">
+                <a href="admin-books.php" class="<?php echo $currentPage === 'admin-books.php' ? 'active' : ''; ?>">
                     <li>
                         <i class="lucide" data-lucide="book"></i> Registered Books
                     </li>
