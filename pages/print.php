@@ -2,7 +2,6 @@
 session_start();
 include '../validate/db.php';
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = $_POST;
 
@@ -18,15 +17,17 @@ function insertTransaction($conn, $data) {
     $email = $data['email'];
     $student_id = $data['student_id'];
     $name = $data['name'];
-    $contact_number = $data['contact']; // Assuming 'contact' is the key in $_POST
+    $contact_number = $data['contact'];
     $address = $data['address'];
     $book_id = $data['book_id'];
     $date_borrowed = $data['date_borrowed'];
     $return_date = $data['return_date'];
+    $course = $data['course']; // Retrieve course from POST data
+    $author = $data['author']; // Retrieve author from POST data
 
-    $sql = "INSERT INTO transactions (email, student_id, name, address, contact_number, book_id, date_borrowed, return_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO transactions (email, student_id, name, address, contact_number, book_id, date_borrowed, return_date, course, author) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssss", $email, $student_id, $name, $address, $contact_number, $book_id, $date_borrowed, $return_date);
+    $stmt->bind_param("ssssssssss", $email, $student_id, $name, $address, $contact_number, $book_id, $date_borrowed, $return_date, $course, $author);
 
     if ($stmt->execute()) {
         return true;
@@ -34,15 +35,7 @@ function insertTransaction($conn, $data) {
         return false;
     }
 }
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $data = $_POST;
-
-    // Insert transaction into database
-    $success = insertTransaction($conn, $data);
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -237,7 +230,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <div class="header">
+<div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         <h2>AklatURSM Management System</h2>
     </div>
@@ -258,8 +251,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo '<div class="info-box"><strong>Contact Number:</strong><p>' . htmlspecialchars($data['contact']) . '</p></div>';
             echo '</div>';
 
-            echo '<div class="full-width-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
+            // Display course and author in new rows
+            echo '<div class="row">';
+           echo '<div class="info-box"><strong>Course:</strong><p>' . htmlspecialchars($data['course']) . '</p></div>';
+            echo '<div class="info-box"><strong>Author:</strong><p>' . htmlspecialchars($data['author']) . '</p></div>';
+            echo '</div>';
 
+            echo '<div class="full-width-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
             echo '<div class="full-width-box"><strong>Book Title:</strong><p>' . htmlspecialchars($data['book_id']) . '</p></div>';
 
             echo '<div class="row">';

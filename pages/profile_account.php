@@ -104,7 +104,7 @@ $userEmail = $_SESSION['email'];
 
 try {
     // Retrieve user details
-    $stmt = $conn->prepare("SELECT user_id, username, password, email, course, student_id FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT user_id, username, password, email, course, student_id, name, contact_number, address FROM users WHERE email = ?");
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -197,30 +197,30 @@ try {
         }
 
         .suggestions-box {
-    position: absolute;
-    width: 56%;
-    background-color: rgba(52, 152, 219, 0.9) !important;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 5;
-    display: none;
-    top: 100%;
-    right: 0; /* Align to the left of the parent */
-    margin-top: 5px;
-    padding: 2px;
-    margin-left: 40px;
-}
-.suggestions-box a {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: white !important;
-    transition: background-color 0.3s ease;
-}
+            position: absolute;
+            width: 56%;
+            background-color: rgba(52, 152, 219, 0.9) !important;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            display: none;
+            top: 100%;
+            right: 0; /* Align to the left of the parent */
+            margin-top: 5px;
+            padding: 2px;
+            margin-left: 40px;
+        }
+        .suggestions-box a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white !important;
+            transition: background-color 0.3s ease;
+        }
 
-.suggestions-box a:hover {
-    background-color:  rgba(0, 69, 116, 0.7) !important;
-}
+        .suggestions-box a:hover {
+            background-color:  rgba(0, 69, 116, 0.7) !important;
+        }
 
         .nav-links {
             display: flex;
@@ -401,32 +401,49 @@ try {
     .user-details .row p {
         width: 48%;
     }
-    
+     
     .profile-header {
-    display: flex;
-    justify-content: space-between; /* Space between title and button */
-    align-items: center; /* Vertical alignment */
-    margin-bottom: -130px;
-}
-
-.logout-button {
-    background-color: #e74c3c;
-    color: white;
-    padding: 12px 18px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    margin-left: 1325px;
-    margin-bottom: 60px;
-}
-
-    .logout-button:hover {
-        background-color: #c0392b; /* Darker red on hover */
+        display: flex;
+        justify-content: space-between; /* Space between title and button */
+        align-items: center; /* Vertical alignment */
+        margin-bottom: -130px;
     }
-</style>
+
+    .logout-button {
+        background-color: #e74c3c;
+        color: white;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        margin-left: 1325px;
+        margin-bottom: 60px;
+        font-weight: bold; /* Make the text bold */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+    }
+
+        .logout-button:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-item img {
+            margin-right: 10px;
+            width: 24px; /* Adjust icon size as needed */
+            height: 24px;
+        }
+        .logout-button img {
+            width: 20px; /* Adjust icon size as needed */
+            height: 20px;
+            margin-right: 8px; /* Add spacing between icon and text */
+        }
+    </style>
 </head>
 <body>
 
@@ -560,26 +577,31 @@ try {
 </script>
 
 <div class="container">
-<div class="profile-header">
+    <div class="profile-header">
         <a href="login.php" class="logout-button">Log Out</a>
     </div>
     <h2 style="font-size: 30px;">Profile Account</h2>
-    
+
     <div class="user-details">
-    <?php if ($user): ?>
-        <p><strong>User ID:</strong> <?php echo htmlspecialchars($user['user_id']); ?></p>
-        <div class="row">
-            <p><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-            <p><strong>Student ID:</strong> <?php echo htmlspecialchars($user['student_id']); ?></p>
-        </div>
-        <div class="row">
-            <p><strong>Course:</strong> <?php echo htmlspecialchars($user['course']); ?></p>
-            <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-        </div>
-    <?php else: ?>
-        <p>User details not found.</p>
-    <?php endif; ?>
-</div>
+        <?php if ($user): ?>
+            <p class="detail-item"><img src="user-id-icon.png" alt="User ID"><strong>User ID:</strong> <?php echo htmlspecialchars($user['user_id']); ?></p>
+            <div class="row">
+                <p class="detail-item"><img src="username-icon.png" alt="Username"><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                <p class="detail-item"><img src="student-id-icon.png" alt="Student ID"><strong>Student ID:</strong> <?php echo htmlspecialchars($user['student_id']); ?></p>
+            </div>
+            <div class="row">
+                <p class="detail-item"><img src="course-icon.png" alt="Course"><strong>Course:</strong> <?php echo htmlspecialchars($user['course']); ?></p>
+                <p class="detail-item"><img src="email-icon.png" alt="Email"><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+            </div>
+            <div class="row">
+                <p class="detail-item"><img src="name-icon.png" alt="Name"><strong>Name:</strong> <?php echo htmlspecialchars($user['name']); ?></p>
+                <p class="detail-item"><img src="contact-icon.png" alt="Contact Number"><strong>Contact Number:</strong> <?php echo htmlspecialchars($user['contact_number']); ?></p>
+            </div>
+            <p class="detail-item"><img src="address-icon.png" alt="Address"><strong>Address:</strong> <?php echo htmlspecialchars($user['address']); ?></p>
+        <?php else: ?>
+            <p>User details not found.</p>
+        <?php endif; ?>
+    </div>
     <section class="transaction-section">
         <h2 style="font-size: 30px; margin-top: 30px;">Recent Transactions</h2>
         <div class="transaction-grid">
