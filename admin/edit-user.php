@@ -10,51 +10,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $student_id = htmlspecialchars($_POST['student_id']);
     $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1; // Get current page from form
 
+    // Initialize an array for errors
+    $errors = [];
+
     // Validate input data
     if (empty($username) || empty($email) || empty($course) || empty($student_id)) {
-        die("All fields are required.");
+        $errors[] = "All fields are required.";
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        die("Invalid email format.");
+        $errors[] = "Invalid email format.";
     }
 
     if ($user_id <= 0) {
-        die("Invalid user ID.");
+        $errors[] = "Invalid user ID.";
     }
 
-    // Check for duplicate username or email
-    $checkSql = "SELECT * FROM users WHERE (username = ? OR email = ?) AND user_id != ?";
+    // Check for duplicate username, email, or student ID
+    $checkSql = "SELECT * FROM users WHERE (username = ? OR email = ? OR student_id = ?) AND user_id != ?";
     $checkStmt = $conn->prepare($checkSql);
     if (!$checkStmt) {
-        die("Error preparing check statement: " . $conn->error);
+        echo json_encode(['error' => "Error preparing check statement: " . $conn->error]);
+        exit;
     }
-    $checkStmt->bind_param("ssi", $username, $email, $user_id);
+    $checkStmt->bind_param("sssi", $username, $email, $student_id, $user_id);
     $checkStmt->execute();
     $result = $checkStmt->get_result();
 
     if ($result->num_rows > 0) {
-        die("Username or email already exists for another user.");
+        $row = $result->fetch_assoc();
+        if ($row['username'] === $username) {
+            $errors[] = "Username already exists for another user.";
+        }
+        if ($row['email'] === $email) {
+            $errors[] = "Email already exists for another user.";
+        }
+        if ($row['student_id'] === $student_id) {
+            $errors[] = "Student ID already exists for another user.";
+        }
+    }
+
+    $checkStmt->close();
+
+    // If there are errors, return them as JSON
+    if (!empty($errors)) {
+        echo json_encode(['error' => implode('<br>', $errors)]); // Combine errors into a single string
+        exit;
     }
 
     // Update the user in the database
     $sql = "UPDATE users SET username = ?, email = ?, course = ?, student_id = ? WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        die("Error preparing update statement: " . $conn->error);
+        echo json_encode(['error' => "Error preparing update statement: " . $conn->error]);
+        exit;
     }
     $stmt->bind_param("ssssi", $username, $email, $course, $student_id, $user_id);
 
     if ($stmt->execute()) {
-        // Redirect to admin-users.php with success status and current page
-        header("Location: admin-users.php?status=edited&page=" . $current_page);
-        exit;
+        // Success! Redirect with success status and current page
+        echo json_encode(['success' => true, 'redirect' => "admin-users.php?status=edited&page=" . $current_page]);
     } else {
-        echo "Error updating user: " . $conn->error;
+        echo json_encode(['error' => "Error updating user: " . $conn->error]);
     }
 
-    // Close the statements
-    $checkStmt->close();
     $stmt->close();
 }
 

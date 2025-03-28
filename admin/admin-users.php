@@ -400,6 +400,43 @@ $conn->close();
             background-color: #217dbb;
             /* Slightly darker blue for hover state */
         }
+
+        /* Error Box Styling */
+        .error-box {
+            background-color: #f8d7da;
+            /* Light red for error background */
+            color: #842029;
+            /* Dark red for text */
+            padding: 12px;
+            border: 1px solid #f5c2c7;
+            /* Softer red border */
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            /* Initially hidden */
+            font-size: 14px;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+            /* Smooth fade-in animation */
+        }
+
+        /* Error Icon */
+        .error-box::before {
+            content: '⚠️';
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -546,6 +583,7 @@ $conn->close();
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('editUserModal').style.display='none'">&times;</span>
             <h2>Edit User</h2>
+            <div id="errorMessages" class="error-box"></div> <!-- Updated with a styled error container -->
             <form id="editUserForm" method="POST" action="edit-user.php">
                 <input type="hidden" name="user_id" id="editUserId">
                 <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
@@ -557,7 +595,7 @@ $conn->close();
                 <input type="text" name="course" id="editCourse" required>
                 <label>Student ID:</label>
                 <input type="text" name="student_id" id="editStudentId" required>
-                <button type="submit">Update User</button>
+                <button type="button" id="updateUserBtn">Update User</button>
             </form>
         </div>
     </div>
@@ -624,6 +662,35 @@ $conn->close();
                 editModal.style.display = 'none';
             }
         };
+    </script>
+
+    <script>
+        // EditModal Errors
+        document.getElementById('updateUserBtn').addEventListener('click', function() {
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const errorMessages = document.getElementById('errorMessages');
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        errorMessages.style.display = 'block'; // Show the error box
+                        errorMessages.innerHTML = data.error; // Update with error messages
+                    } else {
+                        errorMessages.style.display = 'none'; // Hide the error box on success
+                        // Redirect or handle success
+                        window.location.href = `admin-users.php?status=edited&page=${formData.get('current_page')}`;
+                    }
+                })
+                .catch((error) => {
+                    errorMessages.style.display = 'block';
+                    errorMessages.innerHTML = 'An unexpected error occurred.';
+                });
+        });
     </script>
 
     <script>
