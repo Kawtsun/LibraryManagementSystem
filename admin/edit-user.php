@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = htmlspecialchars($_POST['email']);
     $course = htmlspecialchars($_POST['course']);
     $student_id = htmlspecialchars($_POST['student_id']);
+    $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1; // Get current page from form
 
     // Validate input data
     if (empty($username) || empty($email) || empty($course) || empty($student_id)) {
@@ -45,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ssssi", $username, $email, $course, $student_id, $user_id);
 
     if ($stmt->execute()) {
-        // Redirect to admin-users.php with success status
-        header("Location: admin-users.php?status=edited");
+        // Redirect to admin-users.php with success status and current page
+        header("Location: admin-users.php?status=edited&page=" . $current_page);
         exit;
     } else {
         echo "Error updating user: " . $conn->error;

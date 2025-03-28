@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         // Redirect to admin-users.php with a success status
-        header("Location: admin-users.php?status=added");
+        header("Location: admin-users.php?status=added" . $current_page);
         exit;
     } else {
         echo "Error adding user: " . $conn->error;

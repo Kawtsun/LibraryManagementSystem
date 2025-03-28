@@ -22,7 +22,7 @@ if (isset($_GET['id'])) {
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
             // Redirect to admin-users.php with success status
-            header("Location: admin-users.php?status=deleted");
+            header("Location: admin-users.php?status=deleted&page=$page");
             exit;
         } else {
             echo "No user found with the specified ID.";

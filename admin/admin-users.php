@@ -496,6 +496,7 @@ $conn->close();
             <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
             <h2>Add User</h2>
             <form id="addUserForm" method="POST" action="add-user.php">
+                <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
                 <label>Username:</label>
                 <input type="text" name="username" required>
                 <label>Password:</label>
@@ -517,6 +518,7 @@ $conn->close();
             <h2>Edit User</h2>
             <form id="editUserForm" method="POST" action="edit-user.php">
                 <input type="hidden" name="user_id" id="editUserId">
+                <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
                 <label>Username:</label>
                 <input type="text" name="username" id="editUsername" required>
                 <label>Email:</label>
@@ -555,6 +557,8 @@ $conn->close();
         }
 
         function confirmDelete(userId) {
+            const currentPage = new URLSearchParams(window.location.search).get('page') || 1; // Get the current page, default to 1
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "This action cannot be undone!",
@@ -565,8 +569,8 @@ $conn->close();
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirect to the delete-user.php script
-                    window.location.href = `delete-user.php?id=${userId}`;
+                    // Redirect to the delete-user.php script, passing the user ID and current page
+                    window.location.href = `delete-user.php?id=${userId}&page=${currentPage}`;
                 }
             });
         }
