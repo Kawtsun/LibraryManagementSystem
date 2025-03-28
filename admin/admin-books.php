@@ -1,7 +1,66 @@
 <?php
+// Include your database connection.
 include '../validate/db.php';
 session_start();
 
+// Get the search query (if any) by book title.
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
+
+// Define pagination variables.
+$records_per_page = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max($page, 1);
+$offset = ($page - 1) * $records_per_page;
+
+// Build the search condition.
+$searchCondition = "";
+if ($searchQuery !== "") {
+    $searchQueryEscaped = $conn->real_escape_string($searchQuery);
+    $searchCondition = "WHERE title LIKE '%$searchQueryEscaped%'";
+}
+
+// Count total matching books across all three tables.
+$sql_count = "SELECT COUNT(*) AS total FROM (
+    (SELECT id FROM books $searchCondition)
+    UNION ALL
+    (SELECT id FROM author_books $searchCondition)
+    UNION ALL
+    (SELECT id FROM library_books $searchCondition)
+) AS all_books";
+$result_count = $conn->query($sql_count);
+$total_books = ($result_count) ? $result_count->fetch_assoc()['total'] : 0;
+$total_pages = ceil($total_books / $records_per_page);
+
+// Main UNION Query: Fetch books from all tables with computed availability and prefix.
+$sql_books = "
+    (
+        SELECT id, title, author, subject, publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-B-' AS prefix, 1 AS src_order
+        FROM books
+        $searchCondition
+    )
+    UNION ALL
+    (
+        SELECT id, title, author, subject, publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-A-' AS prefix, 3 AS src_order
+        FROM author_books
+        $searchCondition
+    )
+    UNION ALL
+    (
+        SELECT id, title, NULL AS author, topic AS subject, NULL AS publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-L-' AS prefix, 2 AS src_order
+        FROM library_books
+        $searchCondition
+    )
+    ORDER BY src_order ASC, id ASC
+    LIMIT $records_per_page OFFSET $offset
+";
+$result_books = $conn->query($sql_books);
+$books = [];
+if ($result_books && $result_books->num_rows > 0) {
+    while ($row = $result_books->fetch_assoc()) {
+        $books[] = $row;
+    }
+}
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -224,7 +283,7 @@ session_start();
             background-color: #f5f5f5;
         }
 
-        .users-table {
+        .books-table {
             width: 100%;
             background-color: white;
             border-collapse: collapse;
@@ -234,20 +293,20 @@ session_start();
             margin-top: 20px;
         }
 
-        .users-table th,
-        .users-table td {
+        .books-table th,
+        .books-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #f4f4f4;
         }
 
-        .users-table th {
+        .books-table th {
             background-color: #007BFF;
             color: white;
             text-transform: uppercase;
         }
 
-        .users-table tr:hover {
+        .books-table tr:hover {
             background-color: #f9f9f9;
         }
 
@@ -536,15 +595,124 @@ session_start();
             <h2>Registered Books</h2>
             <div class="search-bar-container">
                 <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" placeholder="Search Users...">
+                    <input type="text" id="searchInput" placeholder="Search Books..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+                    <?php if ($searchQuery !== ""): ?>
+                        <a href="admin-books.php" class="clear-search">
+                            Clear
+                        </a>
+                    <?php endif; ?>
+                    <ul id="suggestions" class="suggestions-list"></ul>
                 </div>
-                <button id="openAddBookModal">Add Book</button>
+                <button id="openAddBookModal" class="add-book-button">
+                    Add Book
+                </button>
+            </div>
+            <table class="books-table">
+                <thead>
+                    <tr>
+                        <th>Book ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Subject/Topic</th>
+                        <th>Publication Year</th>
+                        <th>Date Added</th>
+                        <th>Quantity</th>
+                        <th>Is Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($books)): ?>
+                        <tr>
+                            <td colspan="9" style="text-align: center;">No books found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($books as $book): ?>
+                            <tr>
+                                <!-- Display Book ID using computed prefix + id -->
+                                <td><?php echo htmlspecialchars($book['prefix'] . $book['id']); ?></td>
+                                <td><?php echo htmlspecialchars($book['title']); ?></td>
+                                <td><?php echo htmlspecialchars($book['author'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($book['subject'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($book['publication_year'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($book['date_added']); ?></td>
+                                <td><?php echo htmlspecialchars($book['quantity']); ?></td>
+                                <td><?php echo ($book['isBorrowable'] ? "Yes" : "No"); ?></td>
+                                <td>
+                                    <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
+                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?php echo $page - 1; ?><?php echo ($searchQuery !== '' ? '&search=' . urlencode($searchQuery) : ''); ?>">← Previous</a>
+                <?php else: ?>
+                    <a class="disabled">← Previous</a>
+                <?php endif; ?>
+
+                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?php echo $page + 1; ?><?php echo ($searchQuery !== '' ? '&search=' . urlencode($searchQuery) : ''); ?>">Next →</a>
+                <?php else: ?>
+                    <a class="disabled">Next →</a>
+                <?php endif; ?>
             </div>
         </div>
         <script>
             lucide.createIcons();
         </script>
+        <script>
+            // Example: Add listeners for search input suggestions here if needed.
+            // (This is similar to your admin-users JavaScript.)
+            document.addEventListener("DOMContentLoaded", function() {
+                const searchInput = document.getElementById("searchInput");
+                const suggestionsList = document.getElementById("suggestions");
+                if (searchInput) {
+                    searchInput.addEventListener("input", function() {
+                        const query = this.value.trim();
+                        if (query.length > 0) {
+                            fetch(`./searchBooks.php?q=${encodeURIComponent(query)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    suggestionsList.innerHTML = "";
+                                    if (data.length > 0) {
+                                        data.forEach(book => {
+                                            const li = document.createElement("li");
+                                            li.textContent = book.title;
+                                            li.addEventListener("click", function() {
+                                                searchInput.value = book.title;
+                                                window.location.href = `./admin-books.php?search=${encodeURIComponent(book.title)}`;
+                                            });
+                                            suggestionsList.appendChild(li);
+                                        });
+                                    } else {
+                                        const li = document.createElement("li");
+                                        li.textContent = "No books found";
+                                        suggestionsList.appendChild(li);
+                                    }
+                                })
+                                .catch(error => console.error("Error fetching search results:", error));
+                        } else {
+                            suggestionsList.innerHTML = "";
+                        }
+                    });
 
+                    searchInput.addEventListener("keydown", function(e) {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            window.location.href = `./admin-books.php?search=${encodeURIComponent(this.value.trim())}`;
+                        }
+                    });
+                }
+            });
+        </script>
 </body>
 
 </html>
