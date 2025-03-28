@@ -299,7 +299,6 @@ $conn->close();
             transform: scale(1.05);
         }
 
-
         /* Modal Background Overlay */
         .modal {
             display: none;
@@ -318,11 +317,15 @@ $conn->close();
 
         /* Modal Content Box */
         .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
+            background-color: #f9f9f9;
+            /* Softer background for better aesthetics */
+            border-radius: 12px;
+            /* Slightly more rounded corners */
+            padding: 24px;
             width: 400px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            /* Fixed width for modal */
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
+            /* Enhanced shadow for depth */
             position: relative;
             text-align: left;
         }
@@ -330,45 +333,72 @@ $conn->close();
         /* Close Button Styling */
         .close {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #aaa;
-            font-size: 18px;
+            top: 16px;
+            right: 16px;
+            color: #888;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
         }
 
         .close:hover {
-            color: black;
+            color: #444;
+            /* Darker shade for hover state */
         }
 
         /* Form Fields and Buttons Inside Modals */
         .modal-content label {
             display: block;
             font-weight: bold;
-            margin-top: 10px;
+            margin: 12px 0 6px 0;
+            /* Adjusted spacing for better layout */
+            color: #333;
+            /* Darker text for readability */
         }
 
         .modal-content input {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            /* Full width matching the modal */
+            padding: 10px;
+            /* Slightly increased padding for comfort */
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            /* Softer border color */
+            border-radius: 6px;
+            /* Slightly rounded input fields */
+            box-sizing: border-box;
+            /* Ensures proper width calculation */
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border: 1px solid #3498db;
+            /* Blue border for focus state */
+            box-shadow: 0px 0px 5px rgba(52, 152, 219, 0.5);
+            /* Glow effect on focus */
         }
 
         .modal-content button {
-            margin-top: 15px;
-            padding: 10px 20px;
+            margin-top: 20px;
+            padding: 12px 24px;
             background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            /* Slightly rounded button corners */
             cursor: pointer;
             width: 100%;
+            /* Full width button */
+            font-size: 16px;
+            font-weight: bold;
+            /* Prominent button text */
+            transition: background-color 0.3s ease;
+            /* Smooth hover transition */
         }
 
         .modal-content button:hover {
             background-color: #217dbb;
+            /* Slightly darker blue for hover state */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
