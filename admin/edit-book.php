@@ -2,17 +2,17 @@
 include '../validate/db.php'; // Include database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $book_id = (int) $_POST['book_id'];
+    $book_id = (int)$_POST['book_id'];
     $title = htmlspecialchars($_POST['title']);
     $author = isset($_POST['author']) ? htmlspecialchars($_POST['author']) : null;
     $subject = htmlspecialchars($_POST['subject']);
     $publication_year = (int)$_POST['publication_year'];
     $quantity = (int)$_POST['quantity'];
     $source = htmlspecialchars($_POST['source']);
-    $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1;
 
     $errors = [];
 
+    // Validation checks
     if (empty($title) || empty($subject) || empty($publication_year) || !isset($_POST['quantity'])) {
         $errors[] = "Title, Subject, Publication Year, and Quantity are required.";
     }
@@ -20,55 +20,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_numeric($publication_year) || $publication_year <= 0) {
         $errors[] = "Publication Year must be a valid positive number.";
     }
-    
-    if (!is_numeric($quantity) || $quantity < 0 || $quantity > 10) {
-        $errors[] = "Quantity must be between 0 and 10.";
-    }
-    
-    if ($book_id <= 0) {
-        $errors[] = "Invalid book ID.";
+
+    if (!is_numeric($quantity) || $quantity < 0) { // No upper limit for quantity
+        $errors[] = "Quantity must be a valid non-negative number.";
     }
 
+    // Duplicate title check
+    $checkSql = "SELECT * FROM {$source} WHERE title = ? AND id != ?";
+    $checkStmt = $conn->prepare($checkSql);
+    if (!$checkStmt) {
+        echo json_encode(['error' => "Error preparing duplicate check: " . $conn->error]);
+        exit;
+    }
+    $checkStmt->bind_param("si", $title, $book_id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    if ($result->num_rows > 0) {
+        $errors[] = "Another book with this title already exists in the selected source.";
+    }
+    $checkStmt->close();
+
+    // Return errors if any exist
     if (!empty($errors)) {
         echo json_encode(['error' => implode('<br>', $errors)]);
         exit;
     }
 
-    // Determine which table to update based on 'source'
+    // Update the database based on source
     if ($source === 'books') {
-        $sql = "UPDATE books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ? WHERE id = ?";
-    } elseif ($source === 'author_books') {
-        $sql = "UPDATE author_books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ? WHERE id = ?";
+        $sql = "UPDATE books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ?, Available = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $quantity, $book_id);
     } elseif ($source === 'library_books') {
-        // For library_books, note that the subject field is actually "topic".
-        $sql = "UPDATE library_books SET title = ?, topic = ?, quantity = ? WHERE id = ?";
-        // Note: Publication year may not exist in library_books—adapt as necessary.
-    } else {
-        echo json_encode(['error' => "Invalid source."]);
-        exit;
+        $sql = "UPDATE library_books SET title = ?, topic = ?, quantity = ?, Available = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssiii", $title, $subject, $quantity, $quantity, $book_id);
+    } elseif ($source === 'author_books') {
+        $sql = "UPDATE author_books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ?, Available = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $quantity, $book_id);
     }
 
-    // Prepare and execute the statement. For the library_books case,
-    // adjust binding parameters if a field is missing.
-    if ($source === 'library_books') {
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            echo json_encode(['error' => "Error preparing update statement: " . $conn->error]);
-            exit;
-        }
-        // Here we assume library_books does not store publication_year.
-        $stmt->bind_param("ssss", $title, $subject, $quantity, $book_id); // Adjust binding as needed in your schema
-    } else {
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            echo json_encode(['error' => "Error preparing update statement: " . $conn->error]);
-            exit;
-        }
-        $stmt->bind_param("sssiii", $title, $author, $subject, $publication_year, $quantity, $book_id);
-    }
-
+    // Execute the update and return success or error
     if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'redirect' => "admin-books.php?status=edited&page=" . $current_page]);
+        echo json_encode(['success' => true, 'redirect' => "admin-books.php?status=edited"]);
     } else {
         echo json_encode(['error' => "Error updating book: " . $conn->error]);
     }

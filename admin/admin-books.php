@@ -34,24 +34,21 @@ $total_pages = ceil($total_books / $records_per_page);
 // Main UNION Query: Fetch books from all tables with computed availability and prefix.
 $sql_books = "
     (
-    SELECT id, title, author, subject, publication_year, date_added, quantity,
-           IF(quantity > 0, 1, 0) AS isBorrowable,
+    SELECT id, title, author, subject, publication_year, date_added, quantity, Available,
            'B-B-' AS prefix, 1 AS src_order, 'books' AS source
     FROM books
     $searchCondition
     )
     UNION ALL
     (
-        SELECT id, title, author, subject, publication_year, date_added, quantity,
-           IF(quantity > 0, 1, 0) AS isBorrowable,
+        SELECT id, title, author, subject, publication_year, date_added, quantity, Available,
            'B-A-' AS prefix, 3 AS src_order, 'author_books' AS source
         FROM author_books
         $searchCondition
     )
     UNION ALL
     (
-        SELECT id, title, NULL AS author, topic AS subject, NULL AS publication_year, date_added, quantity,
-            IF(quantity > 0, 1, 0) AS isBorrowable,
+        SELECT id, title, NULL AS author, topic AS subject, NULL AS publication_year, date_added, quantity, Available,
             'B-L-' AS prefix, 2 AS src_order, 'library_books' AS source
         FROM library_books
         $searchCondition
@@ -68,6 +65,7 @@ if ($result_books && $result_books->num_rows > 0) {
 }
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -442,7 +440,8 @@ $conn->close();
             /* Darker text for readability */
         }
 
-        .modal-content input {
+        .modal-content input,
+        select {
             width: 100%;
             /* Full width matching the modal */
             padding: 10px;
@@ -456,7 +455,8 @@ $conn->close();
             /* Ensures proper width calculation */
         }
 
-        .modal-content input:focus {
+        .modal-content input:focus,
+        select:focus {
             outline: none;
             border: 1px solid #3498db;
             /* Blue border for focus state */
@@ -624,7 +624,7 @@ $conn->close();
                         <th>Publication Year</th>
                         <th>Date Added</th>
                         <th>Quantity</th>
-                        <th>Is Available</th>
+                        <th>Available</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -644,7 +644,7 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($book['publication_year'] ?? ''); ?></td>
                                 <td><?php echo htmlspecialchars($book['date_added']); ?></td>
                                 <td><?php echo htmlspecialchars($book['quantity']); ?></td>
-                                <td><?php echo ($book['isBorrowable'] ? "Yes" : "No"); ?></td>
+                                <td><?php echo $book['Available']; ?></td>
                                 <td>
                                     <button class="edit-btn" onclick="openEditBookModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
                                     <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
@@ -728,11 +728,12 @@ $conn->close();
                     <label>Publication Year:</label>
                     <input type="number" name="publication_year" id="editPublicationYear" required>
                     <label>Quantity:</label>
-                    <input type="number" name="quantity" id="editQuantity" min="0" max="10" required value="5">
-                    <button type="button" id="updateBookBtn">Update Book</button>
+                    <input type="number" name="quantity" id="editQuantity" min="0" required>
+                    <button type="submit" id="updateBookBtn">Update Book</button>
                 </form>
             </div>
         </div>
+
 
         <script>
             lucide.createIcons();
@@ -893,77 +894,86 @@ $conn->close();
             });
         </script>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // ----- Add Book Form Submission -----
-                const addBookBtn = document.getElementById("addBookBtn");
-                const addBookForm = document.getElementById("addBookForm");
-                const addBookErrorMessages = document.getElementById("addBookErrorMessages");
+            // Add Modal with Errors
+            // AddBook Modal Errors
+            document.getElementById('addBookBtn').addEventListener('click', function() {
+                const form = document.getElementById('addBookForm');
+                const formData = new FormData(form);
+                const errorMessages = document.getElementById('addBookErrorMessages');
 
-                if (addBookBtn) {
-                    addBookBtn.addEventListener("click", function() {
-                        // Clear any previous error messages
-                        addBookErrorMessages.innerHTML = "";
+                // Reset error messages
+                errorMessages.style.display = 'none';
+                errorMessages.innerHTML = ''; // Clear previous errors
 
-                        // Create a FormData object from the addBookForm
-                        const formData = new FormData(addBookForm);
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.error) {
+                            errorMessages.style.display = 'block'; // Show the error box
+                            const errors = data.error.split('<br>'); // Split errors into an array
+                            const errorList = document.createElement('ul'); // Create an unordered list for errors
 
-                        // Send the data via fetch to add-book.php
-                        fetch("add-book.php", {
-                                method: "POST",
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.error) {
-                                    // Display error messages
-                                    addBookErrorMessages.innerHTML = data.error;
-                                } else if (data.success) {
-                                    // On success, redirect using the provided URL
-                                    window.location.href = data.redirect;
-                                }
-                            })
-                            .catch(error => {
-                                // In case of network or other errors
-                                addBookErrorMessages.innerHTML = "An error occurred while adding the book.";
-                                console.error("Add Book Error:", error);
+                            errors.forEach((error) => {
+                                const listItem = document.createElement('li'); // Create list item for each error
+                                listItem.innerHTML = `⚠️ ${error}`; // Prepend the warning symbol to the error message
+                                errorList.appendChild(listItem);
                             });
+
+                            errorMessages.appendChild(errorList); // Append the error list to the error box
+                        } else {
+                            errorMessages.style.display = 'none'; // Hide error box on success
+                            window.location.href = data.redirect; // Redirect to the success page
+                        }
+                    })
+                    .catch(() => {
+                        errorMessages.style.display = 'block'; // Display the error box
+                        errorMessages.innerHTML = '<ul><li>⚠️ An unexpected error occurred.</li></ul>'; // Generic error message
                     });
-                }
-                // ----- Edit Book Form Submission -----
-                const updateBookBtn = document.getElementById("updateBookBtn");
-                const editBookForm = document.getElementById("editBookForm");
-                const editBookErrorMessages = document.getElementById("editBookErrorMessages");
+            });
+        </script>
+        <script>
+            // EditBook Modal Errors
+            document.getElementById('updateBookBtn').addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                const form = document.getElementById('editBookForm');
+                const formData = new FormData(form);
+                const errorMessages = document.getElementById('editBookErrorMessages');
 
-                if (updateBookBtn) {
-                    updateBookBtn.addEventListener("click", function() {
-                        // Clear any previous error messages
-                        editBookErrorMessages.innerHTML = "";
+                // Reset the error messages
+                errorMessages.style.display = 'none';
+                errorMessages.innerHTML = '';
 
-                        // Create a FormData object from the editBookForm
-                        const formData = new FormData(editBookForm);
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.error) {
+                            errorMessages.style.display = 'block';
+                            const errors = data.error.split('<br>'); // Split errors into an array
+                            const errorList = document.createElement('ul'); // Create a list for errors
 
-                        // Send the form data via fetch to edit-book.php
-                        fetch("edit-book.php", {
-                                method: "POST",
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.error) {
-                                    // Display error messages
-                                    editBookErrorMessages.innerHTML = data.error;
-                                } else if (data.success) {
-                                    // On successful update, redirect to the given URL
-                                    window.location.href = data.redirect;
-                                }
-                            })
-                            .catch(error => {
-                                // Handle any errors from the fetch operation
-                                editBookErrorMessages.innerHTML = "An error occurred while updating the book.";
-                                console.error("Edit Book Error:", error);
+                            errors.forEach((error) => {
+                                const listItem = document.createElement('li'); // Create list item for each error
+                                listItem.innerHTML = `⚠️ ${error}`; // Add warning icon
+                                errorList.appendChild(listItem);
                             });
+
+                            errorMessages.appendChild(errorList); // Append the list to the error box
+                        } else if (data.success) {
+                            // Hide the error messages and redirect on success
+                            errorMessages.style.display = 'none';
+                            window.location.href = data.redirect; // Redirect to the success page
+                        }
+                    })
+                    .catch(() => {
+                        errorMessages.style.display = 'block';
+                        errorMessages.innerHTML = '<ul><li>⚠️ An unexpected error occurred.</li></ul>';
                     });
-                }
             });
         </script>
         <script>
