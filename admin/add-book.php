@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $publication_year = isset($_POST['publication_year']) ? (int)$_POST['publication_year'] : null; // Optional for library_books
     $quantity = (int)$_POST['quantity'];
     $source = htmlspecialchars($_POST['source']);
-    $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1;
+    $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1; // Safely retrieve current page
 
     $errors = [];
 

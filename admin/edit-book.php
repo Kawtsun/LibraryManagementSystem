@@ -4,21 +4,32 @@ include '../validate/db.php'; // Include database connection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $book_id = (int)$_POST['book_id'];
     $title = htmlspecialchars($_POST['title']);
-    $author = isset($_POST['author']) ? htmlspecialchars($_POST['author']) : null;
+    $author = isset($_POST['author']) ? htmlspecialchars($_POST['author']) : null; // Optional for library_books
     $subject = htmlspecialchars($_POST['subject']);
-    $publication_year = (int)$_POST['publication_year'];
+    $publication_year = isset($_POST['publication_year']) ? (int)$_POST['publication_year'] : null; // Optional for library_books
     $quantity = (int)$_POST['quantity'];
     $source = htmlspecialchars($_POST['source']);
+    $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1; // Safely retrieve the current page
 
     $errors = [];
 
     // Validation checks
-    if (empty($title) || empty($subject) || empty($publication_year) || !isset($_POST['quantity'])) {
-        $errors[] = "Title, Subject, Publication Year, and Quantity are required.";
+    if (empty($title) || empty($subject) || empty($quantity)) {
+        $errors[] = "Title, Subject, and Quantity are required.";
     }
 
-    if (!is_numeric($publication_year) || $publication_year <= 0) {
-        $errors[] = "Publication Year must be a valid positive number.";
+    if ($source !== 'library_books') {
+        // Validate author and publication_year for non-library_books sources
+        if (empty($author)) {
+            $errors[] = "Author is required for this source.";
+        }
+        if (empty($publication_year) || $publication_year <= 0) {
+            $errors[] = "Publication Year must be a valid positive number.";
+        }
+    } else {
+        // For library_books, make sure these are null
+        $author = null;
+        $publication_year = null;
     }
 
     if (!is_numeric($quantity) || $quantity < 0) { // No upper limit for quantity
@@ -63,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the update and return success or error
     if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'redirect' => "admin-books.php?status=edited"]);
+        echo json_encode(['success' => true, 'redirect' => "admin-books.php?status=edited&page=" . $current_page]);
     } else {
         echo json_encode(['error' => "Error updating book: " . $conn->error]);
     }
