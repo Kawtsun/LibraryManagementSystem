@@ -581,7 +581,7 @@ $conn->close();
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
             <h2>Add User</h2>
-            <div id="errorMessages" class="error-box"></div> <!-- Error messages -->
+            <div id="addErrorMessages" class="error-box"></div> <!-- Error messages -->
             <form id="addUserForm" method="POST" action="add-user.php">
                 <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
                 <label>Username:</label>
@@ -603,7 +603,7 @@ $conn->close();
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('editUserModal').style.display='none'">&times;</span>
             <h2>Edit User</h2>
-            <div id="errorMessages" class="error-box"></div> <!-- Updated with a styled error container -->
+            <div id="editErrorMessages" class="error-box"></div> <!-- Updated with a styled error container -->
             <form id="editUserForm" method="POST" action="edit-user.php">
                 <input type="hidden" name="user_id" id="editUserId">
                 <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
@@ -689,7 +689,7 @@ $conn->close();
         document.getElementById('addUserBtn').addEventListener('click', function() {
             const form = document.getElementById('addUserForm');
             const formData = new FormData(form);
-            const errorMessages = document.getElementById('errorMessages');
+            const errorMessages = document.getElementById('addErrorMessages');
 
             // Reset error messages
             errorMessages.style.display = 'none';
@@ -730,7 +730,7 @@ $conn->close();
         document.getElementById('updateUserBtn').addEventListener('click', function() {
             const form = document.getElementById('editUserForm');
             const formData = new FormData(form);
-            const errorMessages = document.getElementById('errorMessages');
+            const errorMessages = document.getElementById('editErrorMessages');
 
             // Reset error box
             errorMessages.style.display = 'none';
