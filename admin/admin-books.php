@@ -34,19 +34,25 @@ $total_pages = ceil($total_books / $records_per_page);
 // Main UNION Query: Fetch books from all tables with computed availability and prefix.
 $sql_books = "
     (
-        SELECT id, title, author, subject, publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-B-' AS prefix, 1 AS src_order
-        FROM books
-        $searchCondition
+    SELECT id, title, author, subject, publication_year, date_added, quantity,
+           IF(quantity > 0, 1, 0) AS isBorrowable,
+           'B-B-' AS prefix, 1 AS src_order, 'books' AS source
+    FROM books
+    $searchCondition
     )
     UNION ALL
     (
-        SELECT id, title, author, subject, publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-A-' AS prefix, 3 AS src_order
+        SELECT id, title, author, subject, publication_year, date_added, quantity,
+           IF(quantity > 0, 1, 0) AS isBorrowable,
+           'B-A-' AS prefix, 3 AS src_order, 'author_books' AS source
         FROM author_books
         $searchCondition
     )
     UNION ALL
     (
-        SELECT id, title, NULL AS author, topic AS subject, NULL AS publication_year, date_added, quantity, IF(quantity > 0, 1, 0) AS isBorrowable, 'B-L-' AS prefix, 2 AS src_order
+        SELECT id, title, NULL AS author, topic AS subject, NULL AS publication_year, date_added, quantity,
+            IF(quantity > 0, 1, 0) AS isBorrowable,
+            'B-L-' AS prefix, 2 AS src_order, 'library_books' AS source
         FROM library_books
         $searchCondition
     )
@@ -639,7 +645,7 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($book['quantity']); ?></td>
                                 <td><?php echo ($book['isBorrowable'] ? "Yes" : "No"); ?></td>
                                 <td>
-                                    <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
+                                    <button class="edit-btn" onclick="openEditBookModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
                                     <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
                                 </td>
                             </tr>
@@ -665,6 +671,68 @@ $conn->close();
                 <?php endif; ?>
             </div>
         </div>
+        <!-- Add Book Modal -->
+        <div id="addBookModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="document.getElementById('addBookModal').style.display='none'">&times;</span>
+                <h2>Add Book</h2>
+                <div id="addBookErrorMessages" class="error-box"></div> <!-- Error messages -->
+                <form id="addBookForm" method="POST" action="add-book.php">
+                    <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
+
+                    <label>Title:</label>
+                    <input type="text" name="title" id="addTitle" required>
+
+                    <label>Author:</label>
+                    <input type="text" name="author" id="addAuthor">
+
+                    <label>Subject/Topic:</label>
+                    <input type="text" name="subject" id="addSubject" required>
+
+                    <label>Publication Year:</label>
+                    <input type="number" name="publication_year" id="addPublicationYear" required>
+
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" id="addQuantity" min="0" max="10" required value="5">
+
+                    <!-- Dropdown to select the source table -->
+                    <label>Source:</label>
+                    <select name="source" id="addSource" required>
+                        <option value="books" selected>Books</option>
+                        <option value="library_books">Library Books</option>
+                        <option value="author_books">Author Books</option>
+                    </select>
+
+                    <button type="button" id="addBookBtn">Add Book</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Book Modal (for editing existing book data) -->
+        <div id="editBookModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="document.getElementById('editBookModal').style.display='none'">&times;</span>
+                <h2>Edit Book</h2>
+                <div id="editBookErrorMessages" class="error-box"></div>
+                <form id="editBookForm" method="POST" action="edit-book.php">
+                    <input type="hidden" name="source" id="editSource">
+                    <input type="hidden" name="book_id" id="editBookId">
+                    <input type="hidden" name="current_page" value="<?php echo isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 1; ?>">
+                    <label>Title:</label>
+                    <input type="text" name="title" id="editTitle" required>
+                    <label>Author:</label>
+                    <input type="text" name="author" id="editAuthor">
+                    <label>Subject/Topic:</label>
+                    <input type="text" name="subject" id="editSubject" required>
+                    <label>Publication Year:</label>
+                    <input type="number" name="publication_year" id="editPublicationYear" required>
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" id="editQuantity" min="0" max="10" required value="5">
+                    <button type="button" id="updateBookBtn">Update Book</button>
+                </form>
+            </div>
+        </div>
+
         <script>
             lucide.createIcons();
         </script>
@@ -709,6 +777,190 @@ $conn->close();
                             e.preventDefault();
                             window.location.href = `./admin-books.php?search=${encodeURIComponent(this.value.trim())}`;
                         }
+                    });
+                }
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get references to your input fields and source dropdown
+                const addSourceSelect = document.getElementById("addSource");
+                const addAuthorInput = document.getElementById("addAuthor");
+                const addPublicationYearInput = document.getElementById("addPublicationYear");
+
+                // Function to toggle fields based on selected source
+                function toggleFieldsBasedOnSource() {
+                    const source = addSourceSelect.value;
+                    if (source === "library_books") {
+                        // For library_books, disable Author and Publication Year
+                        addAuthorInput.disabled = true;
+                        addPublicationYearInput.disabled = true;
+                        // Optionally, clear the values
+                        addAuthorInput.value = "";
+                        addPublicationYearInput.value = "";
+                    } else {
+                        // For books and author_books, enable Author and Publication Year
+                        addAuthorInput.disabled = false;
+                        addPublicationYearInput.disabled = false;
+                    }
+                }
+
+                // Listen for changes to the dropdown
+                addSourceSelect.addEventListener("change", toggleFieldsBasedOnSource);
+
+                // Call the function once on page load to set the correct field state
+                toggleFieldsBasedOnSource();
+            });
+        </script>
+
+        <script>
+            // Open add modal
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get modal and button elements by their IDs
+                const addBookModal = document.getElementById("addBookModal");
+                const openAddBookModalBtn = document.getElementById("openAddBookModal");
+
+                // Event listener for opening the Add Book Modal
+                if (openAddBookModalBtn) {
+                    openAddBookModalBtn.addEventListener("click", function() {
+                        addBookModal.style.display = "flex";
+                    });
+                }
+
+                // Close modal when clicking on a .close element inside the modal
+                document.querySelectorAll(".modal .close").forEach(function(btn) {
+                    btn.addEventListener("click", function() {
+                        // Using closest to ensure we get the parent modal container
+                        this.closest(".modal").style.display = "none";
+                    });
+                });
+
+                // Optionally, close the modal if clicking outside the modal content
+                window.addEventListener("click", function(event) {
+                    if (event.target.classList.contains("modal")) {
+                        event.target.style.display = "none";
+                    }
+                });
+
+                // --- (Re)binding of other modal-related logic if needed ---
+                // For example, if you have code to clear or reset form inputs when a modal is opened,
+                // add it here.
+            });
+        </script>
+        <script>
+            // Open Edit Modal
+            document.addEventListener("DOMContentLoaded", function() {
+                // Store a reference to the edit modal.
+                const editBookModal = document.getElementById('editBookModal');
+
+                // Global function to open the Edit Book Modal.
+                // Call this function with a valid book object, e.g.,
+                // { id: 1, source: 'books', title: 'My Book', author: 'Author', subject: 'Fiction', publication_year: 2020, quantity: 5 }
+                window.openEditBookModal = function(book) {
+                    if (!editBookModal) {
+                        console.error("Edit modal element not found");
+                        return;
+                    }
+
+                    // Show the modal by setting display to "flex".
+                    editBookModal.style.display = "flex";
+
+                    // Populate hidden and visible fields.
+                    document.getElementById('editBookId').value = book.id;
+                    document.getElementById('editSource').value = book.source || "books"; // default to books if missing
+                    document.getElementById('editTitle').value = book.title || "";
+                    document.getElementById('editAuthor').value = book.author || "";
+                    document.getElementById('editSubject').value = book.subject || "";
+                    document.getElementById('editPublicationYear').value = book.publication_year || "";
+                    document.getElementById('editQuantity').value = book.quantity || "5";
+                };
+
+                // Bind close events for the edit modal.
+                // Close the modal when clicking on any element with a .close class inside the modal.
+                document.querySelectorAll('#editBookModal .close').forEach(function(closeBtn) {
+                    closeBtn.addEventListener("click", function() {
+                        editBookModal.style.display = "none";
+                    });
+                });
+
+                // Also close the modal if clicking outside of its content.
+                window.addEventListener("click", function(event) {
+                    if (event.target === editBookModal) {
+                        editBookModal.style.display = "none";
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // ----- Add Book Form Submission -----
+                const addBookBtn = document.getElementById("addBookBtn");
+                const addBookForm = document.getElementById("addBookForm");
+                const addBookErrorMessages = document.getElementById("addBookErrorMessages");
+
+                if (addBookBtn) {
+                    addBookBtn.addEventListener("click", function() {
+                        // Clear any previous error messages
+                        addBookErrorMessages.innerHTML = "";
+
+                        // Create a FormData object from the addBookForm
+                        const formData = new FormData(addBookForm);
+
+                        // Send the data via fetch to add-book.php
+                        fetch("add-book.php", {
+                                method: "POST",
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    // Display error messages
+                                    addBookErrorMessages.innerHTML = data.error;
+                                } else if (data.success) {
+                                    // On success, redirect using the provided URL
+                                    window.location.href = data.redirect;
+                                }
+                            })
+                            .catch(error => {
+                                // In case of network or other errors
+                                addBookErrorMessages.innerHTML = "An error occurred while adding the book.";
+                                console.error("Add Book Error:", error);
+                            });
+                    });
+                }
+                // ----- Edit Book Form Submission -----
+                const updateBookBtn = document.getElementById("updateBookBtn");
+                const editBookForm = document.getElementById("editBookForm");
+                const editBookErrorMessages = document.getElementById("editBookErrorMessages");
+
+                if (updateBookBtn) {
+                    updateBookBtn.addEventListener("click", function() {
+                        // Clear any previous error messages
+                        editBookErrorMessages.innerHTML = "";
+
+                        // Create a FormData object from the editBookForm
+                        const formData = new FormData(editBookForm);
+
+                        // Send the form data via fetch to edit-book.php
+                        fetch("edit-book.php", {
+                                method: "POST",
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    // Display error messages
+                                    editBookErrorMessages.innerHTML = data.error;
+                                } else if (data.success) {
+                                    // On successful update, redirect to the given URL
+                                    window.location.href = data.redirect;
+                                }
+                            })
+                            .catch(error => {
+                                // Handle any errors from the fetch operation
+                                editBookErrorMessages.innerHTML = "An error occurred while updating the book.";
+                                console.error("Edit Book Error:", error);
+                            });
                     });
                 }
             });
