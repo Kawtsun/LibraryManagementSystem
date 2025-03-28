@@ -549,6 +549,7 @@ $conn->close();
 </head>
 
 <body>
+    <div id="status-handler" data-status="<?php echo isset($_GET['status']) ? htmlspecialchars($_GET['status']) : ''; ?>"></div>
 
     <!-- Header -->
     <header>
@@ -965,6 +966,66 @@ $conn->close();
                 }
             });
         </script>
+        <script>
+            // Deleting books
+            function confirmDelete(bookId) {
+                // Get the current page to maintain pagination context
+                const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#3498db',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the delete-book.php script, passing the book ID and current page
+                        window.location.href = `delete-book.php?id=${bookId}&page=${currentPage}`;
+                    }
+                });
+            }
+        </script>
+        <script>
+            // Get the status from the data attribute
+            const statusElement = document.getElementById('status-handler');
+            const status = statusElement.getAttribute('data-status');
+
+            // Check the status and trigger the appropriate SweetAlert2
+            if (status === 'added') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Book Added',
+                    text: 'The new book was successfully added!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else if (status === 'edited') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Book Updated',
+                    text: 'The book details were successfully updated!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else if (status === 'deleted') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Book Deleted',
+                    text: 'The book was successfully deleted!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+
+            // Remove the status query parameter from the URL
+            const url = new URL(window.location);
+            url.searchParams.delete('status');
+            window.history.replaceState({}, document.title, url);
+        </script>
+
 </body>
 
 </html>
