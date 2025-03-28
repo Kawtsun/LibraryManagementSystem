@@ -14,46 +14,60 @@ if (isset($_GET['status'])) {
 include '../validate/db.php';
 session_start();
 
+// Get the search query (if any)
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
 
-
-// Get the current page for pagination
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$page = max($page, 1); // Ensure the page number is at least 1
-
-// Records per page and offset calculation
+// Always define pagination variables
 $records_per_page = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max($page, 1);
 $offset = ($page - 1) * $records_per_page;
 
-// Get the total number of users for pagination
-$sql_count = "
-SELECT COUNT(*) AS total_users 
-FROM users";
-$result_count = $conn->query($sql_count);
-$total_users = $result_count->fetch_assoc()['total_users'];
+if ($searchQuery !== "") {
+    // Escape user input for safety
+    $searchQueryEscaped = $conn->real_escape_string($searchQuery);
 
-$total_pages = ceil($total_users / $records_per_page);
+    // Count matching users so that we can compute pagination if needed
+    $sql_count = "SELECT COUNT(*) AS total FROM users WHERE username LIKE '%$searchQueryEscaped%'";
+    $countResult = $conn->query($sql_count);
+    $total_users = ($countResult) ? $countResult->fetch_assoc()['total'] : 0;
 
-// Query to fetch registered users with pagination
-$sql_registered_users = "
-SELECT user_id, username, email, course, student_id 
-FROM users 
-ORDER BY user_id ASC
-LIMIT $records_per_page OFFSET $offset";
+    $total_pages = ceil($total_users / $records_per_page);
+
+    // Fetch only matching users with pagination
+    $sql_registered_users = "
+        SELECT user_id, username, email, course, student_id 
+        FROM users 
+        WHERE username LIKE '%$searchQueryEscaped%' 
+        ORDER BY user_id ASC
+        LIMIT $records_per_page OFFSET $offset";
+} else {
+    // Normal (all users) pagination
+    $sql_count = "SELECT COUNT(*) AS total_users FROM users";
+    $result_count = $conn->query($sql_count);
+    $total_users = $result_count->fetch_assoc()['total_users'];
+
+    $total_pages = ceil($total_users / $records_per_page);
+
+    // Query to fetch registered users with pagination
+    $sql_registered_users = "
+        SELECT user_id, username, email, course, student_id 
+        FROM users 
+        ORDER BY user_id ASC
+        LIMIT $records_per_page OFFSET $offset";
+}
 
 $result_registered_users = $conn->query($sql_registered_users);
-
 $registered_users = [];
-if ($result_registered_users->num_rows > 0) {
+if ($result_registered_users && $result_registered_users->num_rows > 0) {
     while ($row = $result_registered_users->fetch_assoc()) {
         $registered_users[] = $row;
     }
 }
 
-
-// Close the database connection
 $conn->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -178,20 +192,12 @@ $conn->close();
             min-height: calc(100vh - 60px);
         }
 
-        /* Search Bar and Add User Button */
+        /* Container for search bar and Add User button */
         .search-bar-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 20px;
-        }
-
-        .search-bar-container input {
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
 
         .search-bar-container button {
@@ -202,6 +208,84 @@ $conn->close();
             border: none;
             border-radius: 5px;
             cursor: pointer;
+        }
+
+        .search-bar-container button:hover {
+            background-color: rgb(46, 132, 190);
+            transform: scale(1.05);
+        }
+
+        /* Wrapper for input and suggestions for relative positioning */
+        .search-input-wrapper {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input-wrapper input {
+            padding: 10px 70px 10px 10px;
+            /* extra right padding to accommodate the clear button */
+            font-size: 16px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Clear Button Styled as a Box */
+        .clear-search {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 0 12px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+
+            /* Center content vertically and horizontally */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .clear-search:hover {
+            background: #c0392b;
+        }
+
+        .clear-search:active {
+            background: #a93226;
+        }
+        /* Suggestions dropdown styling */
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestions-list li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestions-list li:hover {
+            background-color: #f5f5f5;
         }
 
         .users-table {
@@ -231,6 +315,7 @@ $conn->close();
             background-color: #f9f9f9;
         }
 
+        /* New Pagination styling as provided */
         .pagination {
             margin-top: 40px;
             text-align: center;
@@ -515,66 +600,73 @@ $conn->close();
         <!-- Main Content -->
         <div class="main-content">
             <h2>Users</h2>
-            <!-- Search Bar and Add User Button -->
+            <!-- Search Bar and Suggestions -->
             <div class="search-bar-container">
-                <input type="text" placeholder="Search Users...">
-                <button id="openAddUserModal">Add User</button>
-            </div>
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Course</th>
-                        <th>Student ID</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($registered_users)): ?>
-                        <tr>
-                            <td colspan="6" style="text-align: center;">No registered users found.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($registered_users as $user): ?>
-                            <tr>
-                                <td>U-<?php echo htmlspecialchars($user['user_id']); ?></td>
-                                <td><?php echo htmlspecialchars($user['username']); ?></td>
-                                <td><?php echo htmlspecialchars($user['email']); ?></td>
-                                <td><?php echo htmlspecialchars($user['course']); ?></td>
-                                <td><?php echo htmlspecialchars($user['student_id']); ?></td>
-                                <td>
-                                    <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
-
-                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search Users..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+                    <?php if ($searchQuery !== ""): ?>
+                        <!-- The Clear button now appears as a box inside the input -->
+                        <a href="admin-users.php" class="clear-search">Clear</a>
                     <?php endif; ?>
-                </tbody>
-            </table>
-
-
-            <div class="pagination">
-                <?php if ($page > 1): ?>
-                    <!-- Previous button -->
-                    <a href="?page=<?php echo $page - 1; ?>">← Previous</a>
-                <?php else: ?>
-                    <a class="disabled">← Previous</a>
-                <?php endif; ?>
-
-                <!-- Current page indicator -->
-                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
-
-                <?php if ($page < $total_pages): ?>
-                    <!-- Next button -->
-                    <a href="?page=<?php echo $page + 1; ?>">Next →</a>
-                <?php else: ?>
-                    <a class="disabled">Next →</a>
-                <?php endif; ?>
+                    <ul id="suggestions" class="suggestions-list"></ul>
             </div>
+            <button id="openAddUserModal">Add User</button>
         </div>
+
+        <!-- Users Table -->
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Student ID</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($registered_users)): ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No registered users found.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($registered_users as $user): ?>
+                        <tr>
+                            <td>U-<?php echo htmlspecialchars($user['user_id']); ?></td>
+                            <td><?php echo htmlspecialchars($user['username']); ?></td>
+                            <td><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td><?php echo htmlspecialchars($user['course']); ?></td>
+                            <td><?php echo htmlspecialchars($user['student_id']); ?></td>
+                            <td>
+                                <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
+                                <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <?php if ($page > 1): ?>
+                <!-- Previous button -->
+                <a href="?page=<?php echo $page - 1; ?><?php echo ($searchQuery != '' ? '&search=' . urlencode($searchQuery) : ''); ?>">← Previous</a>
+            <?php else: ?>
+                <a class="disabled">← Previous</a>
+            <?php endif; ?>
+
+            <!-- Current page indicator -->
+            <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+            <?php if ($page < $total_pages): ?>
+                <!-- Next button -->
+                <a href="?page=<?php echo $page + 1; ?><?php echo ($searchQuery != '' ? '&search=' . urlencode($searchQuery) : ''); ?>">Next →</a>
+            <?php else: ?>
+                <a class="disabled">Next →</a>
+            <?php endif; ?>
+        </div>
+
+    </div>
     </div>
     <!-- Add User Modal -->
     <div id="addUserModal" class="modal">
@@ -620,9 +712,54 @@ $conn->close();
         </div>
     </div>
 
-
     <script>
         lucide.createIcons();
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // DOM elements for search and suggestions
+            const searchInput = document.getElementById("searchInput");
+            const suggestionsList = document.getElementById("suggestions");
+
+            // Listen for input events for suggestions
+            searchInput.addEventListener("input", function() {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    fetch(`searchUsers.php?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            suggestionsList.innerHTML = "";
+                            if (data.length > 0) {
+                                data.forEach(user => {
+                                    const li = document.createElement("li");
+                                    li.textContent = user.username;
+                                    li.dataset.userid = user.user_id;
+                                    li.addEventListener("click", function() {
+                                        searchInput.value = user.username;
+                                        window.location.href = `admin-users.php?search=${encodeURIComponent(user.username)}`;
+                                    });
+                                    suggestionsList.appendChild(li);
+                                });
+                            } else {
+                                const li = document.createElement("li");
+                                li.textContent = "No users found";
+                                suggestionsList.appendChild(li);
+                            }
+                        })
+                        .catch(error => console.error("Error fetching search results:", error));
+                } else {
+                    suggestionsList.innerHTML = "";
+                }
+            });
+
+            // Listen for Enter key press in search input
+            searchInput.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    window.location.href = `admin-users.php?search=${encodeURIComponent(this.value.trim())}`;
+                }
+            });
+        });
     </script>
 
     <script>
