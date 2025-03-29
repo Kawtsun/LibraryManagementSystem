@@ -585,7 +585,7 @@ $conn->close();
                         <i class="lucide" data-lucide="book"></i> Registered Books
                     </li>
                 </a>
-                <a href="#">
+                <a href="admin-transactions.php" class="<?php echo $currentPage === 'admin-transactions.php' ? 'active' : ''; ?>">
                     <li>
                         <i class="lucide" data-lucide="file-text"></i> Transactions
                     </li>
