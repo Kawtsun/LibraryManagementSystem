@@ -55,22 +55,35 @@ function getTopAuthors($conn, $limit = 5) {
 
 // Function to display authors
 function displayAuthors($result) {
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            ?>
-            <div class="author-item">
-                <img src="author-icon.png" alt="Author Icon" class="author-icon">
-                <p class="author-name"><?php echo htmlspecialchars($row['author']); ?></p>
-            </div>
-            <?php
+    $authorImages = [
+        'author1.png',
+        'author2.png',
+        'author3.png',
+        'author4.png',
+        'author5.png',
+        'author6.png' // Add more if needed
+    ];
+    $imageIndex = 0;
+
+    while ($row = $result->fetch_assoc()) {
+        if (!isset($authorImages[$imageIndex])) {
+            echo "<p>Error: Not enough author images.</p>";
+            return; // Stop the loop to avoid further errors
         }
-    } else {
-        echo "<p>No authors found.</p>";
+        ?>
+        <div class="author-item">
+            <a href="author_detail.php?author=<?php echo urlencode($row['author']); ?>">
+                <img src="<?php echo $authorImages[$imageIndex]; ?>" alt="Author Icon" class="author-icon">
+            </a>
+            <p class="author-name"><?php echo htmlspecialchars($row['author']); ?></p>
+        </div>
+        <?php
+        $imageIndex = ($imageIndex + 1) % count($authorImages);
     }
 }
 
 // Function to fetch trending books from library_books (adjust as needed)
-function getTrendingBooks($conn, $limit = 3) {
+function getTrendingBooks($conn, $limit = 4) { // Modified limit to 4
     $sql = "SELECT * FROM library_books ORDER BY title ASC LIMIT $limit";
     $result = $conn->query($sql);
     return $result;
@@ -79,6 +92,14 @@ function getTrendingBooks($conn, $limit = 3) {
 // Function to display trending books
 function displayTrendingBooks($result) {
     if ($result->num_rows > 0) {
+        $coverImages = [ // Array for different cover images
+            'advance-calculus.png', // Replace with your actual image paths
+            'agriculture-books.png',
+            'mito-books.png',
+            'algebra-book.png'
+        ];
+        $imageIndex = 0; // Initialize image index
+
         while ($row = $result->fetch_assoc()) {
             ?>
             <div class="trending-item">
@@ -86,11 +107,16 @@ function displayTrendingBooks($result) {
                 if (!empty($row['cover_image'])) {
                     echo '<img src="' . htmlspecialchars($row['cover_image']) . '" alt="' . htmlspecialchars($row['title']) . '">';
                 } else {
-                    $defaultImage = 'advance-calculus.png'; 
-                    echo '<img src="' . $defaultImage . '" alt="No Cover Image">';
+                    echo '<img src="' . $coverImages[$imageIndex] . '" alt="Default Cover Image">'; // Use cover image from array
+                    $imageIndex = ($imageIndex + 1) % count($coverImages); // Cycle through images
                 }
                 ?>
                 <p><?php echo htmlspecialchars($row['title']); ?></p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                    <input type="hidden" name="source" value="library_books">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
             </div>
             <?php
         }
@@ -444,8 +470,8 @@ function getBookTitles($conn) {
     /* Add more adjustments as needed */
 }
 .trending-section {
-            background-color: #d4edda; /* Light green background */
-            color: #155724; /* Dark green text */
+            background-color:rgb(0, 0, 0); /* Light green background */
+            color:rgb(255, 255, 255); /* Dark green text */
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -453,24 +479,26 @@ function getBookTitles($conn) {
 
         .trending-section h2 {
             margin-bottom: 15px;
+            margin-top: 5px;
             font-size: 24px;
             font-weight: 600;
         }
 
         .trending-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
         .trending-item {
             text-align: center;
+            font-size: 20px;
         }
 
         .trending-item img {
             width: 100px; /* Adjust as needed */
             height: auto;
-            margin-bottom: 10px;
+            margin-bottom: -5px;
         }
 
         /* Add styles for Top Authors section */
@@ -535,9 +563,9 @@ function getBookTitles($conn) {
     text-align: center;
 }
 .container-author .author-grid .author-item img {
-    width: 100px; 
-    height: 100px; 
-    margin-bottom: 10px;
+    width: 120px; 
+    height: 120px; 
+    margin-bottom: -20px;
 }
 
 .container-author .author-grid .author-item p {
@@ -802,10 +830,10 @@ function getBookTitles($conn) {
 <div class="container-row">
     <div class="book-listings">
         <div class="container trending-section">
-            <h2>Trending Books This Month</h2>
+            <h2 style="font-size: 30px;">Trending Books This Month</h2>
             <div class="trending-grid">
                 <?php
-                $trendingBooks = getTrendingBooks($conn, 3);
+                $trendingBooks = getTrendingBooks($conn, 4);
                 displayTrendingBooks($trendingBooks);
                 ?>
             </div>
@@ -833,14 +861,20 @@ function getBookTitles($conn) {
     </div>
 
     <div class="container-author">
-        <section class="book-section">
-            <h2 style="font-size: 30px;">Top Authors</h2>
-            <div class="author-grid">
-                <?php
-                $topAuthors = getTopAuthors($conn, 6);
+    <section class="book-section">
+        <h2 style="font-size: 30px;">Top Authors</h2>
+        <div class="author-grid">
+            <?php
+            $topAuthors = getTopAuthors($conn, 6);
+            if ($topAuthors && $topAuthors->num_rows > 0) {
                 displayAuthors($topAuthors);
-                ?>
-            </div>
+            } else {
+                echo "<p>No authors found.</p>";
+            }
+            ?>
+        </div>
+    </section>
+    
         </section>
 
     <section class="transaction-section">
