@@ -1,6 +1,37 @@
 <?php
+// Include your database connection file.
 include '../validate/db.php';
 session_start();
+
+// Define pagination variables.
+$records_per_page = 10; // Number of records per page.
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page number.
+$page = max($page, 1); // Ensure page is not less than 1.
+$offset = ($page - 1) * $records_per_page; // Calculate offset for SQL query.
+
+// Fetch transactions that are not completed.
+$sql_transactions = "
+    SELECT transaction_id, email, name, book_id, date_borrowed, return_date
+    FROM transactions
+    WHERE completed = 0
+    ORDER BY transaction_id ASC
+    LIMIT $records_per_page OFFSET $offset
+";
+$result_transactions = $conn->query($sql_transactions);
+$transactions = [];
+if ($result_transactions && $result_transactions->num_rows > 0) {
+    while ($row = $result_transactions->fetch_assoc()) {
+        $transactions[] = $row;
+    }
+}
+
+// Count total incomplete transactions for pagination.
+$sql_count = "SELECT COUNT(*) AS total FROM transactions WHERE completed = 0";
+$result_count = $conn->query($sql_count);
+$total_transactions = ($result_count) ? $result_count->fetch_assoc()['total'] : 0;
+$total_pages = ceil($total_transactions / $records_per_page);
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -223,7 +254,7 @@ session_start();
             background-color: #f5f5f5;
         }
 
-        .books-table {
+        .transactions-table {
             width: 100%;
             background-color: white;
             border-collapse: collapse;
@@ -233,20 +264,20 @@ session_start();
             margin-top: 20px;
         }
 
-        .books-table th,
-        .books-table td {
+        .transactions-table th,
+        .transactions-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #f4f4f4;
         }
 
-        .books-table th {
+        .transactions-table th {
             background-color: #007BFF;
             color: white;
             text-transform: uppercase;
         }
 
-        .books-table tr:hover {
+        .transactions-table tr:hover {
             background-color: #f9f9f9;
         }
 
@@ -536,8 +567,58 @@ session_start();
         <!-- Main Content -->
         <div class="main-content">
             <h2>Transactions</h2>
+            <h3>Incomplete Transaction</h3>
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Book ID</th>
+                        <th>Date Borrowed</th>
+                        <th>Return Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($transactions)): ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No incomplete transactions found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($transactions as $transaction): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['email']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['name']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['book_id']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
+                                <td>
+                                    <button class="return-btn" onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">Return</button>
+                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?php echo $page - 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">← Previous</a>
+                <?php else: ?>
+                    <a class="disabled">← Previous</a>
+                <?php endif; ?>
 
+                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?php echo $page + 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next →</a>
+                <?php else: ?>
+                    <a class="disabled">Next →</a>
+                <?php endif; ?>
             </div>
+        </div>
 
         <script>
             lucide.createIcons();
