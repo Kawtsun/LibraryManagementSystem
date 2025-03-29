@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Mar 29, 2025 at 08:17 AM
+-- Host: 127.0.0.1:3306
+-- Generation Time: Mar 29, 2025 at 09:39 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -300,8 +300,8 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`, `category_id`, `date_added`, `quantity`, `Available`) VALUES
-(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-20 22:02:14', 5, 5),
-(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL, '2025-03-21 23:31:29', 5, 5),
+(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-20 22:02:14', 5, 4),
+(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL, '2025-03-21 23:31:29', 5, 3),
 (37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL, '2025-03-20 03:30:45', 5, 5),
 (38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL, '2025-03-21 18:59:18', 5, 5),
 (39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL, '2025-03-21 12:24:14', 5, 5),
@@ -463,7 +463,7 @@ CREATE TABLE `transactions` (
   `address` varchar(255) NOT NULL,
   `contact_number` varchar(20) NOT NULL,
   `student_id` varchar(20) NOT NULL,
-  `book_id` varchar(20) NOT NULL,
+  `book_title` varchar(255) NOT NULL,
   `date_borrowed` date NOT NULL,
   `return_date` date NOT NULL,
   `course` varchar(255) DEFAULT NULL,
@@ -475,12 +475,14 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_id`, `date_borrowed`, `return_date`, `course`, `author`, `completed`) VALUES
+INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_title`, `date_borrowed`, `return_date`, `course`, `author`, `completed`) VALUES
 (1, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Emily White: The Sil', '2025-03-28', '2025-03-30', 'BSCS', 'Emily White', 0),
 (2, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSCS', 'Robert Brown', 0),
 (3, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'World Geography', '2025-03-28', '2025-03-29', 'BSIT', 'Marco Polo', 0),
 (4, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSIT', 'Robert Brown', 0),
-(5, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Begin', '2025-03-29', '2025-03-31', 'BSCS', 'Robert Brown', 0);
+(5, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Begin', '2025-03-29', '2025-03-31', 'BSCS', 'Robert Brown', 0),
+(6, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Physics for Everyone', '2025-03-29', '2025-04-03', 'BSCS', 'Albert Newton', 0),
+(9, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Calculus Essentials', '2025-03-29', '2025-04-04', 'BSCS', 'Jane Smith', 0);
 
 -- --------------------------------------------------------
 
@@ -622,7 +624,7 @@ ALTER TABLE `library_books`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
