@@ -387,20 +387,24 @@ $conn->close();
 
         /* Modal Content Box */
         .modal-content {
-            background-color: #f9f9f9;
-            /* Softer background for better aesthetics */
-            border-radius: 12px;
-            /* Slightly more rounded corners */
-            padding: 24px;
-            width: 400px;
-            /* Fixed width for modal */
-            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
-            /* Enhanced shadow for depth */
+            background-color: white;
+            border-radius: 8px;
+            /* Matches the transactions table border radius */
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            /* Increased width for larger display */
+            max-height: 80%;
+            /* Restrict height to fit viewport */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            /* Matches the transactions table shadow */
+            overflow: auto;
+            /* Makes content scrollable if it exceeds modal height */
             position: relative;
             text-align: left;
         }
 
-        /* Close Button Styling */
+        /* Modal Close Button Styling */
         .close {
             position: absolute;
             top: 16px;
@@ -414,6 +418,35 @@ $conn->close();
         .close:hover {
             color: #444;
             /* Darker shade for hover state */
+        }
+
+        /* Modal Table Styling */
+        .modal-content .transactions-table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+            box-shadow: none;
+            /* Shadow removed to keep it clean inside modal */
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .modal-content .transactions-table th,
+        .modal-content .transactions-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .modal-content .transactions-table th {
+            background-color: #007BFF;
+            /* Matches table header styling */
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .modal-content .transactions-table tr:hover {
+            background-color: #f9f9f9;
         }
 
         /* Form Fields and Buttons Inside Modals */
@@ -599,6 +632,31 @@ $conn->close();
                     Open Completed
                 </button>
             </div>
+            <!-- Completed Transactions Modal -->
+            <div id="completedTransactionsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="document.getElementById('completedTransactionsModal').style.display='none'">&times;</span>
+                    <h2>Completed Transactions</h2>
+                    <div id="completedTransactionsErrorMessages" class="error-box"></div> <!-- Error messages -->
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Email</th>
+                                <th>Name</th>
+                                <th>Book Title</th>
+                                <th>Date Borrowed</th>
+                                <th>Return Date</th>
+                                <th>Date Returned</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedTransactionsBody">
+                            <!-- Dynamic rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
 
             <table class="transactions-table">
                 <thead>
@@ -700,6 +758,78 @@ $conn->close();
                 }
             });
         </script>
+        <script>
+            // Open Completed Transactions Modal and Load Data
+            document.addEventListener("DOMContentLoaded", function() {
+                const completedTransactionsModal = document.getElementById('completedTransactionsModal');
+                const completedTransactionsBody = document.getElementById('completedTransactionsBody');
+
+                // Function to open the modal
+                window.openCompletedTransactionsModal = function() {
+                    if (!completedTransactionsModal) {
+                        console.error("Completed Transactions modal element not found");
+                        return;
+                    }
+
+                    // Show the modal
+                    completedTransactionsModal.style.display = "flex";
+
+                    // Dynamically load completed transactions
+                    loadCompletedTransactions();
+                };
+
+                // Function to fetch and load completed transaction data
+                function loadCompletedTransactions() {
+                    fetch('fetch-completed-transactions.php') // Replace with your backend file path
+                        .then(response => response.json())
+                        .then(data => {
+                            completedTransactionsBody.innerHTML = ''; // Clear previous content
+
+                            if (data.length > 0) {
+                                data.forEach(transaction => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                <td>${transaction.transaction_id}</td>
+                                <td>${transaction.email}</td>
+                                <td>${transaction.name}</td>
+                                <td>${transaction.book_title}</td>
+                                <td>${transaction.date_borrowed}</td>
+                                <td>${transaction.return_date}</td>
+                                <td>${transaction.date_returned}</td>
+                            `;
+                                    completedTransactionsBody.appendChild(row);
+                                });
+                            } else {
+                                completedTransactionsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No completed transactions found.</td></tr>';
+                            }
+                        })
+                        .catch(error => console.error('Error loading completed transactions:', error));
+                }
+
+                // Bind click event to the button for opening the modal
+                const openButton = document.getElementById('openCompletedTransactions');
+                if (openButton) {
+                    openButton.addEventListener("click", function() {
+                        openCompletedTransactionsModal();
+                    });
+                }
+
+                // Close modal when clicking on any element with the `.close` class
+                document.querySelectorAll('#completedTransactionsModal .close').forEach(function(closeBtn) {
+                    closeBtn.addEventListener("click", function() {
+                        completedTransactionsModal.style.display = "none";
+                    });
+                });
+
+                // Close the modal if clicking outside its content
+                window.addEventListener("click", function(event) {
+                    if (event.target === completedTransactionsModal) {
+                        completedTransactionsModal.style.display = "none";
+                    }
+                });
+            });
+        </script>
+
 </body>
 
 </html>
