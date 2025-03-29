@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2025 at 05:27 PM
+-- Generation Time: Mar 29, 2025 at 05:48 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -465,24 +465,21 @@ CREATE TABLE `transactions` (
   `student_id` varchar(20) NOT NULL,
   `book_id` varchar(20) NOT NULL,
   `date_borrowed` date NOT NULL,
-  `return_date` date NOT NULL
+  `return_date` date NOT NULL,
+  `course` varchar(255) DEFAULT NULL,
+  `author` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_id`, `date_borrowed`, `return_date`) VALUES
-(1, 'mj@fa.com', 'dada', 'dadsa', 'dasd', 'adas', 'dasda', '2025-03-20', '2025-03-22'),
-(2, 'setsu@gmail.com', 'setsu', 'jpan', '2323', '32323', '22323', '2025-03-21', '2025-03-31'),
-(3, 'test@gmail.com', 'daad', 'dadad', '32323', '0000', '0101', '2025-03-17', '2025-03-27'),
-(4, 'test@gmail.com', 'sdsdsds', 'dsdsd', '233324', '32', '323', '2025-03-17', '2025-03-21'),
-(5, 'limpante@gmail.com', 'Andrei Limpante', 'Calumpang Bin., Rizal', '0912345678', 'M001-1111', 'B123', '2025-03-17', '2025-03-30'),
-(6, 'test3@gmail.com', 'Test3', 'Test3', '232323', '443242', '434141', '2025-03-17', '2025-03-27'),
-(7, 'kawtsun@gmail.com', 'Setsu', 'Japan', '1234', 'M2025-0005', 'Advanced Algebra', '2025-03-28', '2025-03-31'),
-(8, 'kawtsun@gmail.com', 'Setsu', 'Japan', '1234', 'M2025-0005', 'Advanced Algebra', '2025-03-28', '2025-03-31'),
-(9, 'kawtsun@gmail.com', 'Setsu', 'Japan', '2323', 'M2025-0005', 'The Wonders of Chemi', '2025-03-28', '2025-03-31'),
-(10, 'kawtsun@gmail.com', 'Setsu', 'Japan', '2323', 'M2025-0005', 'The Wonders of Chemi', '2025-03-28', '2025-03-31');
+INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_id`, `date_borrowed`, `return_date`, `course`, `author`) VALUES
+(1, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Emily White: The Sil', '2025-03-28', '2025-03-30', 'BSCS', 'Emily White'),
+(2, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSCS', 'Robert Brown'),
+(3, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'World Geography', '2025-03-28', '2025-03-29', 'BSIT', 'Marco Polo'),
+(4, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSIT', 'Robert Brown'),
+(5, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Begin', '2025-03-29', '2025-03-31', 'BSCS', 'Robert Brown');
 
 -- --------------------------------------------------------
 
@@ -508,25 +505,26 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `course` varchar(100) NOT NULL,
-  `student_id` varchar(50) NOT NULL
+  `student_id` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `contact_number` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `student_id`) VALUES
-(1, 'setsu', '$2y$10$dyH3LvpxdUetz4wUkHxGqeUp8YYHp5R3naVJHpCLxzIzxRmIXp4u6', 'setsu@gmail.com', 'BSCS', 'M2025-0001'),
-(2, 'morpheus', '$2y$10$ZIt/8G.Qx3t9kokHK8B0RO6YqU6Q8nbwl3k11Pg2twaAGuR9lPztu', 'morpheus@gmail.com', 'BSCS', 'M2025-0002'),
-(4, 'austria', '$2y$10$LeiLX.QVWkL7QP.eyFQwKuSl3R7Aq5LET1YWSQg4xAjgJ/XlqiGIm', 'johnluizaustria@gmail.com', 'BSCS', 'M2022-0234'),
-(5, 'JohnAustria', '$2y$10$tn8iGO6dRmAUKwRpRu8A0eOSw7Bdm3Zb4R8d/an.aAPw5M1gAT/sC', 'john121@gmail.com', 'BSCS', 'M2022-0234'),
-(8, 'austrialuiz', '$2y$10$13PnjFzDcQczOTF1HuqbFODg7EAp0qLdBavvb/ZS4jzQntESlQAxm', 'johnluiiz123@gmail.com', 'BSCS', 'M2022-0244'),
-(9, 'austria', '$2y$10$IpLz4Q/6VJ38ltX8PZ1U8e/T4HZPZG0YWvGR2.avAhYNqwv.vESra', '123133232@gmaill.com', 'abad', 'M2022-0234'),
-(10, '123austria', '$2y$10$/eTGtZcI/fyPWll0oJ59F.6MpgW9lhy/JYxrUco97NWMGQhA33in6', 'Johnbenedictaustria@gmail.com', 'BSCS', 'M2022-2034'),
-(11, 'austria', '$2y$10$kJ0kgZCjM1AxwDUNdfSFMunMKF2RDWSk.PZfZT1IRtOoxGRGoJRQ6', 'johnluiz1234@gmail.com', 'BSCS', 'M2022-0334'),
-(12, 'Kawtsun', '$2y$10$qpedbbZhRdDO.HF.ViVv4ucEZ8Sr1ufld2nG4u4QF4aqCc.jxjM2q', 'kawtsun@gmail.com', 'BSCS', 'M2025-0005'),
-(13, 'Kita', '$2y$10$4Ci5NvVWudIPJQN38bTABuTBrBowIc3v/okMOkJOCr6avChzVmlZ.', 'kita@gmail.com', 'BSCS', 'M2025-0006'),
-(15, 'Chisato', '$2y$10$8HBOXBMvC1DFproX.dMYa.zA65JzMcHvwXWqJzOUTNjI7N3jxTSpq', 'chisato@gmail.com', 'BSCS', 'M2025-0007');
+INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `student_id`, `name`, `address`, `contact_number`) VALUES
+(1, 'setsu', '$2y$10$dyH3LvpxdUetz4wUkHxGqeUp8YYHp5R3naVJHpCLxzIzxRmIXp4u6', 'setsu@gmail.com', 'BSCS', 'M2025-0001', 'Setsuna Yuki', 'Japan', '123'),
+(2, 'morpheus', '$2y$10$ZIt/8G.Qx3t9kokHK8B0RO6YqU6Q8nbwl3k11Pg2twaAGuR9lPztu', 'morpheus@gmail.com', 'BSCS', 'M2025-0002', 'Morpheus', 'Morong', '123'),
+(3, 'austria', '$2y$10$FfIfsHKTe20mPifUr5Hhaeh9GiMYUhV0iXd.v4seyf/GpPTOuA20.', 'johnluizaustria@gmail.com', 'BSCS', 'M2022-0234', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121'),
+(4, 'dizon', '$2y$10$nJSJ0BVD0RB9Rlad5dsDYevFM5E16.XJNwHusCNLMDf5t8uPtKIcm', 'dizon@gmail.com', 'BSIT', 'B2022-0423', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424'),
+(5, 'Kawtsun', '$2y$10$qpedbbZhRdDO.HF.ViVv4ucEZ8Sr1ufld2nG4u4QF4aqCc.jxjM2q', 'kawtsun@gmail.com', 'BSCS', 'M2025-0005', 'Morpheus Francisco', 'Morong', '123'),
+(6, 'Kita', '$2y$10$4Ci5NvVWudIPJQN38bTABuTBrBowIc3v/okMOkJOCr6avChzVmlZ.', 'kita@gmail.com', 'BSCS', 'M2025-0006', 'Ikuyo Kita', 'Japan', '123'),
+(7, 'Chisato', '$2y$10$8HBOXBMvC1DFproX.dMYa.zA65JzMcHvwXWqJzOUTNjI7N3jxTSpq', 'chisato@gmail.com', 'BSCS', 'M2025-0007', 'Chisato Arashi', 'Japan', '123'),
+(8, 'Momoka', '$2y$10$MviHDL/gXmTbBK89ofZ7peAknbEsYticaCy1QxfNR6J09O6xk//vq', 'momoka@gmail.com', 'BSCS', 'M2025-0008', 'Momoka Sakurai', 'Japan', '123'),
+(9, 'Rika', '$2y$10$XiYJdIID2jcBxgjTOC6vZe9ieY43rjOVD/8mV4K1xNol.uVUbkpxu', 'rika@gmail.com', 'BSCS', 'M2025-0009', 'Rika Furude', 'Japan', '123');
 
 -- --------------------------------------------------------
 
@@ -605,7 +603,7 @@ ALTER TABLE `author_books`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -623,13 +621,13 @@ ALTER TABLE `library_books`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
