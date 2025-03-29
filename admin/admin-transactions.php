@@ -3,17 +3,32 @@
 include '../validate/db.php';
 session_start();
 
+// Get the search query (if any) for transactions.
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
+
 // Define pagination variables.
 $records_per_page = 10; // Number of records per page.
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page number.
 $page = max($page, 1); // Ensure page is not less than 1.
 $offset = ($page - 1) * $records_per_page; // Calculate offset for SQL query.
 
-// Fetch transactions that are not completed.
+// Build the search condition for incomplete transactions.
+$searchCondition = "WHERE completed = 0"; // Default condition for incomplete transactions.
+if ($searchQuery !== "") {
+    $searchQueryEscaped = $conn->real_escape_string($searchQuery);
+    $searchCondition = "
+        WHERE (name LIKE '%$searchQueryEscaped%' 
+        OR email LIKE '%$searchQueryEscaped%'
+        OR book_id LIKE '%$searchQueryEscaped%')
+        AND completed = 0
+    ";
+}
+
+// Fetch incomplete transactions with search applied.
 $sql_transactions = "
     SELECT transaction_id, email, name, book_id, date_borrowed, return_date
     FROM transactions
-    WHERE completed = 0
+    $searchCondition
     ORDER BY transaction_id ASC
     LIMIT $records_per_page OFFSET $offset
 ";
@@ -25,8 +40,12 @@ if ($result_transactions && $result_transactions->num_rows > 0) {
     }
 }
 
-// Count total incomplete transactions for pagination.
-$sql_count = "SELECT COUNT(*) AS total FROM transactions WHERE completed = 0";
+// Count total incomplete transactions matching the search for pagination.
+$sql_count = "
+    SELECT COUNT(*) AS total
+    FROM transactions
+    $searchCondition
+";
 $result_count = $conn->query($sql_count);
 $total_transactions = ($result_count) ? $result_count->fetch_assoc()['total'] : 0;
 $total_pages = ceil($total_transactions / $records_per_page);
@@ -568,6 +587,19 @@ $conn->close();
         <div class="main-content">
             <h2>Transactions</h2>
             <h3>Incomplete Transaction</h3>
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search Transactions..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+                    <?php if (!empty($searchQuery)): ?>
+                        <a href="admin-transactions.php" class="clear-search">Clear</a>
+                    <?php endif; ?>
+                    <ul id="suggestions" class="suggestions-list"></ul>
+                </div>
+                <button id="openCompletedTransactions" class="open-completed-button">
+                    Open Completed
+                </button>
+            </div>
+
             <table class="transactions-table">
                 <thead>
                     <tr>
@@ -622,6 +654,51 @@ $conn->close();
 
         <script>
             lucide.createIcons();
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const searchInput = document.getElementById("searchInput");
+                const suggestionsList = document.getElementById("suggestions");
+
+                if (searchInput) {
+                    searchInput.addEventListener("input", function() {
+                        const query = this.value.trim();
+                        if (query.length > 0) {
+                            fetch(`searchTransactions.php?q=${encodeURIComponent(query)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    suggestionsList.innerHTML = "";
+                                    if (data.length > 0) {
+                                        data.forEach(transaction => {
+                                            const li = document.createElement("li");
+                                            li.textContent = `${transaction.name} - ${transaction.book_id}`;
+                                            li.addEventListener("click", function() {
+                                                searchInput.value = `${transaction.name}`;
+                                                window.location.href = `admin-transactions.php?search=${encodeURIComponent(transaction.name)}`;
+                                            });
+                                            suggestionsList.appendChild(li);
+                                        });
+                                    } else {
+                                        const li = document.createElement("li");
+                                        li.textContent = "No incomplete transactions found";
+                                        suggestionsList.appendChild(li);
+                                    }
+                                })
+                                .catch(error => console.error("Error fetching search results:", error));
+                        } else {
+                            suggestionsList.innerHTML = "";
+                        }
+                    });
+
+                    searchInput.addEventListener("keydown", function(e) {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            window.location.href = `admin-transactions.php?search=${encodeURIComponent(this.value.trim())}`;
+                        }
+                    });
+                }
+            });
         </script>
 </body>
 
