@@ -36,7 +36,7 @@ if ($searchQuery !== "") {
 
     // Fetch only matching users with pagination
     $sql_registered_users = "
-        SELECT user_id, username, email, course, student_id 
+        SELECT user_id, username, email, course, student_id, name, address, contact_number 
         FROM users 
         WHERE username LIKE '%$searchQueryEscaped%' 
         ORDER BY user_id ASC
@@ -51,7 +51,7 @@ if ($searchQuery !== "") {
 
     // Query to fetch registered users with pagination
     $sql_registered_users = "
-        SELECT user_id, username, email, course, student_id 
+        SELECT user_id, username, email, course, student_id, name, address, contact_number 
         FROM users 
         ORDER BY user_id ASC
         LIMIT $records_per_page OFFSET $offset";
@@ -622,13 +622,16 @@ $conn->close();
                     <th>Email</th>
                     <th>Course</th>
                     <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Contact Number</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($registered_users)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">No registered users found.</td>
+                        <td colspan="9" style="text-align: center;">No registered users found.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($registered_users as $user): ?>
@@ -638,6 +641,9 @@ $conn->close();
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
                             <td><?php echo htmlspecialchars($user['course']); ?></td>
                             <td><?php echo htmlspecialchars($user['student_id']); ?></td>
+                            <td><?php echo htmlspecialchars($user['name']); ?></td>
+                            <td><?php echo htmlspecialchars($user['address']); ?></td>
+                            <td><?php echo htmlspecialchars($user['contact_number']); ?></td>
                             <td>
                                 <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
                                 <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
@@ -686,6 +692,12 @@ $conn->close();
                 <input type="text" name="course" id="addCourse" required>
                 <label>Student ID:</label>
                 <input type="text" name="student_id" id="addStudentId" required>
+                <label>Name:</label>
+                <input type="text" name="name" id="addName" required>
+                <label>Address:</label>
+                <input type="text" name="address" id="addAddress" required>
+                <label>Contact Number:</label>
+                <input type="text" name="contact_number" id="addContactNumber" required>
                 <button type="button" id="addUserBtn">Add User</button>
             </form>
         </div>
@@ -707,6 +719,12 @@ $conn->close();
                 <input type="text" name="course" id="editCourse" required>
                 <label>Student ID:</label>
                 <input type="text" name="student_id" id="editStudentId" required>
+                <label>Name:</label>
+                <input type="text" name="name" id="editName" required>
+                <label>Address:</label>
+                <input type="text" name="address" id="editAddress" required>
+                <label>Contact Number:</label>
+                <input type="text" name="contact_number" id="editContactNumber" required>
                 <button type="button" id="updateUserBtn">Update User</button>
             </form>
         </div>
@@ -779,6 +797,9 @@ $conn->close();
             document.getElementById('editEmail').value = user.email;
             document.getElementById('editCourse').value = user.course;
             document.getElementById('editStudentId').value = user.student_id;
+            document.getElementById('editName').value = user.name;
+            document.getElementById('editAddress').value = user.address;
+            document.getElementById('editContactNumber').value = user.contact_number;
         }
 
         function confirmDelete(userId) {

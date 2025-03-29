@@ -7,6 +7,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = htmlspecialchars($_POST['email']);
     $course = htmlspecialchars($_POST['course']);
     $student_id = htmlspecialchars($_POST['student_id']);
+    $name = htmlspecialchars($_POST['name']);
+    $address = htmlspecialchars($_POST['address']);
+    $contact_number = htmlspecialchars($_POST['contact_number']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password for security
     $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1;
 
@@ -14,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = [];
 
     // Validate input data
-    if (empty($username) || empty($email) || empty($course) || empty($student_id) || empty($_POST['password'])) {
+    if (empty($username) || empty($email) || empty($course) || empty($student_id) || empty($name) || empty($address) || empty($contact_number) || empty($_POST['password'])) {
         $errors[] = "All fields are required.";
     }
 
@@ -55,13 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert the new user into the database
-    $sql = "INSERT INTO users (username, password, email, course, student_id) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (username, password, email, course, student_id, name, address, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         echo json_encode(['error' => "Error preparing insert statement: " . $conn->error]);
         exit;
     }
-    $stmt->bind_param("sssss", $username, $password, $email, $course, $student_id);
+    $stmt->bind_param("ssssssss", $username, $password, $email, $course, $student_id, $name, $address, $contact_number);
 
     if ($stmt->execute()) {
         // Success! Redirect with success status and current page

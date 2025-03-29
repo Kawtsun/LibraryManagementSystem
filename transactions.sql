@@ -46,10 +46,10 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_id`, `date_borrowed`, `return_date`, `course`, `author`) VALUES
-(90, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Emily White: The Sil', '2025-03-28', '2025-03-30', 'BSCS', 'Emily White'),
-(91, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSCS', 'Robert Brown'),
-(93, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'World Geography', '2025-03-28', '2025-03-29', 'BSIT', 'Marco Polo'),
-(94, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSIT', 'Robert Brown');
+(1, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Emily White: The Sil', '2025-03-28', '2025-03-30', 'BSCS', 'Emily White'),
+(2, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSCS', 'Robert Brown'),
+(3, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'World Geography', '2025-03-28', '2025-03-29', 'BSIT', 'Marco Polo'),
+(4, 'dizon@gmail.com', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424', 'B2022-0423', 'Statistics for Begin', '2025-03-28', '2025-03-29', 'BSIT', 'Robert Brown');
 
 --
 -- Indexes for dumped tables
@@ -69,7 +69,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

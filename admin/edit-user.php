@@ -8,13 +8,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = htmlspecialchars($_POST['email']);
     $course = htmlspecialchars($_POST['course']);
     $student_id = htmlspecialchars($_POST['student_id']);
+    $name = htmlspecialchars($_POST['name']);
+    $address = htmlspecialchars($_POST['address']);
+    $contact_number = htmlspecialchars($_POST['contact_number']);
     $current_page = isset($_POST['current_page']) ? (int)$_POST['current_page'] : 1; // Get current page from form
 
     // Initialize an array for errors
     $errors = [];
 
     // Validate input data
-    if (empty($username) || empty($email) || empty($course) || empty($student_id)) {
+    if (empty($username) || empty($email) || empty($course) || empty($student_id) || empty($name) || empty($address) || empty($contact_number)) {
         $errors[] = "All fields are required.";
     }
 
@@ -59,13 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Update the user in the database
-    $sql = "UPDATE users SET username = ?, email = ?, course = ?, student_id = ? WHERE user_id = ?";
+    $sql = "UPDATE users SET username = ?, email = ?, course = ?, student_id = ?, name = ?, address = ?, contact_number = ? WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         echo json_encode(['error' => "Error preparing update statement: " . $conn->error]);
         exit;
     }
-    $stmt->bind_param("ssssi", $username, $email, $course, $student_id, $user_id);
+    $stmt->bind_param("sssssssi", $username, $email, $course, $student_id, $name, $address, $contact_number, $user_id);
 
     if ($stmt->execute()) {
         // Success! Redirect with success status and current page
