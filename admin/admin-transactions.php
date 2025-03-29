@@ -701,7 +701,7 @@ $conn->close();
                                 <td>
                                     <button
                                         class="return-btn"
-                                        onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>, '<?php echo htmlspecialchars($transaction['source']); ?>')">
+                                        onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
                                         Return
                                     </button>
                                     <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
@@ -851,7 +851,7 @@ $conn->close();
             function markAsReturned(transactionId, source) {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You are about to mark this transaction as returned.",
+                    text: 'You are about to mark this transaction as returned.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -866,12 +866,7 @@ $conn->close();
                                 },
                                 body: `transaction_id=${transactionId}&source=${source}`
                             })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not OK');
-                                }
-                                return response.json();
-                            })
+                            .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
                                     Swal.fire('Success', data.message, 'success').then(() => location.reload());

@@ -35,13 +35,13 @@ function insertTransaction($conn, $data) {
 
     try {
         // 1. Insert the transaction record (storing the book title).
-        $sql = "INSERT INTO transactions (email, student_id, name, address, contact_number, book_title, date_borrowed, return_date, course, author)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO transactions (email, student_id, name, address, contact_number, book_title, date_borrowed, return_date, course, author, source)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new Exception("Prepare failed: " . $conn->error);
         }
-        $stmt->bind_param("ssssssssss", $email, $student_id, $name, $address, $contact_number, $book_title, $date_borrowed, $return_date, $course, $author);
+        $stmt->bind_param("sssssssssss", $email, $student_id, $name, $address, $contact_number, $book_title, $date_borrowed, $return_date, $course, $author, $source);
         if (!$stmt->execute()) {
             throw new Exception("Execute failed: " . $stmt->error);
         }
