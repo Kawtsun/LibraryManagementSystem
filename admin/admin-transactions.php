@@ -1,5 +1,5 @@
 <?php
-// Include your database connection file.
+// Include your database connection.
 include '../validate/db.php';
 session_start();
 
@@ -13,25 +13,35 @@ $page = max($page, 1); // Ensure page is not less than 1.
 $offset = ($page - 1) * $records_per_page; // Calculate offset for SQL query.
 
 // Build the search condition for incomplete transactions.
-$searchCondition = "WHERE completed = 0"; // Default condition for incomplete transactions.
+$searchCondition = "WHERE t.completed = 0"; // Default condition for incomplete transactions.
 if ($searchQuery !== "") {
     $searchQueryEscaped = $conn->real_escape_string($searchQuery);
     $searchCondition = "
-        WHERE (name LIKE '%$searchQueryEscaped%' 
-        OR email LIKE '%$searchQueryEscaped%'
-        OR book_title LIKE '%$searchQueryEscaped%')
-        AND completed = 0
+        WHERE (t.name LIKE '%$searchQueryEscaped%' 
+        OR t.email LIKE '%$searchQueryEscaped%'
+        OR t.book_title LIKE '%$searchQueryEscaped%')
+        AND t.completed = 0
     ";
 }
 
-// Fetch incomplete transactions with search applied.
+// Main UNION query: Fetch incomplete transactions and their source tables.
 $sql_transactions = "
-    SELECT transaction_id, email, name, book_title, date_borrowed, return_date
-    FROM transactions
+    SELECT t.transaction_id, t.email, t.name, t.book_title, t.date_borrowed, t.return_date,
+           CASE
+               WHEN b.title IS NOT NULL THEN 'books'
+               WHEN ab.title IS NOT NULL THEN 'author_books'
+               WHEN lb.title IS NOT NULL THEN 'library_books'
+               ELSE NULL
+           END AS source
+    FROM transactions t
+    LEFT JOIN books b ON t.book_title = b.title
+    LEFT JOIN author_books ab ON t.book_title = ab.title
+    LEFT JOIN library_books lb ON t.book_title = lb.title
     $searchCondition
-    ORDER BY transaction_id ASC
+    ORDER BY t.transaction_id ASC
     LIMIT $records_per_page OFFSET $offset
 ";
+
 $result_transactions = $conn->query($sql_transactions);
 $transactions = [];
 if ($result_transactions && $result_transactions->num_rows > 0) {
@@ -43,7 +53,10 @@ if ($result_transactions && $result_transactions->num_rows > 0) {
 // Count total incomplete transactions matching the search for pagination.
 $sql_count = "
     SELECT COUNT(*) AS total
-    FROM transactions
+    FROM transactions t
+    LEFT JOIN books b ON t.book_title = b.title
+    LEFT JOIN author_books ab ON t.book_title = ab.title
+    LEFT JOIN library_books lb ON t.book_title = lb.title
     $searchCondition
 ";
 $result_count = $conn->query($sql_count);
@@ -52,6 +65,7 @@ $total_pages = ceil($total_transactions / $records_per_page);
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -347,13 +361,13 @@ $conn->close();
             transform: scale(1.05);
         }
 
-        /* Edit Button */
-        .edit-btn {
+        /* Return Button */
+        .return-btn {
             background-color: #2ecc71;
             color: white;
         }
 
-        .edit-btn:hover {
+        .return-btn:hover {
             background-color: #28a860;
             transform: scale(1.05);
         }
@@ -685,7 +699,11 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
                                 <td>
-                                    <button class="return-btn" onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">Return</button>
+                                    <button
+                                        class="return-btn"
+                                        onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>, '<?php echo htmlspecialchars($transaction['source']); ?>')">
+                                        Return
+                                    </button>
                                     <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
                                 </td>
                             </tr>
@@ -829,7 +847,46 @@ $conn->close();
                 });
             });
         </script>
-
+        <script>
+            function markAsReturned(transactionId, source) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to mark this transaction as returned.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, mark as returned!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('mark-as-returned.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: `transaction_id=${transactionId}&source=${source}`
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not OK');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Success', data.message, 'success').then(() => location.reload());
+                                } else {
+                                    Swal.fire('Error', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                            });
+                    }
+                });
+            }
+        </script>
 </body>
 
 </html>
