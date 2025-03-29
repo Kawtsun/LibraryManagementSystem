@@ -38,7 +38,7 @@ function displayRecentTransactions($result) {
                 while ($row = $result->fetch_assoc()) {
                     ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['book_id']); ?></td>
+                        <td><?php echo htmlspecialchars($row['book_title']); ?></td>
                         <td><?php echo htmlspecialchars($row['date_borrowed']); ?></td>
                         <td><?php echo htmlspecialchars($row['return_date']); ?></td>
                     </tr>

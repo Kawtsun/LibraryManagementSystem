@@ -19,14 +19,14 @@ if ($searchQuery !== "") {
     $searchCondition = "
         WHERE (name LIKE '%$searchQueryEscaped%' 
         OR email LIKE '%$searchQueryEscaped%'
-        OR book_id LIKE '%$searchQueryEscaped%')
+        OR book_title LIKE '%$searchQueryEscaped%')
         AND completed = 0
     ";
 }
 
 // Fetch incomplete transactions with search applied.
 $sql_transactions = "
-    SELECT transaction_id, email, name, book_id, date_borrowed, return_date
+    SELECT transaction_id, email, name, book_title, date_borrowed, return_date
     FROM transactions
     $searchCondition
     ORDER BY transaction_id ASC
@@ -606,7 +606,7 @@ $conn->close();
                         <th>Transaction ID</th>
                         <th>Email</th>
                         <th>Name</th>
-                        <th>Book ID</th>
+                        <th>Book Title</th>
                         <th>Date Borrowed</th>
                         <th>Return Date</th>
                         <th>Actions</th>
@@ -623,7 +623,7 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['email']); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['name']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['book_id']); ?></td>
+                                <td><?php echo htmlspecialchars($transaction['book_title']); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
                                 <td>
@@ -672,7 +672,7 @@ $conn->close();
                                     if (data.length > 0) {
                                         data.forEach(transaction => {
                                             const li = document.createElement("li");
-                                            li.textContent = `${transaction.name} - ${transaction.book_id}`;
+                                            li.textContent = `${transaction.name} - ${transaction.book_title}`;
                                             li.addEventListener("click", function() {
                                                 searchInput.value = `${transaction.name}`;
                                                 window.location.href = `admin-transactions.php?search=${encodeURIComponent(transaction.name)}`;

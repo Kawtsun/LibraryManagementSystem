@@ -35,7 +35,7 @@ $pdf->Ln(5);
 $pdf->SetFont('Arial', '', 12);
 
 // Define keys to include in the PDF
-$keysToInclude = ['email', 'student_id', 'name', 'contact', 'address', 'course', 'author', 'book_id', 'date_borrowed', 'return_date'];
+$keysToInclude = ['email', 'student_id', 'name', 'contact', 'address', 'course', 'author', 'book_title', 'date_borrowed', 'return_date'];
 
 foreach ($keysToInclude as $key) {
     if (isset($data[$key])) {
