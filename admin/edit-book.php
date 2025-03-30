@@ -57,19 +57,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Fetch current availability from the database
+    $availabilitySql = "SELECT quantity, Available FROM {$source} WHERE id = ?";
+    $availabilityStmt = $conn->prepare($availabilitySql);
+    $availabilityStmt->bind_param("i", $book_id);
+    $availabilityStmt->execute();
+    $availabilityResult = $availabilityStmt->get_result();
+    $currentData = $availabilityResult->fetch_assoc();
+    $currentQuantity = (int)$currentData['quantity'];
+    $currentAvailable = (int)$currentData['Available'];
+
+    // Adjust availability based on the update
+    $newAvailable = ($currentAvailable === $currentQuantity) ? $quantity : $quantity - ($currentQuantity - $currentAvailable);
+    $availabilityStmt->close();
+
     // Update the database based on source
     if ($source === 'books') {
         $sql = "UPDATE books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ?, Available = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $quantity, $book_id);
+        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $newAvailable, $book_id);
     } elseif ($source === 'library_books') {
         $sql = "UPDATE library_books SET title = ?, topic = ?, quantity = ?, Available = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssiii", $title, $subject, $quantity, $quantity, $book_id);
+        $stmt->bind_param("ssiii", $title, $subject, $quantity, $newAvailable, $book_id);
     } elseif ($source === 'author_books') {
         $sql = "UPDATE author_books SET title = ?, author = ?, subject = ?, publication_year = ?, quantity = ?, Available = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $quantity, $book_id);
+        $stmt->bind_param("sssiiii", $title, $author, $subject, $publication_year, $quantity, $newAvailable, $book_id);
     }
 
     // Execute the update and return success or error
