@@ -22,13 +22,64 @@ if (isset($_GET['author'])) {
     echo "Author not specified.";
     exit;
 }
+
+// Start the session
+session_start();
+
+if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+} else {
+    $username = "";
+}
+
+function getBookTitles($conn) {
+    $titles = [];
+
+    // Fetch titles from 'books' table
+    $sql_books = "SELECT title FROM books";
+    $result_books = $conn->query($sql_books);
+    if ($result_books->num_rows > 0) {
+        while ($row = $result_books->fetch_assoc()) {
+            $titles[] = $row['title'];
+        }
+    }
+
+    // Fetch authors from 'author_books' table
+    $sql_authors = "SELECT DISTINCT author FROM author_books";
+    $result_authors = $conn->query($sql_authors);
+    if ($result_authors->num_rows > 0) {
+        while ($row = $result_authors->fetch_assoc()) {
+            $titles[] = $row['author'];
+        }
+    }
+
+    // Fetch categories from 'categories' table
+    $sql_categories = "SELECT name FROM categories"; // Updated to 'name'
+    $result_categories = $conn->query($sql_categories);
+    if ($result_categories->num_rows > 0) {
+        while ($row = $result_categories->fetch_assoc()) {
+            $titles[] = $row['name']; // Updated to 'name'
+        }
+    }
+
+    // Fetch titles from library_books table
+    $sql_library_books = "SELECT title FROM library_books";
+    $result_library_books = $conn->query($sql_library_books);
+    if ($result_library_books->num_rows > 0) {
+        while ($row = $result_library_books->fetch_assoc()) {
+            $titles[] = $row['title'];
+        }
+    }
+
+    return $titles;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial--scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($author); ?> - Books</title>
     <style>
         body {
@@ -42,8 +93,8 @@ if (isset($_GET['author'])) {
         }
 
         .container {
-            width: 72%; /* Reduce width from 90% to 80% */
-            margin: 100px auto; /* Increase top margin to move it down */
+            width: 72%;
+            margin: 100px auto;
             background-color: #fff;
             padding: 10px;
             border-radius: 10px;
@@ -81,16 +132,51 @@ if (isset($_GET['author'])) {
             align-items: center;
             flex-grow: 1;
             justify-content: flex-end;
+            position: relative;
         }
 
         .search-bar {
             width: 55%;
-            padding: 8px 12px;
+            padding: 10px 15px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 25px;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 16px;
             margin-right: 15px;
+            background-color: white;
+            color: black;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar::placeholder {
+            color: #999;
+        }
+
+        .suggestions-box {
+            position: absolute;
+            width: 56%;
+            background-color: rgba(52, 152, 219, 0.9) !important;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            display: none;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            padding: 2px;
+            margin-left: 40px;
+        }
+        .suggestions-box a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .suggestions-box a:hover {
+            background-color: rgba(0, 69, 116, 0.7) !important;
         }
 
         .nav-links {
@@ -99,22 +185,35 @@ if (isset($_GET['author'])) {
         }
 
         .nav-links ul {
+            display: flex;
+            align-items: center;
             list-style-type: none;
             margin: 0;
             padding: 0;
-            display: flex;
         }
 
         .nav-links ul li {
-            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            margin-left: 30px;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
         }
 
         .nav-links ul li a {
+            display: flex;
+            align-items: center;
             text-decoration: none;
             color: white;
             font-weight: 600;
             font-size: 20px;
             transition: color 0.3s ease;
+            position: relative;
+            z-index: 3;
         }
 
         .nav-links ul li a:hover {
@@ -128,16 +227,16 @@ if (isset($_GET['author'])) {
         .book-section h2 {
             margin-bottom: 15px;
             color: #333;
-            font-size: 20px;
+            font-size: 30px;
             font-weight: 600;
-            text-align: center; /* Center the heading */
+            text-align: center;
         }
 
         .book-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 columns */
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
-            justify-items: center; /* Center items horizontally */
+            justify-items: center;
         }
 
         .book-item {
@@ -147,16 +246,15 @@ if (isset($_GET['author'])) {
             border-radius: 8px;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            width: 218px; /* Set a fixed width */
-            height: 210px; /* Set a fixed height */
+            width: 218px;
+            height: 210px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Space title and button */
+            justify-content: space-between;
             align-items: center;
         }
 
-        .book-item:hover {
-            transform: translateY(-3px);
+        .book-item:hover {transform: translateY(-3px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
         }
 
@@ -206,10 +304,12 @@ if (isset($_GET['author'])) {
         .dropdown-content {
             display: none;
             position: absolute;
+            top: 100%;
+            left: 0;
             background-color: #3498db;
             min-width: 150px;
-            box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
-            z-index: 1;
+            box-shadow: 0 6px 12px 0 rgba(255, 255, 255, 0.2);
+            z-index: 4;
             border-radius: 6px;
             padding: 8px 0;
         }
@@ -237,7 +337,7 @@ if (isset($_GET['author'])) {
             height: 0;
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
-            border-top: 5px solid #333;
+            border-top: 5px solid white;
             margin-left: 5px;
         }
 
@@ -250,6 +350,44 @@ if (isset($_GET['author'])) {
                 padding: 10px;
             }
         }
+        .account-icon-link {
+            padding: 0; 
+            justify-content: center; 
+            display: flex; 
+            align-items: center;
+            width: 30px; 
+            height: 30px; 
+        }
+
+
+        .account-icon-link::before {
+            content: ""; 
+        }
+        .account-icon-link img {
+            width: 30px;
+            height: 30px;
+        }
+        .suggestions-box {
+            position: absolute;
+            width: 55%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            display: none;
+        }
+
+        .suggestions-box a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .suggestions-box a:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -260,28 +398,133 @@ if (isset($_GET['author'])) {
         <span class="system-title">AklatURSM Management System</span>
     </div>
     <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Search...">
-        <div class="nav-links">
-            <ul>
-            <li><a href="dashboard.php">Dashboard</a></li>
-                <li class="dropdown">
-                    <a href="categories.php">Categories <span class="down-arrow"></span></a>
-                    <div class="dropdown-content">
-                        <a href="genre/math.php">Math</a>
-                        <a href="genre/english.php">English</a>
-                        <a href="genre/science.php">Science</a>
-                        <a href="genre/ap.php">Araling Panlipunan</a>
-                        <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
-                        <a href="genre/physical-education.php">Physical Education</a>
-                        <a href="genre/filipino.php">Filipino</a>
-                        <a href="genre/tle.php">Technology and livelihood Education</a>
-                    </div>
-                </li>
-                <li><a href="Authors.php">Authors</a></li>
-            </ul>
-        </div>
+        <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
+        <div class="suggestions-box" id="suggestions-box"></div>
+    </div>
+    <div class="nav-links">
+        <ul>
+            <li>
+                <img src="dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
+                <a href="dashboard.php">Dashboard</a>
+            </li>
+            <li class="dropdown">
+                <img src="categories-icon.png" alt="Categories Icon" class="nav-icon">
+                <a href="categories.php">Categories <span class="down-arrow"></span></a>
+                <div class="dropdown-content">
+                    <a href="genre/math.php">Math</a>
+                    <a href="genre/english.php">English</a>
+                    <a href="genre/science.php">Science</a>
+                    <a href="genre/ap.php">Araling Panlipunan</a>
+                    <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
+                    <a href="genre/physical-education.php">Physical Education</a>
+                    <a href="genre/filipino.php">Filipino</a>
+                    <a href="genre/tle.php">Technology and livelihood Education</a>
+                </div>
+            </li>
+            <li>
+                <img src="authors-icon.png" alt="Authors Icon" class="nav-icon">
+                <a href="Authors.php">Authors</a>
+            </li>
+            <li>
+                <a href="profile_account.php" class="account-icon-link">
+                    <img src="account-icon.png" alt="Account Icon" class="nav-icon">
+                </a>
+            </li>
+        </ul>
     </div>
 </header>
+<script>
+    function showSuggestions(str) {
+        console.log("showSuggestions called with:", str);
+
+        var titles = <?php echo json_encode(getBookTitles($conn)); ?>;
+        console.log("titles:", titles);
+
+        var suggestionsBox = document.getElementById("suggestions-box");
+        suggestionsBox.innerHTML = "";
+
+        if (str.length === 0) {
+            suggestionsBox.style.display = "none";
+            return;
+        }
+
+        if (titles && titles.length > 0) {
+            titles.forEach(function(title) {
+                if (title.toLowerCase().startsWith(str.toLowerCase())) {
+                    suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
+                }
+            });
+
+            suggestionsBox.style.display = "block";
+        } else {
+            suggestionsBox.style.display = "none";
+        }
+    }
+
+    function fillSearch(value) {
+        // Determine the source and book_id based on the book title
+        var source = '';
+        var bookId = '';
+
+        // Check if the title exists in books table
+        <?php
+        $booksTitles = array();
+        $sqlBooks = "SELECT id, title FROM books";
+        $resultBooks = $conn->query($sqlBooks);
+        if ($resultBooks->num_rows > 0) {
+            while ($row = $resultBooks->fetch_assoc()) {
+                $booksTitles[$row['title']] = $row['id'];
+            }
+        }
+        echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
+        ?>
+        if (bookTitlesBooks[value]) {
+            source = 'books';
+            bookId = bookTitlesBooks[value];
+        } else {
+            // Check if the title exists in library_books table
+            <?php
+            $libraryBooksTitles = array();
+            $sqlLibraryBooks = "SELECT id, title FROM library_books";
+            $resultLibraryBooks = $conn->query($sqlLibraryBooks);
+            if ($resultLibraryBooks->num_rows > 0) {
+                while ($row = $resultLibraryBooks->fetch_assoc()) {
+                    $libraryBooksTitles[$row['title']] = $row['id'];
+                }
+            }
+            echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
+            ?>
+        if (bookTitlesLibraryBooks[value]) {
+            source = 'library_books';
+            bookId = bookTitlesLibraryBooks[value];
+        } else {
+            // Check if the title exists in author_books table
+            <?php
+            $authorBooksTitles = array();
+            $sqlAuthorBooks = "SELECT id, title FROM author_books";
+            $resultAuthorBooks = $conn->query($sqlAuthorBooks);
+            if ($resultAuthorBooks->num_rows > 0) {
+                while ($row = $resultAuthorBooks->fetch_assoc()) {
+                    $authorBooksTitles[$row['title']] = $row['id'];
+                }
+            }
+            echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
+            ?>
+            if (bookTitlesAuthorBooks[value]) {
+                source = 'author_books';
+                bookId = bookTitlesAuthorBooks[value];
+            }
+        }
+    }
+
+        // Redirect to transaction.php with book_title, source, and book_id parameters
+        if (source && bookId) {
+            window.location.href = 'transaction.php?book_title=' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
+        } else {
+            alert("Book not found!");
+        }
+    }
+</script>
 
 <div class="container">
     <section class="book-section">
