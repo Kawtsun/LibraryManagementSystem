@@ -900,10 +900,27 @@ $conn->close();
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Redirect to the delete-transaction.php script, passing the transaction ID and current page
-                        window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}`;
+                        window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&status=success`;
                     }
                 });
             }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('status') === 'success') {
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'The transaction has been successfully deleted.',
+                        icon: 'success',
+                        confirmButtonColor: '#3498db',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Optional: Remove the status parameter from the URL to prevent duplicate alerts
+                        urlParams.delete('status');
+                        window.history.replaceState({}, document.title, `${location.pathname}?${urlParams}`);
+                    });
+                }
+            });
         </script>
 </body>
 
