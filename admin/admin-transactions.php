@@ -383,6 +383,16 @@ $conn->close();
             transform: scale(1.05);
         }
 
+        .modal-content .delete-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .modal-content .delete-button:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
         /* Modal Background Overlay */
         .modal {
             display: none;
@@ -662,6 +672,7 @@ $conn->close();
                                 <th>Date Borrowed</th>
                                 <th>Return Date</th>
                                 <th>Date Returned</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="completedTransactionsBody">
@@ -808,22 +819,43 @@ $conn->close();
                                 data.forEach(transaction => {
                                     const row = document.createElement('tr');
                                     row.innerHTML = `
-                                <td>${transaction.transaction_id}</td>
-                                <td>${transaction.email}</td>
-                                <td>${transaction.name}</td>
-                                <td>${transaction.book_title}</td>
-                                <td>${transaction.date_borrowed}</td>
-                                <td>${transaction.return_date}</td>
-                                <td>${transaction.date_returned}</td>
-                            `;
+                            <td>${transaction.transaction_id}</td>
+                            <td>${transaction.email}</td>
+                            <td>${transaction.name}</td>
+                            <td>${transaction.book_title}</td>
+                            <td>${transaction.date_borrowed}</td>
+                            <td>${transaction.return_date}</td>
+                            <td>${transaction.date_returned}</td>
+                            <td>
+                                <button onclick="confirmDeleteTransactionCompleted(${transaction.transaction_id})" class="delete-button">Delete</button>
+                            </td>
+                        `;
                                     completedTransactionsBody.appendChild(row);
                                 });
                             } else {
-                                completedTransactionsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No completed transactions found.</td></tr>';
+                                completedTransactionsBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No completed transactions found.</td></tr>';
                             }
                         })
                         .catch(error => console.error('Error loading completed transactions:', error));
                 }
+
+                // Delete function for completed transactions
+                window.confirmDeleteTransactionCompleted = function(transactionId) {
+                    const currentPage = 1; // Default page if undefined
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Deleting this transaction cannot be undone!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e74c3c',
+                        cancelButtonColor: '#3498db',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
+                        }
+                    });
+                };
 
                 // Bind click event to the button for opening the modal
                 const openButton = document.getElementById('openCompletedTransactions');
