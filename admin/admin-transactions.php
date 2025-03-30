@@ -704,7 +704,8 @@ $conn->close();
                                         onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
                                         Return
                                     </button>
-                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
+                                    <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
+
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -878,6 +879,28 @@ $conn->close();
                                 console.error('Error:', error);
                                 Swal.fire('Error', 'An unexpected error occurred.', 'error');
                             });
+                    }
+                });
+            }
+        </script>
+        <script>
+            // Deleting transactions
+            function confirmDeleteTransaction(transactionId) {
+                // Retrieve current page for maintaining pagination context
+                const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#3498db',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the delete-transaction.php script, passing the transaction ID and current page
+                        window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}`;
                     }
                 });
             }
