@@ -641,6 +641,111 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .update-success-popup button:hover {
             background-color: #45a049;
         }
+
+        /* Modal Background Overlay */
+        .modal {
+            display: none;
+            /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Semi-transparent background */
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal Content Box */
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            /* Matches the transactions table border radius */
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            /* Increased width for larger display */
+            max-height: 80%;
+            /* Restrict height to fit viewport */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            /* Matches the transactions table shadow */
+            overflow: auto;
+            /* Makes content scrollable if it exceeds modal height */
+            position: relative;
+            text-align: left;
+        }
+
+        /* Modal Close Button Styling */
+        .close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #888;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #444;
+            /* Darker shade for hover state */
+        }
+
+        .view-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            right: 5%;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .view-button:hover {
+            background-color: rgb(46, 132, 190);
+            transform: scale(1.05);
+        }
+
+        /* Modal Table Styling */
+        .modal-content .transactions-table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+            box-shadow: none;
+            /* Shadow removed to keep it clean inside modal */
+            border-radius: 0;
+            margin: 0;
+        }
+
+        .modal-content .transactions-table th,
+        .modal-content .transactions-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .modal-content .transactions-table th {
+            background-color: #007BFF;
+            /* Matches table header styling */
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .modal-content .transactions-table tr:hover {
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 
@@ -855,8 +960,105 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
         </div>
 
+        <!-- Completed Transactions Modal -->
+        <div id="completedTransactionsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="document.getElementById('completedTransactionsModal').style.display='none'">&times;</span>
+                <h2>Completed Transactions</h2>
+                <div id="completedTransactionsErrorMessages" class="error-box"></div> <!-- Error messages -->
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Book Title</th>
+                            <th>Date Borrowed</th>
+                            <th>Return Date</th>
+                            <th>Date Returned</th>
+                        </tr>
+                    </thead>
+                    <tbody id="completedTransactionsBody">
+                        <!-- Dynamic rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            // Open Completed Transactions Modal and Load Data
+            document.addEventListener("DOMContentLoaded", function() {
+                const completedTransactionsModal = document.getElementById('completedTransactionsModal');
+                const completedTransactionsBody = document.getElementById('completedTransactionsBody');
+
+                // Function to open the modal
+                window.openCompletedTransactionsModal = function() {
+                    if (!completedTransactionsModal) {
+                        console.error("Completed Transactions modal element not found");
+                        return;
+                    }
+
+                    // Show the modal
+                    completedTransactionsModal.style.display = "flex";
+
+                    // Dynamically load completed transactions
+                    loadCompletedTransactions();
+                };
+
+                // Function to fetch and load completed transaction data
+                function loadCompletedTransactions() {
+                    fetch('fetch-completed-transactions.php') // Replace with your backend file path
+                        .then(response => response.json())
+                        .then(data => {
+                            completedTransactionsBody.innerHTML = ''; // Clear previous content
+
+                            if (data.length > 0) {
+                                data.forEach(transaction => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                <td>${transaction.transaction_id}</td>
+                                <td>${transaction.book_title}</td>
+                                <td>${transaction.date_borrowed}</td>
+                                <td>${transaction.return_date}</td>
+                                <td>${transaction.date_returned}</td>
+                            `;
+                                    completedTransactionsBody.appendChild(row);
+                                });
+                            } else {
+                                completedTransactionsBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No completed transactions found.</td></tr>';
+                            }
+                        })
+                        .catch(error => console.error('Error loading completed transactions:', error));
+                }
+
+                // Bind click event to the button for opening the modal
+                const openButton = document.getElementById('openCompletedTransactions');
+                if (openButton) {
+                    openButton.addEventListener("click", function() {
+                        openCompletedTransactionsModal();
+                    });
+                }
+
+                // Close modal when clicking on any element with the `.close` class
+                document.querySelectorAll('#completedTransactionsModal .close').forEach(function(closeBtn) {
+                    closeBtn.addEventListener("click", function() {
+                        completedTransactionsModal.style.display = "none";
+                    });
+                });
+
+                // Close the modal if clicking outside its content
+                window.addEventListener("click", function(event) {
+                    if (event.target === completedTransactionsModal) {
+                        completedTransactionsModal.style.display = "none";
+                    }
+                });
+            });
+        </script>
+
         <section class="transaction-section">
             <h2 style="font-size: 30px; margin-top: 30px;">Recent Incomplete Transactions</h2>
+            <!-- Button styled to align on the right end side -->
+            <div class="button-container" style="text-align: right; margin-top: 20px;">
+                <button id="openCompletedTransactions" class="view-button">Completed Transactions</button>
+            </div>
             <div class="transaction-grid">
                 <?php
                 if (isset($_SESSION['email'])) { // Check for email in session
