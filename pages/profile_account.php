@@ -12,48 +12,58 @@ if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
     $username = "";
 }
 
-// --- CORRECTED getRecentTransactions FUNCTION ---
-function getRecentTransactions($conn, $email, $limit = 10) {
-    $sql = "SELECT * FROM transactions WHERE email = ? ORDER BY date_borrowed DESC LIMIT ?"; // Use 'email'
+function getRecentTransactions($conn, $email, $limit = 10)
+{
+    $sql = "SELECT * FROM transactions 
+            WHERE email = ? AND completed = 0 
+            ORDER BY date_borrowed DESC LIMIT ?"; // Filter for incomplete transactions
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $email, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result;
 }
-// --- CORRECTED displayRecentTransactions FUNCTION ---
-function displayRecentTransactions($result) {
+
+function displayRecentTransactions($result)
+{
     if ($result->num_rows > 0) {
-        ?>
+?>
         <table class="modern-table">
             <thead>
                 <tr>
-                    <th>Book ID</th>
+                    <th>Book Title</th>
                     <th>Date Borrowed</th>
                     <th>Return Date</th>
+                    <th>Status</th> <!-- Added column -->
                 </tr>
             </thead>
             <tbody>
                 <?php
                 while ($row = $result->fetch_assoc()) {
-                    ?>
+                ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['book_title']); ?></td>
                         <td><?php echo htmlspecialchars($row['date_borrowed']); ?></td>
                         <td><?php echo htmlspecialchars($row['return_date']); ?></td>
+                        <td>
+                            <?php
+                            echo $row['completed'] ? "Inactive" : "Active";
+                            ?> <!-- Status based on completed -->
+                        </td>
                     </tr>
-                    <?php
+                <?php
                 }
                 ?>
             </tbody>
         </table>
-        <?php
+<?php
     } else {
-        echo "<p>No recent transactions</p>";
+        echo "<p>No incomplete transactions</p>";
     }
 }
 
-function getBookTitles($conn) {
+function getBookTitles($conn)
+{
     $titles = [];
 
     // Fetch titles from 'books' table
@@ -109,7 +119,6 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
     exit();
@@ -146,6 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -233,11 +243,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             z-index: 5;
             display: none;
             top: 100%;
-            right: 0; /* Align to the left of the parent */
+            right: 0;
+            /* Align to the left of the parent */
             margin-top: 5px;
             padding: 2px;
             margin-left: 40px;
         }
+
         .suggestions-box a {
             display: block;
             padding: 10px 15px;
@@ -247,7 +259,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .suggestions-box a:hover {
-            background-color:  rgba(0, 69, 116, 0.7) !important;
+            background-color: rgba(0, 69, 116, 0.7) !important;
         }
 
         .nav-links {
@@ -356,7 +368,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
         }
 
-        .modern-table th, .modern-table td {
+        .modern-table th,
+        .modern-table td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
@@ -413,7 +426,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 6px;
             font-size: 18px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1),
-                        -2px -2px 5px rgba(255, 255, 255, 0.7);
+                -2px -2px 5px rgba(255, 255, 255, 0.7);
         }
 
         .user-details strong {
@@ -438,25 +451,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-.logout-button {
-    background-color: #e74c3c;
-    color: white;
-    padding: 12px 18px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    margin-bottom: -90px; /* Remove bottom margin */
-    margin-right: 20px;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .logout-button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-bottom: -90px;
+            /* Remove bottom margin */
+            margin-right: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-.logout-button:hover {
-    background-color: #c0392b;
-}
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
+
         .detail-item {
             display: flex;
             align-items: center;
@@ -464,131 +479,157 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .detail-item img {
             margin-right: 10px;
-            width: 24px; /* Adjust icon size as needed */
+            width: 24px;
+            /* Adjust icon size as needed */
             height: 24px;
         }
+
         .logout-button img {
-            width: 20px; /* Adjust icon size as needed */
+            width: 20px;
+            /* Adjust icon size as needed */
             height: 20px;
-            margin-right: 8px; /* Add spacing between icon and text */
+            margin-right: 8px;
+            /* Add spacing between icon and text */
         }
+
         .edit-button {
-    background-color: #3498db;
-    color: white;
-    padding: 12px 18px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    margin-right: 10px; /* Space from logout button */
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-bottom: -90px; 
-    margin-right: 10px;
-}
+            background-color: #3498db;
+            color: white;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-right: 10px;
+            /* Space from logout button */
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: -90px;
+            margin-right: 10px;
+        }
 
-.edit-button:hover {
-    background-color: #2980b9;
-}
+        .edit-button:hover {
+            background-color: #2980b9;
+        }
 
-.user-details form p.detail-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
+        .user-details form p.detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-.user-details form p.detail-item img {
-    margin-right: 10px;
-    width: 24px;
-    height: 24px;
-}
+        .user-details form p.detail-item img {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
 
-.user-details form p.detail-item input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
+        .user-details form p.detail-item input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
 
-.user-details form p.detail-item input:focus {
-    border-color: #3498db;
-    outline: none;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-}
+        .user-details form p.detail-item input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
 
-.user-details .button-container {
-    background-color: white !important; /* Remove background */
-    display: flex; /* For alignment */
-    align-items: center; /* Vertical alignment */
-}
+        .user-details .button-container {
+            background-color: white !important;
+            /* Remove background */
+            display: flex;
+            /* For alignment */
+            align-items: center;
+            /* Vertical alignment */
+        }
 
-.user-details .button-container button[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    padding: 12px 20px; /* Increase padding */
-    border: none;
-    border-radius: 6px; /* Slightly larger border radius */
-    cursor: pointer;
-    font-size: 18px; /* Increase font size */
-    transition: background-color 0.3s ease;
-    min-width: 120px; /* Set minimum width */
-}
+        .user-details .button-container button[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            /* Increase padding */
+            border: none;
+            border-radius: 6px;
+            /* Slightly larger border radius */
+            cursor: pointer;
+            font-size: 18px;
+            /* Increase font size */
+            transition: background-color 0.3s ease;
+            min-width: 120px;
+            /* Set minimum width */
+        }
 
-.user-details .button-container button[type="submit"]:hover {
-    background-color: #2980b9;
-}
+        .user-details .button-container button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
 
-.user-details .button-container a {
-    background-color: #e74c3c;
-    color: white;
-    padding: 12px 10px; /* Increase padding */
-    border: none;
-    border-radius: 6px; /* Slightly larger border radius */
-    cursor: pointer;
-    font-size: 18px; /* Increase font size */
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    margin-left: 15px; /* Increase margin */
-    min-width: 120px; /* Set minimum width */
-    text-align: center;
-}
+        .user-details .button-container a {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 10px;
+            /* Increase padding */
+            border: none;
+            border-radius: 6px;
+            /* Slightly larger border radius */
+            cursor: pointer;
+            font-size: 18px;
+            /* Increase font size */
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-left: 15px;
+            /* Increase margin */
+            min-width: 120px;
+            /* Set minimum width */
+            text-align: center;
+        }
 
-.user-details .button-container a:hover {
-    background-color: #c0392b;
-}
+        .user-details .button-container a:hover {
+            background-color: #c0392b;
+        }
 
-.update-success-popup {
+        .update-success-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
-            padding: 30px; /* Increased padding */
-            border-radius: 10px; /* Slightly larger border radius */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            padding: 30px;
+            /* Increased padding */
+            border-radius: 10px;
+            /* Slightly larger border radius */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            /* Stronger shadow */
             text-align: center;
             z-index: 10;
-            width: 400px; /* Increased width */
+            width: 400px;
+            /* Increased width */
         }
 
         .update-success-popup img {
-            width: 80px; /* Increased image size */
-            height: 80px; /* Increased image size */
+            width: 80px;
+            /* Increased image size */
+            height: 80px;
+            /* Increased image size */
             margin-bottom: 15px;
         }
 
         .update-success-popup h2 {
-            color: green; /* Green color for the heading */
+            color: green;
+            /* Green color for the heading */
             margin-bottom: -10px;
             margin-top: -20px;
         }
 
         .update-success-popup button {
-            background-color: #4CAF50; /* Green color */
+            background-color: #4CAF50;
+            /* Green color */
             color: white;
             padding: 12px 20px;
             border: none;
@@ -602,241 +643,244 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div class="header-left">
-        <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
-        <span class="system-title">AklatURSM Management System</span>
-    </div>
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
-        <div class="suggestions-box" id="suggestions-box"></div>
-    </div>
-    <div class="nav-links">
-        <ul>
-            <li>
-                <img src="dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
-                <a href="dashboard.php">Dashboard</a>
-            </li>
-            <li class="dropdown">
-                <img src="categories-icon.png" alt="Categories Icon" class="nav-icon">
-                <a href="categories.php">Categories <span class="down-arrow"></span></a>
-                <div class="dropdown-content">
-                    <a href="genre/math.php">Math</a>
-                    <a href="genre/english.php">English</a>
-                    <a href="genre/science.php">Science</a>
-                    <a href="genre/ap.php">Araling Panlipunan</a>
-                    <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
-                    <a href="genre/physical-education.php">Physical Education</a>
-                    <a href="genre/filipino.php">Filipino</a>
-                    <a href="genre/tle.php">Technology and livelihood Education</a>
-                </div>
-            </li>
-            <li>
-                <img src="authors-icon.png" alt="Authors Icon" class="nav-icon">
-                <a href="Authors.php">Authors</a>
-            </li>
-            <li>
-                <a href="profile_account.php" class="account-icon-link">
-                    <img src="account-icon.png" alt="Account Icon" class="nav-icon">
-                </a>
-            </li>
-        </ul>
-    </div>
-</header>
-<script>
-    function showSuggestions(str) {
-        console.log("showSuggestions called with:", str);
+    <header>
+        <div class="header-left">
+            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
+            <span class="system-title">AklatURSM Management System</span>
+        </div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
+            <div class="suggestions-box" id="suggestions-box"></div>
+        </div>
+        <div class="nav-links">
+            <ul>
+                <li>
+                    <img src="dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
+                    <a href="dashboard.php">Dashboard</a>
+                </li>
+                <li class="dropdown">
+                    <img src="categories-icon.png" alt="Categories Icon" class="nav-icon">
+                    <a href="categories.php">Categories <span class="down-arrow"></span></a>
+                    <div class="dropdown-content">
+                        <a href="genre/math.php">Math</a>
+                        <a href="genre/english.php">English</a>
+                        <a href="genre/science.php">Science</a>
+                        <a href="genre/ap.php">Araling Panlipunan</a>
+                        <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
+                        <a href="genre/physical-education.php">Physical Education</a>
+                        <a href="genre/filipino.php">Filipino</a>
+                        <a href="genre/tle.php">Technology and livelihood Education</a>
+                    </div>
+                </li>
+                <li>
+                    <img src="authors-icon.png" alt="Authors Icon" class="nav-icon">
+                    <a href="Authors.php">Authors</a>
+                </li>
+                <li>
+                    <a href="profile_account.php" class="account-icon-link">
+                        <img src="account-icon.png" alt="Account Icon" class="nav-icon">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <script>
+        function showSuggestions(str) {
+            console.log("showSuggestions called with:", str);
 
-        var titles = <?php echo json_encode(getBookTitles($conn)); ?>;
-        console.log("titles:", titles);
+            var titles = <?php echo json_encode(getBookTitles($conn)); ?>;
+            console.log("titles:", titles);
 
-        var suggestionsBox = document.getElementById("suggestions-box");
-        suggestionsBox.innerHTML = "";
+            var suggestionsBox = document.getElementById("suggestions-box");
+            suggestionsBox.innerHTML = "";
 
-        if (str.length === 0) {
-            suggestionsBox.style.display = "none";
-            return;
-        }
+            if (str.length === 0) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
 
-        if (titles && titles.length > 0) {
-            titles.forEach(function (title) {
-                if (title.toLowerCase().startsWith(str.toLowerCase())) {
-                    suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
-                }
-            });
+            if (titles && titles.length > 0) {
+                titles.forEach(function(title) {
+                    if (title.toLowerCase().startsWith(str.toLowerCase())) {
+                        suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
+                    }
+                });
 
-            suggestionsBox.style.display = "block";
-        } else {
-            suggestionsBox.style.display = "none";
-        }
-    }
-
-    function fillSearch(value) {
-        var source = '';
-        var bookId = '';
-
-        <?php
-        $booksTitles = array();
-        $sqlBooks = "SELECT id, title FROM books";
-        $resultBooks = $conn->query($sqlBooks);
-        if ($resultBooks->num_rows > 0) {
-            while ($row = $resultBooks->fetch_assoc()) {
-                $booksTitles[$row['title']] = $row['id'];
+                suggestionsBox.style.display = "block";
+            } else {
+                suggestionsBox.style.display = "none";
             }
         }
-        echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
-        ?>
-        if (bookTitlesBooks[value]) {
-            source = 'books';
-            bookId = bookTitlesBooks[value];
-        } else {
+
+        function fillSearch(value) {
+            var source = '';
+            var bookId = '';
+
             <?php
-            $libraryBooksTitles = array();
-            $sqlLibraryBooks = "SELECT id, title FROM library_books";
-            $resultLibraryBooks = $conn->query($sqlLibraryBooks);
-            if ($resultLibraryBooks->num_rows > 0) {
-                while ($row = $resultLibraryBooks->fetch_assoc()) {
-                    $libraryBooksTitles[$row['title']] = $row['id'];
+            $booksTitles = array();
+            $sqlBooks = "SELECT id, title FROM books";
+            $resultBooks = $conn->query($sqlBooks);
+            if ($resultBooks->num_rows > 0) {
+                while ($row = $resultBooks->fetch_assoc()) {
+                    $booksTitles[$row['title']] = $row['id'];
                 }
             }
-            echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
+            echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
             ?>
-            if (bookTitlesLibraryBooks[value]) {
-                source = 'library_books';
-                bookId = bookTitlesLibraryBooks[value];
+            if (bookTitlesBooks[value]) {
+                source = 'books';
+                bookId = bookTitlesBooks[value];
             } else {
                 <?php
-                $authorBooksTitles = array();
-                $sqlAuthorBooks = "SELECT id, title FROM author_books";
-                $resultAuthorBooks = $conn->query($sqlAuthorBooks);
-                if ($resultAuthorBooks->num_rows > 0) {
-                    while ($row = $resultAuthorBooks->fetch_assoc()) {
-                        $authorBooksTitles[$row['title']] = $row['id'];
+                $libraryBooksTitles = array();
+                $sqlLibraryBooks = "SELECT id, title FROM library_books";
+                $resultLibraryBooks = $conn->query($sqlLibraryBooks);
+                if ($resultLibraryBooks->num_rows > 0) {
+                    while ($row = $resultLibraryBooks->fetch_assoc()) {
+                        $libraryBooksTitles[$row['title']] = $row['id'];
                     }
                 }
-                echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
+                echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
                 ?>
-                if (bookTitlesAuthorBooks[value]) {
-                    source = 'author_books';
-                    bookId = bookTitlesAuthorBooks[value];
+                if (bookTitlesLibraryBooks[value]) {
+                    source = 'library_books';
+                    bookId = bookTitlesLibraryBooks[value];
+                } else {
+                    <?php
+                    $authorBooksTitles = array();
+                    $sqlAuthorBooks = "SELECT id, title FROM author_books";
+                    $resultAuthorBooks = $conn->query($sqlAuthorBooks);
+                    if ($resultAuthorBooks->num_rows > 0) {
+                        while ($row = $resultAuthorBooks->fetch_assoc()) {
+                            $authorBooksTitles[$row['title']] = $row['id'];
+                        }
+                    }
+                    echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
+                    ?>
+                    if (bookTitlesAuthorBooks[value]) {
+                        source = 'author_books';
+                        bookId = bookTitlesAuthorBooks[value];
+                    }
                 }
             }
-        }
 
-        if (source && bookId) {
-            window.location.href = 'transaction.php?book_title=' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
-        } else {
-            alert("Book not found!");
-        }
-    }
-</script>
-
-<div class="container">
-    <div class="profile-header">
-        <?php if (!$isEditing): ?>
-            <a href="?edit=true" class="edit-button">Edit Profile</a>
-        <?php endif; ?>
-        <a href="login.php" class="logout-button">Log Out</a>
-    </div>
-    <h2 style="font-size: 30px;">Profile Account</h2>
-
-    <div class="user-details">
-        <?php if (!$isEditing): ?>
-            <?php if ($user): ?>
-                <p class="detail-item"><img src="user-id-icon.png" alt="User ID"><strong>User ID:&nbsp</strong> <?php echo htmlspecialchars($user['user_id']); ?></p>
-                <div class="row">
-                    <p class="detail-item"><img src="username-icon.png" alt="Username"><strong>Username:&nbsp</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-                    <p class="detail-item"><img src="student-id-icon.png" alt="Student ID"><strong>Student ID:&nbsp</strong> <?php echo htmlspecialchars($user['student_id']); ?></p>
-                </div>
-                <div class="row">
-                    <p class="detail-item"><img src="course-icon.png" alt="Course"><strong>Course:&nbsp</strong> <?php echo htmlspecialchars($user['course']); ?></p>
-                    <p class="detail-item"><img src="email-icon.png" alt="Email"><strong>Email:&nbsp</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-                </div>
-                <div class="row">
-                    <p class="detail-item"><img src="name-icon.png" alt="Name"><strong>Name:&nbsp</strong> <?php echo htmlspecialchars($user['name']); ?></p>
-                    <p class="detail-item"><img src="contact-icon.png" alt="Contact Number"><strong>Contact Number:&nbsp</strong> <?php echo htmlspecialchars($user['contact_number']); ?></p>
-                </div>
-                <p class="detail-item"><img src="address-icon.png" alt="Address"><strong>Address:&nbsp</strong> <?php echo htmlspecialchars($user['address']); ?></p>
-            <?php else: ?>
-                <p>User details not found.</p>
-            <?php endif; ?>
-        <?php else: ?>
-            <form method="post">
-                <p class="detail-item">
-                    <img src="username-icon.png" alt="Username">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
-                </p>
-                <div class="row">
-                    <p class="detail-item">
-                        <img src="student-id-icon.png" alt="Student ID">
-                        <label for="student_id">Student ID:</label>
-                        <input type="text" id="student_id" name="student_id" value="<?php echo htmlspecialchars($user['student_id']); ?>">
-                    </p>
-                    <p class="detail-item">
-                        <img src="course-icon.png" alt="Course">
-                        <label for="course">Course:</label>
-                        <input type="text" id="course" name="course" value="<?php echo htmlspecialchars($user['course']); ?>">
-                    </p>
-                </div>
-                <div class="row">
-                    <p class="detail-item">
-                        <img src="email-icon.png" alt="Email">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
-                    </p>
-                    <p class="detail-item">
-                        <img src="name-icon.png" alt="Name">
-                        <label for="name">Name:</label>
-                        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
-                    </p>
-                </div>
-                <div class="row">
-                    <p class="detail-item">
-                        <img src="contact-icon.png" alt="Contact Number">
-                        <label for="contact_number">Contact Number:</label>
-                        <input type="text" id="contact_number" name="contact_number" value="<?php echo htmlspecialchars($user['contact_number']); ?>">
-                    </p>
-                    <p class="detail-item">
-                        <img src="address-icon.png" alt="Address">
-                        <label for="address">Address:</label>
-                        <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address']); ?>">
-                    </p>
-                </div>
-                <p class="button-container">
-    <button type="submit">Save Changes</button>
-    <a href="profile_account.php">Cancel</a>
-</p>
-            </form>
-        <?php endif; ?>
-    </div>
-
-    <section class="transaction-section">
-        <h2 style="font-size: 30px; margin-top: 30px;">Recent Transactions</h2>
-        <div class="transaction-grid">
-            <?php
-            if (isset($_SESSION['email'])) {
-                $email = $_SESSION['email'];
-                $recentTransactions = getRecentTransactions($conn, $email, 10);
-                displayRecentTransactions($recentTransactions);
+            if (source && bookId) {
+                window.location.href = 'transaction.php?book_title=' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
             } else {
-                echo "<p>Please log in to see your transactions.</p>";
+                alert("Book not found!");
             }
-            ?>
+        }
+    </script>
+
+    <div class="container">
+        <div class="profile-header">
+            <?php if (!$isEditing): ?>
+                <a href="?edit=true" class="edit-button">Edit Profile</a>
+            <?php endif; ?>
+            <a href="login.php" class="logout-button">Log Out</a>
         </div>
-    </section>
-    <?php if ($updateSuccess): ?>
-        <div class="update-success-popup">
-            <img src="success-icon.png" alt="Success">
-            <h2>Profile Updated</h2>
-            <p>Your details have been successfully updated!</p>
-            <button onclick="window.location.href='profile_account.php'">CONTINUE</button>
+        <h2 style="font-size: 30px;">Profile Account</h2>
+
+        <div class="user-details">
+            <?php if (!$isEditing): ?>
+                <?php if ($user): ?>
+                    <p class="detail-item"><img src="user-id-icon.png" alt="User ID"><strong>User ID:&nbsp</strong> <?php echo htmlspecialchars($user['user_id']); ?></p>
+                    <div class="row">
+                        <p class="detail-item"><img src="username-icon.png" alt="Username"><strong>Username:&nbsp</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                        <p class="detail-item"><img src="student-id-icon.png" alt="Student ID"><strong>Student ID:&nbsp</strong> <?php echo htmlspecialchars($user['student_id']); ?></p>
+                    </div>
+                    <div class="row">
+                        <p class="detail-item"><img src="course-icon.png" alt="Course"><strong>Course:&nbsp</strong> <?php echo htmlspecialchars($user['course']); ?></p>
+                        <p class="detail-item"><img src="email-icon.png" alt="Email"><strong>Email:&nbsp</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+                    </div>
+                    <div class="row">
+                        <p class="detail-item"><img src="name-icon.png" alt="Name"><strong>Name:&nbsp</strong> <?php echo htmlspecialchars($user['name']); ?></p>
+                        <p class="detail-item"><img src="contact-icon.png" alt="Contact Number"><strong>Contact Number:&nbsp</strong> <?php echo htmlspecialchars($user['contact_number']); ?></p>
+                    </div>
+                    <p class="detail-item"><img src="address-icon.png" alt="Address"><strong>Address:&nbsp</strong> <?php echo htmlspecialchars($user['address']); ?></p>
+                <?php else: ?>
+                    <p>User details not found.</p>
+                <?php endif; ?>
+            <?php else: ?>
+                <form method="post">
+                    <p class="detail-item">
+                        <img src="username-icon.png" alt="Username">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                    </p>
+                    <div class="row">
+                        <p class="detail-item">
+                            <img src="student-id-icon.png" alt="Student ID">
+                            <label for="student_id">Student ID:</label>
+                            <input type="text" id="student_id" name="student_id" value="<?php echo htmlspecialchars($user['student_id']); ?>">
+                        </p>
+                        <p class="detail-item">
+                            <img src="course-icon.png" alt="Course">
+                            <label for="course">Course:</label>
+                            <input type="text" id="course" name="course" value="<?php echo htmlspecialchars($user['course']); ?>">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="detail-item">
+                            <img src="email-icon.png" alt="Email">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
+                        </p>
+                        <p class="detail-item">
+                            <img src="name-icon.png" alt="Name">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="detail-item">
+                            <img src="contact-icon.png" alt="Contact Number">
+                            <label for="contact_number">Contact Number:</label>
+                            <input type="text" id="contact_number" name="contact_number" value="<?php echo htmlspecialchars($user['contact_number']); ?>">
+                        </p>
+                        <p class="detail-item">
+                            <img src="address-icon.png" alt="Address">
+                            <label for="address">Address:</label>
+                            <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address']); ?>">
+                        </p>
+                    </div>
+                    <p class="button-container">
+                        <button type="submit">Save Changes</button>
+                        <a href="profile_account.php">Cancel</a>
+                    </p>
+                </form>
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
-</div>
+
+        <section class="transaction-section">
+            <h2 style="font-size: 30px; margin-top: 30px;">Recent Incomplete Transactions</h2>
+            <div class="transaction-grid">
+                <?php
+                if (isset($_SESSION['email'])) { // Check for email in session
+                    $email = $_SESSION['email'];
+                    $recentTransactions = getRecentTransactions($conn, $email, 10); // Use email
+                    displayRecentTransactions($recentTransactions);
+                } else {
+                    echo "<p>Please log in to see your transactions.</p>";
+                }
+                ?>
+            </div>
+        </section>
+
+        <?php if ($updateSuccess): ?>
+            <div class="update-success-popup">
+                <img src="success-icon.png" alt="Success">
+                <h2>Profile Updated</h2>
+                <p>Your details have been successfully updated!</p>
+                <button onclick="window.location.href='profile_account.php'">CONTINUE</button>
+            </div>
+        <?php endif; ?>
+    </div>
 
 </body>
+
 </html>
 <?php $conn->close(); ?>
