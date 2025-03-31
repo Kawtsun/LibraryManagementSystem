@@ -2,6 +2,11 @@
 include '../validate/db.php';
 session_start();
 
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin-login.php");
+    exit;
+}
+
 // Get the total number of users
 $sql_users = "SELECT COUNT(*) AS total_users FROM users";
 $result_users = $conn->query($sql_users);
@@ -329,7 +334,7 @@ $conn->close();
                         <i class="lucide" data-lucide="file-text"></i> Transactions
                     </li>
                 </a>
-                <a href="#" class="logout">
+                <a href="logoutAdmin.php" class="logout">
                     <li>
                         <i class="lucide" data-lucide="log-out"></i> Logout
                     </li>

@@ -3,6 +3,10 @@
 include '../validate/db.php';
 session_start();
 
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin-login.php");
+    exit;
+}
 // Get the search query (if any) for transactions.
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
 
@@ -632,7 +636,7 @@ $conn->close();
                         <i class="lucide" data-lucide="file-text"></i> Transactions
                     </li>
                 </a>
-                <a href="#">
+                <a href="logoutAdmin.php">
                     <li>
                         <i class="lucide" data-lucide="log-out"></i> Logout
                     </li>
