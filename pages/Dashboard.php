@@ -131,6 +131,7 @@ function displayTrendingBooks($result)
         echo "<p>No trending books found.</p>";
     }
 }
+
 function getRecentTransactions($conn, $email, $limit = 10)
 {
     $sql = "SELECT * FROM transactions 
@@ -180,7 +181,6 @@ function displayRecentTransactions($result)
         echo "<p>No incomplete transactions</p>";
     }
 }
-
 
 function getBookTitles($conn)
 {
@@ -946,7 +946,7 @@ function getBookTitles($conn)
             </section>
 
             <section class="transaction-section">
-                <h2 style="font-size: 30px; margin-top: 30px;">Recent Transactions</h2>
+                <h2 style="font-size: 30px; margin-top: 30px;">Recent Incomplete Transactions</h2>
                 <div class="transaction-grid">
                     <?php
                     if (isset($_SESSION['email'])) { // Check for email in session
