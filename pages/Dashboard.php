@@ -143,17 +143,18 @@ function displayTrendingBooks($result)
         echo "<p>No trending books found.</p>";
     }
 }
-// --- CORRECTED getRecentTransactions FUNCTION ---
 function getRecentTransactions($conn, $email, $limit = 10)
 {
-    $sql = "SELECT * FROM transactions WHERE email = ? ORDER BY date_borrowed DESC LIMIT ?"; // Use 'email'
+    $sql = "SELECT * FROM transactions 
+            WHERE email = ? AND completed = 0 
+            ORDER BY date_borrowed DESC LIMIT ?"; // Filter for incomplete transactions
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $email, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result;
 }
-// --- CORRECTED displayRecentTransactions FUNCTION ---
+
 function displayRecentTransactions($result)
 {
     if ($result->num_rows > 0) {
@@ -161,9 +162,10 @@ function displayRecentTransactions($result)
         <table class="modern-table">
             <thead>
                 <tr>
-                    <th>Book ID</th>
+                    <th>Book Title</th>
                     <th>Date Borrowed</th>
                     <th>Return Date</th>
+                    <th>Status</th> <!-- Added column -->
                 </tr>
             </thead>
             <tbody>
@@ -171,9 +173,14 @@ function displayRecentTransactions($result)
                 while ($row = $result->fetch_assoc()) {
                 ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['book_id']); ?></td>
+                        <td><?php echo htmlspecialchars($row['book_title']); ?></td>
                         <td><?php echo htmlspecialchars($row['date_borrowed']); ?></td>
                         <td><?php echo htmlspecialchars($row['return_date']); ?></td>
+                        <td>
+                            <?php
+                            echo $row['completed'] ? "Inactive" : "Active";
+                            ?> <!-- Status based on completed -->
+                        </td>
                     </tr>
                 <?php
                 }
@@ -182,9 +189,10 @@ function displayRecentTransactions($result)
         </table>
 <?php
     } else {
-        echo "<p>No recent transactions</p>";
+        echo "<p>No incomplete transactions</p>";
     }
 }
+
 
 function getBookTitles($conn)
 {
@@ -1054,7 +1062,7 @@ function getBookTitles($conn)
             </section>
 
             <section class="transaction-section">
-                <h2 style="font-size: 30px; margin-top: 30px;">Recent Transactions</h2>
+                <h2 style="font-size: 30px; margin-top: 30px;">Recent Incomplete Transactions</h2>
                 <div class="transaction-grid">
                     <?php
                     if (isset($_SESSION['email'])) { // Check for email in session
