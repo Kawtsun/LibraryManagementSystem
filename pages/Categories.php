@@ -1,23 +1,5 @@
 <?php
 // categories.php
-include '../validate/db.php'; // Include your database connection
-
-// Function to fetch book titles
-function getBookTitles($conn) {
-    $titles = array();
-    $sql = "SELECT title FROM books UNION SELECT title FROM library_books UNION SELECT title FROM author_books";
-    $result = $conn->query($sql);
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $titles[] = $row['title'];
-        }
-    }
-    return $titles;
-}
-
-// Fetch book titles for JavaScript
-$allTitles = getBookTitles($conn);
-$allTitlesJson = json_encode($allTitles);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,16 +20,15 @@ $allTitlesJson = json_encode($allTitles);
         }
 
         .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 60px auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            align-self: center;
-        }
-
+        width: 90%;
+        max-width: 1200px;
+        margin: 60px auto;
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        align-self: center;
+    }
         header {
             background-color: #3498db;
             color: white;
@@ -78,52 +59,16 @@ $allTitlesJson = json_encode($allTitles);
             align-items: center;
             flex-grow: 1;
             justify-content: flex-end;
-            position: relative;
         }
 
         .search-bar {
             width: 55%;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
-            border-radius: 25px;
-            box-sizing: border-box;
-            font-size: 16px;
-            margin-right: 15px;
-            background-color: white;
-            color: black;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .search-bar::placeholder {
-            color: #999;
-        }
-
-        .suggestions-box {
-            position: absolute;
-            width: 56%;
-            background-color: rgba(52, 152, 219, 0.9) !important;
             border-radius: 6px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            z-index: 5;
-            display: none;
-            top: 100%;
-            right: 0;
-            margin-top: 5px;
-            padding: 2px;
-            margin-left: 40px;
-        }
-
-        .suggestions-box a {
-            display: block;
-            padding: 10px 15px;
-            text-decoration: none;
-            color: white !important;
-            transition: background-color 0.3s ease;
-        }
-
-        .suggestions-box a:hover {
-            background-color: rgba(0, 69, 116, 0.7) !important;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-right: 15px;
         }
 
         .nav-links {
@@ -139,148 +84,132 @@ $allTitlesJson = json_encode($allTitles);
         }
 
         .nav-links ul li {
-    display: flex;
-    align-items: center;
-    margin-left: 30px;
-}
+            margin-left: 15px;
+        }
 
-.nav-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-}
+        .nav-links ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
 
-.nav-links ul li a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-    font-size: 20px;
-    transition: color 0.3s ease;
-    position: relative;
-    z-index: 3;
-}
-
-.nav-links ul li a:hover {
-    color: #ecf0f1;
-}
-
+        .nav-links ul li a:hover {
+            color: #ecf0f1;
+        }
         .book-section {
-            margin-top: 15px;
-        }
+        margin-top: 15px;
+    }
 
-        .book-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 2.2em;
-            font-weight: 700;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    .book-section h2 {
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 2.2em; /* Slightly reduced font size */
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
-        .book-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            justify-items: center;
-        }
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px; /* Reduced gap */
+        justify-items: center;
+    }
 
-        .book-item {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            width: 230px;
-            height: 220px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .book-item {
+        background-color: #3498db;
+        color: white;
+        padding: 20px; /* Reduced padding */
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 230px; /* Reduced width */
+        height: 220px; /* Reduced height */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex; /* Added flexbox to ensure vertical alignment */
+        flex-direction: column; /* Added flexbox to ensure vertical alignment */
+        justify-content: space-between; /* Added flexbox to ensure vertical alignment */
+    }
 
-        .book-item:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-        }
+    .book-item:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
 
-        .book-icon {
-            width: 90px;
-            height: 90px;
-            margin-bottom: 10px;
-        }
+    .book-icon {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 10px;
+    }
 
-        .book-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            text-decoration: none;
-            color: white;
-        }
+    .book-title {
+        font-size: 1.4em; /* Adjusted font size */
+        font-weight: 600;
+        text-decoration: none;
+        color: white;
+    }
 
-        .see-books-btn {
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px 35px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2em;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-        }
+    .see-books-btn {
+        background-color: #2ecc71;
+        color: white;
+        padding: 10px 35px; /* Reduced padding */
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2em; /* Reduced font size */
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
 
-        .see-books-btn:hover {
-            background-color: #27ae60;
-        }
-
+    .see-books-btn:hover {
+        background-color: #27ae60;
+    }
         .dropdown {
-    position: relative;
-    display: inline-block;
-}
+            position: relative;
+            display: inline-block;
+        }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #3498db;
-    min-width: 150px;
-    box-shadow: 0 6px 12px 0 rgba(255, 255, 255, 0.2);
-    z-index: 4;
-    border-radius: 6px;
-    padding: 8px 0;
-}
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #3498db;
+            min-width: 150px;
+            box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 6px;
+            padding: 8px 0;
+        }
 
-.dropdown-content a {
-    color: black;
-    padding: 10px 15px;
-    text-decoration: none;
-    display: block;
-    transition: background-color 0.3s ease;
-    font-size: 15px;
-}
+        .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+            font-size: 15px;
+        }
 
-.dropdown-content a:hover {
-    background-color: rgb(30, 90, 131);
-}
+        .dropdown-content a:hover {
+            background-color: rgb(30, 90, 131);
+        }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
 
-.down-arrow {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white;
-    margin-left: 5px;
-}
+        .down-arrow {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #333;
+            margin-left: 5px;
+        }
 
         @media (max-width: 768px) {
             .book-grid {
@@ -291,24 +220,6 @@ $allTitlesJson = json_encode($allTitles);
                 padding: 15px;
                 width: 100%;
             }
-        }
-
-        .account-icon-link {
-            padding: 0;
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            width: 30px;
-            height: 30px;
-        }
-
-        .account-icon-link::before {
-            content: "";
-        }
-
-        .account-icon-link img {
-            width: 30px;
-            height: 30px;
         }
     </style>
 </head>
@@ -321,18 +232,13 @@ $allTitlesJson = json_encode($allTitles);
             <span class="system-title">AklatURSM Management System</span>
         </div>
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
-            <div class="suggestions-box" id="suggestions-box"></div>
+            <input type="text" class="search-bar" placeholder="Search...">
         </div>
         <div class="nav-links">
             <ul>
-            <li>
-                <img src="dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
-                <a href="dashboard.php">Dashboard</a>
-            </li>
+                <li><a href="dashboard.php">Dashboard</a></li>
                 <li class="dropdown">
-                <img src="categories-icon.png" alt="Categories Icon" class="nav-icon">
-                <a href="categories.php">Categories <span class="down-arrow"></span></a>
+                    <a href="categories.php">Categories <span class="down-arrow"></span></a>
                     <div class="dropdown-content">
                         <a href="genre/math.php">Math</a>
                         <a href="genre/english.php">English</a>
@@ -344,15 +250,7 @@ $allTitlesJson = json_encode($allTitles);
                         <a href="genre/tle.php">Technology and livelihood Education</a>
                     </div>
                 </li>
-                <li>
-                <img src="authors-icon.png" alt="Authors Icon" class="nav-icon">
-                <a href="Authors.php">Authors</a>
-            </li>
-                <li>
-                    <a href="profile_account.php" class="account-icon-link">
-                        <img src="account-icon.png" alt="Account Icon" class="nav-icon">
-                    </a>
-                </li>
+                <li><a href="Authors.php">Authors</a></li>
             </ul>
         </div>
     </header>
@@ -372,7 +270,7 @@ $allTitlesJson = json_encode($allTitles);
                     "pe-icon.png",
                     "ap-icon.png",
                     "esp-icon.png"
-                ];
+                ]; // Array of image filenames
 
                 foreach ($genres as $index => $genre) {
                     switch ($genre) {
@@ -404,7 +302,6 @@ $allTitlesJson = json_encode($allTitles);
                             $targetPage = "genre.php?genre=" . urlencode($genre);
                             break;
                     }
-
                     echo '<div class="book-item">';
                     echo '<a href="' . $targetPage . '" style="text-decoration:none;">';
                     echo '<img src="' . $icons[$index] . '" alt="' . $genre . ' Icon" class="book-icon">';
@@ -417,98 +314,6 @@ $allTitlesJson = json_encode($allTitles);
             </div>
         </section>
     </div>
-
-    <script>
-        var allTitles = <?php echo $allTitlesJson; ?>;
-
-        function showSuggestions(str) {
-            console.log("showSuggestions called with:", str);
-
-            var suggestionsBox = document.getElementById("suggestions-box");
-            suggestionsBox.innerHTML = "";
-
-            if (str.length === 0) {
-                suggestionsBox.style.display = "none";
-                return;
-            }
-
-            if (allTitles && allTitles.length > 0) {
-                allTitles.forEach(function(title) {
-                    if (title.toLowerCase().startsWith(str.toLowerCase())) {
-                        suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
-                    }
-                });
-
-                suggestionsBox.style.display = "block";
-            } else {
-                suggestionsBox.style.display = "none";
-            }
-        }
-
-        function fillSearch(value) {
-            // Determine the source and book_id based on the book title
-            var source = '';
-            var bookId = '';
-
-            // Check if the title exists in books table
-            <?php
-            $booksTitles = array();
-            $sqlBooks = "SELECT id, title FROM books";
-            $resultBooks = $conn->query($sqlBooks);
-            if ($resultBooks && $resultBooks->num_rows > 0) {
-                while ($row = $resultBooks->fetch_assoc()) {
-                    $booksTitles[$row['title']] = $row['id'];
-                }
-            }
-            echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
-            ?>
-            if (bookTitlesBooks[value]) {
-                source = 'books';
-                bookId = bookTitlesBooks[value];
-            } else {
-                // Check if the title exists in library_books table
-                <?php
-                $libraryBooksTitles = array();
-                $sqlLibraryBooks = "SELECT id, title FROM library_books";
-                $resultLibraryBooks = $conn->query($sqlLibraryBooks);
-                if ($resultLibraryBooks && $resultLibraryBooks->num_rows > 0) {
-                    while ($row = $resultLibraryBooks->fetch_assoc()) {
-                        $libraryBooksTitles[$row['title']] = $row['id'];
-                    }
-                }
-                echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
-                ?>
-                if (bookTitlesLibraryBooks[value]) {
-                    source = 'library_books';
-                    bookId = bookTitlesLibraryBooks[value];
-                } else {
-                    // Check if the title exists in author_books table
-                    <?php
-                    $authorBooksTitles = array();
-                    $sqlAuthorBooks = "SELECT id, title FROM author_books";
-                    $resultAuthorBooks = $conn->query($sqlAuthorBooks);
-                    if ($resultAuthorBooks && $resultAuthorBooks->num_rows > 0) {
-                        while ($row = $resultAuthorBooks->fetch_assoc()) {
-                            $authorBooksTitles[$row['title']] = $row['id'];
-                        }
-                    }
-                    echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
-                    ?>
-                    if (bookTitlesAuthorBooks[value]) {
-                        source = 'author_books';
-                        bookId = bookTitlesAuthorBooks[value];
-                    }
-                }
-            }
-
-            // Redirect to transaction.php with book_title, source, and book_id parameters
-            if (source && bookId) {
-                window.location.href = 'transaction.php?book_title' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
-            } else {
-                alert("Book not found!");
-            }
-        }
-    </script>
 
 </body>
 

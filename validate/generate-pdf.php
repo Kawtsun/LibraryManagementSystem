@@ -37,6 +37,13 @@ $pdf->Ln(5);
 // Set font for table content
 $pdf->SetFont('Arial', '', 12);
 
+<<<<<<< HEAD
+foreach ($data as $key => $value) {
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Cell(60, 10, ucfirst(str_replace("_", " ", $key)) . ":", 1, 0, 'L', true);
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->Cell(130, 10, $value, 1, 1, 'L');
+=======
 // Define keys to include in the PDF
 $keysToInclude = ['email', 'student_id', 'name', 'contact', 'address', 'course', 'author', 'book_id', 'date_borrowed', 'return_date'];
 
@@ -47,6 +54,7 @@ foreach ($keysToInclude as $key) {
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(130, 10, $data[$key], 1, 1, 'L');
     }
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 }
 
 // Barcode Generation

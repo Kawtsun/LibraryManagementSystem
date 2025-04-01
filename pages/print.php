@@ -1,8 +1,9 @@
 <?php
 session_start();
-include '../validate/db.php';
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+<<<<<<< HEAD
+    $_SESSION["transaction_data"] = $_POST; // Store transaction data in session
+=======
     $data = $_POST;
 
     // Insert transaction into database
@@ -34,23 +35,36 @@ function insertTransaction($conn, $data) {
     } else {
         return false;
     }
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction Overview</title>
     <style>
         body {
+<<<<<<< HEAD
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('../img/background-transaction.jpg'); /* Replace with your image path */
+            background-size: cover;
+            background-repeat: no-repeat;
+=======
             font-family: sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
             background-image: url('../img/background-transaction.jpg');
             background-size: cover;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             background-attachment: fixed;
             display: flex;
             flex-direction: column;
@@ -64,8 +78,12 @@ function insertTransaction($conn, $data) {
             align-items: center;
             justify-content: flex-start;
             padding: 10px 20px;
+<<<<<<< HEAD
+            border-radius: 0;
+=======
             position: relative;
             z-index: 10;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
         }
 
         .logo {
@@ -77,6 +95,10 @@ function insertTransaction($conn, $data) {
             margin: 0;
             font-size: 2.1em;
             font-weight: 600;
+<<<<<<< HEAD
+            white-space: nowrap;
+=======
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             color: white;
         }
 
@@ -108,38 +130,62 @@ function insertTransaction($conn, $data) {
         }
 
         .info-box {
+<<<<<<< HEAD
+            background-color: #e0f2fe; /* Light blue background */
+=======
             background-color: #e0f2fe;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 16px;
+<<<<<<< HEAD
+            border: 1px solid #cce0f5; /* Light blue border */
+=======
             border: 1px solid #cce0f5;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             width: 48%;
             box-sizing: border-box;
         }
 
         .full-width-box {
+<<<<<<< HEAD
+            background-color: #e0f2fe; /* Light blue background */
+=======
             background-color: #e0f2fe;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 16px;
+<<<<<<< HEAD
+            border: 1px solid #cce0f5; /* Light blue border */
+=======
             border: 1px solid #cce0f5;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             width: 100%;
             box-sizing: border-box;
             margin-bottom: 15px;
         }
 
+<<<<<<< HEAD
+        .info-box strong, .full-width-box strong {
+=======
         .info-box strong,
         .full-width-box strong {
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             display: block;
             margin-bottom: 5px;
             color: #333;
             font-weight: 600;
         }
 
+<<<<<<< HEAD
+        .info-box p, .full-width-box p {
+=======
         .info-box p,
         .full-width-box p {
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             color: #555;
             line-height: 1.5;
             margin: 0;
@@ -166,6 +212,8 @@ function insertTransaction($conn, $data) {
             background-color: #27ae60;
             transform: scale(1.03);
         }
+<<<<<<< HEAD
+=======
         .message-container {
             text-align: center;
             margin-top: 20px;
@@ -227,8 +275,10 @@ function insertTransaction($conn, $data) {
         .message-content {
             display: none; /* Initially hide the message content */
         }
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
     </style>
 </head>
+
 <body>
 <div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
@@ -237,10 +287,15 @@ function insertTransaction($conn, $data) {
     <div class="container">
         <h2>Transaction Overview</h2>
         <?php
+<<<<<<< HEAD
+        if (isset($_SESSION["transaction_data"])) {
+            $data = $_SESSION["transaction_data"];
+=======
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data = $_POST;
 
             // Display all transaction details
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             echo '<div class="row">';
             echo '<div class="info-box"><strong>Email:</strong><p>' . htmlspecialchars($data['email']) . '</p></div>';
             echo '<div class="info-box"><strong>Student ID:</strong><p>' . htmlspecialchars($data['student_id']) . '</p></div>';
@@ -251,6 +306,10 @@ function insertTransaction($conn, $data) {
             echo '<div class="info-box"><strong>Contact Number:</strong><p>' . htmlspecialchars($data['contact']) . '</p></div>';
             echo '</div>';
 
+<<<<<<< HEAD
+            echo '<div class="full-width-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
+
+=======
             // Display course and author in new rows
             echo '<div class="row">';
            echo '<div class="info-box"><strong>Course:</strong><p>' . htmlspecialchars($data['course']) . '</p></div>';
@@ -258,12 +317,15 @@ function insertTransaction($conn, $data) {
             echo '</div>';
 
             echo '<div class="full-width-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             echo '<div class="full-width-box"><strong>Book Title:</strong><p>' . htmlspecialchars($data['book_id']) . '</p></div>';
 
             echo '<div class="row">';
             echo '<div class="info-box"><strong>Date Borrowed:</strong><p>' . htmlspecialchars($data['date_borrowed']) . '</p></div>';
             echo '<div class="info-box"><strong>Return Date:</strong><p>' . htmlspecialchars($data['return_date']) . '</p></div>';
             echo '</div>';
+<<<<<<< HEAD
+=======
 
             // Message Container (Initially hidden)
             echo '<div class="message-container" id="messageContainer">';
@@ -283,9 +345,17 @@ function insertTransaction($conn, $data) {
             echo '<button type="submit" class="print-button" onclick="showMessage()">Print PDF</button>';
             echo '</form>';
             echo '</div>';
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
         }
         ?>
+        <div class="button-container">
+            <form action="../validate/generate-pdf.php" method="post">
+                <button type="submit">Print PDF</button>
+            </form>
+        </div>
     </div>
+<<<<<<< HEAD
+=======
 
     <script>
         function showMessage() {
@@ -293,5 +363,6 @@ function insertTransaction($conn, $data) {
             document.getElementById("messageContainer").style.display = "block";
         }
     </script>
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </body>
 </html>

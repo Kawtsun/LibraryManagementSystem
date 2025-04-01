@@ -18,6 +18,7 @@ $sql = "
     WHERE subject = 'Mathematics'
 ";
 
+
 $result = $conn->query($sql);
 
 $books = [];
@@ -30,48 +31,6 @@ if ($result) {
 } else {
     die("Query failed: " . $conn->error);
 }
-
-function getBookTitles($conn) {
-    $titles = [];
-
-    // Fetch titles from 'books' table
-    $sql_books = "SELECT title FROM books";
-    $result_books = $conn->query($sql_books);
-    if ($result_books->num_rows > 0) {
-        while ($row = $result_books->fetch_assoc()) {
-            $titles[] = $row['title'];
-        }
-    }
-
-    // Fetch authors from 'author_books' table
-    $sql_authors = "SELECT DISTINCT author FROM author_books";
-    $result_authors = $conn->query($sql_authors);
-    if ($result_authors->num_rows > 0) {
-        while ($row = $result_authors->fetch_assoc()) {
-            $titles[] = $row['author'];
-        }
-    }
-
-    // Fetch categories from 'categories' table
-    $sql_categories = "SELECT name FROM categories";
-    $result_categories = $conn->query($sql_categories);
-    if ($result_categories->num_rows > 0) {
-        while ($row = $result_categories->fetch_assoc()) {
-            $titles[] = $row['name'];
-        }
-    }
-
-    // Fetch titles from library_books table
-    $sql_library_books = "SELECT title FROM library_books";
-    $result_library_books = $conn->query($sql_library_books);
-    if ($result_library_books->num_rows > 0) {
-        while ($row = $result_library_books->fetch_assoc()) {
-            $titles[] = $row['title'];
-        }
-    }
-
-    return $titles;
-}
 ?>
 
 <!DOCTYPE html>
@@ -82,6 +41,8 @@ function getBookTitles($conn) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathematics Books</title>
     <link rel="stylesheet" href="./styles.css">
+<<<<<<< HEAD
+=======
     <style>
         /* Add your styles here or link to an external stylesheet */
         body {
@@ -346,6 +307,7 @@ function getBookTitles($conn) {
             display: block;
         }
     </style>
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </head>
 
 <body>
@@ -356,18 +318,13 @@ function getBookTitles($conn) {
             <span class="system-title">AklatURSM Management System</span>
         </div>
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
-            <div class="suggestions-box" id="suggestions-box"></div>
+            <input type="text" class="search-bar" placeholder="Search...">
         </div>
         <div class="nav-links">
             <ul>
-            <li>
-            <img src="../dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
-            <a href="../dashboard.php">Dashboard</a>
-        </li>
+                <li><a href="../dashboard.php">Dashboard</a></li>
                 <li class="dropdown">
-                <img src="../categories-icon.png" alt="Categories Icon" class="nav-icon">
-                <a href="../categories.php">Categories <span class="down-arrow"></span></a>
+                    <a href="../categories.php">Categories <span class="down-arrow"></span></a>
                     <div class="dropdown-content">
                         <a href="math.php">Math</a>
                         <a href="english.php">English</a>
@@ -379,21 +336,14 @@ function getBookTitles($conn) {
                         <a href="tle.php">Technology and livelihood Education</a>
                     </div>
                 </li>
-                <li>
-            <img src="../authors-icon.png" alt="Authors Icon" class="nav-icon">
-            <a href="../Authors.php">Authors</a>
-        </li>                <li>
-                    <a href="../profile_account.php" class="account-icon-link">
-                        <img src="../account-icon.png" alt="Account Icon" class="nav-icon">
-                    </a>
-                </li>
+                <li><a href="../Authors.php">Authors</a></li>
             </ul>
         </div>
     </header>
 
     <div class="container">
         <section class="book-section">
-            <h2>MATHEMATICS BOOKS</h2>
+            <h2>Genre: Mathematics</h2>
             <div class="book-grid">
     <?php
     if (!empty($books)) {
@@ -425,98 +375,6 @@ function getBookTitles($conn) {
         </section>
     </div>
 
-    <script>
-        function showSuggestions(str) {
-            console.log("showSuggestions called with:", str);
-
-            var titles = <?php echo json_encode(getBookTitles($conn)); ?>;
-            console.log("titles:", titles);
-
-            var suggestionsBox = document.getElementById("suggestions-box");
-            suggestionsBox.innerHTML = "";
-
-            if (str.length === 0) {
-                suggestionsBox.style.display = "none";
-                return;
-            }
-
-            if (titles && titles.length > 0) {
-                titles.forEach(function(title) {
-                    if (title.toLowerCase().startsWith(str.toLowerCase())) {
-                        suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
-                    }
-                });
-
-                suggestionsBox.style.display = "block";
-            } else {
-                suggestionsBox.style.display = "none";
-            }
-        }
-
-        function fillSearch(value) {
-            // Determine the source and book_id based on the book title
-            var source = '';
-            var bookId = '';
-
-            // Check if the title exists in books table
-            <?php
-            $booksTitles = array();
-            $sqlBooks = "SELECT id, title FROM books";
-            $resultBooks = $conn->query($sqlBooks);
-            if ($resultBooks->num_rows > 0) {
-                while ($row = $resultBooks->fetch_assoc()) {
-                    $booksTitles[$row['title']] = $row['id'];
-                }
-            }
-            echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
-            ?>
-            if (bookTitlesBooks[value]) {
-                source = 'books';
-                bookId = bookTitlesBooks[value];
-            } else {
-                // Check if the title exists in library_books table
-                <?php
-                $libraryBooksTitles = array();
-                $sqlLibraryBooks = "SELECT id, title FROM library_books";
-                $resultLibraryBooks = $conn->query($sqlLibraryBooks);
-                if ($resultLibraryBooks->num_rows > 0) {
-                    while ($row = $resultLibraryBooks->fetch_assoc()) {
-                        $libraryBooksTitles[$row['title']] = $row['id'];
-                    }
-                }
-                echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
-                ?>
-                if (bookTitlesLibraryBooks[value]) {
-                    source = 'library_books';
-                    bookId = bookTitlesLibraryBooks[value];
-                } else {
-                    // Check if the title exists in author_books table
-                    <?php
-                    $authorBooksTitles = array();
-                    $sqlAuthorBooks = "SELECT id, title FROM author_books";
-                    $resultAuthorBooks = $conn->query($sqlAuthorBooks);
-                    if ($resultAuthorBooks->num_rows > 0) {
-                        while ($row = $resultAuthorBooks->fetch_assoc()) {
-                            $authorBooksTitles[$row['title']] = $row['id'];
-                        }
-                    }
-                    echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
-                    ?>
-                    if (bookTitlesAuthorBooks[value]) {
-                        source = 'author_books';
-                        bookId = bookTitlesAuthorBooks[value];
-                    }
-                }
-            }
-
-            // Redirect to transaction.php with book_title, source, and book_id parameters
-            if (source && bookId) {
-                window.location.href = '../transaction.php?book_title=' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
-            } else {
-                alert("Book not found!");
-            }
-        }
-    </script>
 </body>
 
 </html>
