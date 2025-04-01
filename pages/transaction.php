@@ -77,17 +77,17 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
      die("Book ID or source is missing.");
 }
 
-// Check if the user has already borrowed the maximum books (limit: 2)
-$sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+// Check if the user has any incomplete transactions
+$sql = "SELECT COUNT(*) FROM transactions WHERE email = ? AND completed = 0";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($hasTransactions);
+$stmt->bind_result($incompleteTransactions);
 $stmt->fetch();
 $stmt->close();
 
-if ($hasTransactions > 0) {
-    $sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+if ($incompleteTransactions > 0) {
+    $sql = "SELECT COUNT(*) FROM transactions WHERE email = ? AND completed = 0";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -96,7 +96,7 @@ if ($hasTransactions > 0) {
     $stmt->close();
 
     if ($bookCount >= 2) {
-         $errorMessage = "Under AklatURSM rules, you have already borrowed the maximum of 2 books.";
+        $errorMessage = "Under AklatURSM rules, you have already borrowed the maximum of 2 books with incomplete transactions.";
     }
 }
 ?>
