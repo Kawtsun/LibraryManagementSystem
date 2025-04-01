@@ -8,9 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $course = $_POST['course'];
     $student_id = $_POST['student_id'];
-    $name = $_POST['name'];
-    $address = $_POST['address'];
-    $contact_number = $_POST['contact_number'];
 
     $errors = array();
 
@@ -41,9 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../pages/register.php");
         exit();
     } else {
-         // Insert data into database
-         $stmt = $conn->prepare("INSERT INTO users (username, password, email, course, student_id, name, address, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-         $stmt->bind_param("ssssssss", $username, $password, $email, $course, $student_id, $name, $address, $contact_number);
+        // Insert data into database
+        $stmt = $conn->prepare("INSERT INTO users (username, password, email, course, student_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $username, $password, $email, $course, $student_id);
 
         if ($stmt->execute()) {
             $_SESSION['success'] = "🎉Account created successfully! You can now log in.🎉";
