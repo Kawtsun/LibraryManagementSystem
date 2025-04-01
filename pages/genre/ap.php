@@ -39,6 +39,274 @@ if ($result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Araling Panlipunan Books</title>
     <link rel="stylesheet" href="./styles.css">
+<<<<<<< HEAD
+=======
+    <style>
+       /* Add your styles here or link to an external stylesheet */
+       body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 60px;
+            margin-right: 10px;
+        }
+
+        .system-title {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 50%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            margin-right: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: white;
+            color: black;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar::placeholder {
+            color: #999;
+        }
+
+        .nav-links ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .nav-links ul li {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.nav-links ul li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 3;
+}
+
+.nav-links ul li a:hover {
+    color: #ecf0f1;
+}
+
+        .book-section {
+            margin-top: 20px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .book-item {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .book-item img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .book-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .book-topic {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .borrow-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #3498db;
+    min-width: 150px;
+    box-shadow: 0 6px 12px 0 rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    border-radius: 6px;
+    padding: 8px 0;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+    font-size: 15px;
+}
+
+.dropdown-content a:hover {
+    background-color: rgb(30, 90, 131);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.down-arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    margin-left: 5px;
+}
+
+
+        .suggestions-box {
+            position: absolute;
+            width: 56%;
+            background-color: rgba(52, 152, 219, 0.9) !important;
+            border-radius: 6px;
+            box-shadow: 0 4px 8rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            display: none;
+            top: 100%;
+            right: 0; /* Align to the left of the parent */
+            margin-top: 5px;
+            padding: 2px;
+            margin-left: 40px;
+        }
+
+        .suggestions-box a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .suggestions-box a:hover {
+            background-color: rgba(0, 69, 116, 0.7) !important;
+        }
+
+        .account-icon-link {
+            padding: 0;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+        }
+
+        .account-icon-link::before {
+            content: "";
+        }
+
+        .account-icon-link img {
+            width: 30px;
+            height: 30px;
+        }
+        .book-item {
+            position: relative;
+            z-index: 1;
+        }
+
+        .book-details {
+            display: none;
+            position: absolute;
+            background-color: rgb(85, 161, 212);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            width: 250px;
+            box-sizing: border-box;
+            text-align: left;
+            z-index: 1000 !important;
+            top: -50%;
+            left: 0%;
+            margin-top: 10px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-item:hover .book-details {
+            display: block;
+        }
+    </style>
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </head>
 <body>
     <header>
@@ -74,25 +342,33 @@ if ($result) {
         <section class="book-section">
             <h2>Araling Panlipunan Books</h2>
             <div class="book-grid">
-                <?php
-                if (!empty($books)) {
-                    foreach ($books as $book) {
-                        echo '<div class="book-item">';
-                        echo '<img src="./ap-icon.png" alt="Book Icon" class="book-icon">';
-                        echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
-                        echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
-                        echo '<form action="../transaction.php" method="get">';
-                        echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">';
-                        echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
-                        echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
-                        echo '</form>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo "<p>No books found in this category.</p>";
-                }
-                ?>
-            </div>
+    <?php
+    if (!empty($books)) {
+        foreach ($books as $book) {
+            echo '<div class="book-item">';
+            echo '<img src="./ap-icon.png" alt="Book Icon" class="book-icon">';
+            echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
+            echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
+            echo '<form action="../transaction.php" method="get">';
+            echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">';
+            echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
+            echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
+            echo '</form>';
+
+            // Add the book details div
+            echo '<div class="book-details">';
+            echo '<p><strong>Title:</strong> ' . htmlspecialchars($book['title']) . '</p>';
+            echo '<p><strong>Topic:</strong> ' . htmlspecialchars($book['topic']) . '</p>';
+            echo '<p><strong>Source:</strong> ' . htmlspecialchars($book['source']) . '</p>';
+            echo '</div>';
+
+            echo '</div>';
+        }
+    } else {
+        echo "<p>No books found in this category.</p>";
+    }
+    ?>
+</div>
         </section>
     </div>
 

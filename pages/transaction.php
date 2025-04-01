@@ -2,10 +2,27 @@
 session_start();
 include '../validate/db.php';
 
+<<<<<<< HEAD
+=======
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 $bookTitle = "";
 $bookCoverImage = "";
 $email = "";
 $student_id = "";
+<<<<<<< HEAD
+=======
+$errorMessage = "";
+$name = "";
+$address = "";
+$contact_number = "";
+$course = "";
+$authorName = ""; // Added author name variable
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 
 // Get user session details
 if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
@@ -28,7 +45,11 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     } elseif ($source === 'library_books') {
         $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
     } elseif ($source === 'author_books') {
+<<<<<<< HEAD
         $sql = "SELECT title, NULL AS cover_image FROM author_books WHERE id = ?";
+=======
+        $sql = "SELECT title, NULL AS cover_image, author FROM author_books WHERE id = ?";
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
     } else {
         die("Invalid source.");
     }
@@ -49,6 +70,32 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     die("Book ID or source is missing.");
 }
 
+<<<<<<< HEAD
+=======
+// Check if user has any transactions
+$sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$stmt->bind_result($hasTransactions);
+$stmt->fetch();
+$stmt->close();
+
+// Check the number of books already borrowed (using email) if user has transactions
+if ($hasTransactions > 0) {
+    $sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($bookCount);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($bookCount >= 2) {
+        $errorMessage = "Under AklatURSM rules, you have already borrowed the maximum of 2 books.";
+    }
+}
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 
 ?>
 
@@ -59,6 +106,10 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Transaction</title>
     <style>
+<<<<<<< HEAD
+=======
+        /* Your existing styles */
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
         body {
             font-family: sans-serif;
             margin: 0;
@@ -73,6 +124,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         }
 
         .header {
+<<<<<<< HEAD
             background-color: #3498db;
             color: white;
             display: flex;
@@ -82,6 +134,19 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             position: relative;
             z-index: 10;
         }
+=======
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 20px;
+        position: fixed; /* Add this line */
+        top: 0; /* Add this line */
+        width: 100%; /* Add this line */
+        z-index: 10;
+    }
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 
         .logo {
             width: 60px;
@@ -95,10 +160,15 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             color: white;
         }
 
+
         .container {
             width: 85%;
             max-width: 800px;
             margin: auto;
+<<<<<<< HEAD
+=======
+            margin-bottom: 10px;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 12px;
@@ -121,7 +191,11 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 250px;
+<<<<<<< HEAD
             margin-left: 250px;
+=======
+            margin-left: 290px;
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
         }
 
         .book-display img {
@@ -183,7 +257,12 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     </style>
 </head>
 <body>
+<<<<<<< HEAD
 <div class="header">
+=======
+<<body>
+    <div class="header">
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         <h2>AklatURSM Management System</h2>
     </div>
@@ -191,8 +270,10 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         <div class="book-display">
             <img src="<?php echo $bookCoverImage ? $bookCoverImage : 'booksicon.png'; ?>" alt="Book Cover">
             <p class="book-title"><?php echo $bookTitle; ?></p>
+            <?php if (!empty($authorName)) { ?>
+                <?php } ?>
         </div>
-
+        
         <h2>Transaction Details</h2>
         <form id="transactionForm" method="POST" action="print.php">
             <div class="info-row">
@@ -215,8 +296,13 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
                     <input type="text" id="contact" name="contact" required>
                 </div>
             </div>
+
             <label for="address">Address:</label>
+<<<<<<< HEAD
             <input type="text" id="address" name="address" required>
+=======
+            <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
             <label for="book_id">Book Title:</label>
             <input type="text" id="book_id" name="book_id" value="<?php echo $bookTitle; ?>" readonly>
             <div class="info-row">
@@ -231,6 +317,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             </div>
             <button type="submit">Proceed to Print Transaction</button>
         </form>
+<<<<<<< HEAD
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -252,4 +339,51 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         });
     </script>
 </body>
+=======
+        <?php if (!empty($errorMessage)) { ?>
+            <div id="errorModal" class="error-modal">
+                <div class="error-modal-content">
+                    <img src="books-rules.png" alt="Error Icon">
+                    <h2>Error!</h2>
+                    <p><?php echo $errorMessage; ?></p>
+                    <button onclick="location.href='dashboard.php'">Go to Dashboard</button>
+                </div>
+            </div>
+        <?php } ?>
+</div>
+
+<script>
+    // Your existing JavaScript code
+</script>
+</body>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date().toISOString().split('T')[0];
+        let dateBorrowed = document.getElementById("date_borrowed");
+        let returnDate = document.getElementById("return_date");
+        dateBorrowed.value = today;
+        dateBorrowed.min = today;
+        returnDate.min = today;
+        dateBorrowed.addEventListener("change", function () {
+            returnDate.min = dateBorrowed.value;
+        });
+        returnDate.addEventListener("change", function () {
+            if (returnDate.value < dateBorrowed.value) {
+                alert("Return date cannot be earlier than the borrowed date!");
+                returnDate.value = dateBorrowed.value;
+            }
+        });
+
+        <?php if (!empty($errorMessage)) { ?>
+            document.querySelector(".container").classList.add("blurred");
+            setTimeout(function() {
+                document.getElementById("errorModal").style.display = "flex";
+            }, 100);
+        <?php } ?>
+    });
+</script>
+</body>
+>>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </html>
