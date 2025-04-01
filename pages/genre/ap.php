@@ -30,6 +30,41 @@ if ($result) {
 } else {
     die("Query failed: " . $conn->error);
 }
+
+function getBookTitles($conn) {
+    $titles = [];
+
+    // Fetch titles from 'books' table
+    $sql_books = "SELECT title FROM books";
+    $result_books = $conn->query($sql_books);
+    if ($result_books->num_rows > 0) {
+        while ($row = $result_books->fetch_assoc()) {
+            $titles[] = $row['title'];
+        }
+    }
+
+    // Fetch authors from 'author_books' table
+    $sql_authors = "SELECT DISTINCT author FROM author_books";
+    $result_authors = $conn->query($sql_authors);
+    if ($result_authors->num_rows > 0) {
+        while ($row = $result_authors->fetch_assoc()) {
+            $titles[] = $row['author'];
+        }
+    }
+
+    // Fetch titles from library_books table
+    $sql_library_books = "SELECT title FROM library_books";
+    $result_library_books = $conn->query($sql_library_books);
+    if ($result_library_books->num_rows > 0) {
+        while ($row = $result_library_books->fetch_assoc()) {
+            $titles[] = $row['title'];
+        }
+    }
+
+    return $titles;
+}
+$allTitles = getBookTitles($conn);
+$allTitlesJson = json_encode($allTitles);
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +74,6 @@ if ($result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Araling Panlipunan Books</title>
     <link rel="stylesheet" href="./styles.css">
-<<<<<<< HEAD
-=======
     <style>
        /* Add your styles here or link to an external stylesheet */
        body {
@@ -306,7 +339,6 @@ if ($result) {
             display: block;
         }
     </style>
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </head>
 <body>
     <header>
@@ -315,26 +347,39 @@ if ($result) {
             <span class="system-title">AklatURSM Management System</span>
         </div>
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search...">
-            <div class="nav-links">
-                <ul>
-                    <li><a href="../dashboard.php">Dashboard</a></li>
-                    <li class="dropdown">
-                        <a href="../categories.php">Categories <span class="down-arrow"></span></a>
-                        <div class="dropdown-content">
-                            <a href="math.php">Math</a>
-                            <a href="english.php">English</a>
-                            <a href="science.php">Science</a>
-                            <a href="ap.php">Araling Panlipunan</a>
-                            <a href="esp.php">Edukasyon Sa Pagpapakatao</a>
-                            <a href="physical-education.php">Physical Education</a>
-                            <a href="filipino.php">Filipino</a>
-                            <a href="tle.php">Technology and Livelihood Education</a>
-                        </div>
-                    </li>
-                    <li><a href="../Authors.php">Authors</a></li>
-                </ul>
-            </div>
+            <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
+            <div class="suggestions-box" id="suggestions-box"></div>
+        </div>
+        <div class="nav-links">
+            <ul>
+               <li>
+            <img src="../dashboard-icon.png" alt="Dashboard Icon" class="nav-icon">
+            <a href="../dashboard.php">Dashboard</a>
+        </li>
+                <li class="dropdown">
+                <img src="../categories-icon.png" alt="Categories Icon" class="nav-icon">
+                <a href="../categories.php">Categories <span class="down-arrow"></span></a>
+                    <div class="dropdown-content">
+                        <a href="math.php">Math</a>
+                        <a href="english.php">English</a>
+                        <a href="science.php">Science</a>
+                        <a href="ap.php">Araling Panlipunan</a>
+                        <a href="esp.php">Edukasyon Sa Pagpapakatao</a>
+                        <a href="physical-education.php">Physical Education</a>
+                        <a href="filipino.php">Filipino</a>
+                        <a href="tle.php">Technology and Livelihood Education</a>
+                    </div>
+                </li>
+                <li>
+            <img src="../authors-icon.png" alt="Authors Icon" class="nav-icon">
+            <a href="../Authors.php">Authors</a>
+        </li>
+                <li>
+                    <a href="../profile_account.php" class="account-icon-link">
+                        <img src="../account-icon.png" alt="Account Icon" class="nav-icon">
+                    </a>
+                </li>
+            </ul>
         </div>
     </header>
 
@@ -372,5 +417,96 @@ if ($result) {
         </section>
     </div>
 
+    <script>
+        var allTitles = <?php echo $allTitlesJson; ?>;
+
+        function showSuggestions(str) {
+            console.log("showSuggestions called with:", str);
+
+            var suggestionsBox = document.getElementById("suggestions-box");
+            suggestionsBox.innerHTML = "";
+
+            if (str.length === 0) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+
+            if (allTitles && allTitles.length > 0) {
+                allTitles.forEach(function(title) {
+                    if (title.toLowerCase().startsWith(str.toLowerCase())) {
+                        suggestionsBox.innerHTML += "<a href='#' onclick='fillSearch(\"" + title + "\")'>" + title + "</a>";
+                    }
+                });
+
+                suggestionsBox.style.display = "block";
+            } else {
+                suggestionsBox.style.display = "none";
+            }
+        }
+
+        function fillSearch(value) {
+            // Determine the source and book_id based on the book title
+            var source = '';
+            var bookId = '';
+
+            // Check if the title exists in books table
+            <?php
+            $booksTitles = array();
+            $sqlBooks = "SELECT id, title FROM books";
+            $resultBooks = $conn->query($sqlBooks);
+            if ($resultBooks && $resultBooks->num_rows > 0) {
+                while ($row = $resultBooks->fetch_assoc()) {
+                    $booksTitles[$row['title']] = $row['id'];
+                }
+            }
+            echo "var bookTitlesBooks = " . json_encode($booksTitles) . ";";
+            ?>
+            if (bookTitlesBooks[value]) {
+                source = 'books';
+                bookId = bookTitlesBooks[value];
+            } else {
+                // Check if the title exists in library_books table
+                <?php
+                $libraryBooksTitles = array();
+                $sqlLibraryBooks = "SELECT id, title FROM library_books";
+                $resultLibraryBooks = $conn->query($sqlLibraryBooks);
+                if ($resultLibraryBooks && $resultLibraryBooks->num_rows > 0) {
+                    while ($row = $resultLibraryBooks->fetch_assoc()) {
+                        $libraryBooksTitles[$row['title']] = $row['id'];
+                    }
+                }
+                echo "var bookTitlesLibraryBooks = " . json_encode($libraryBooksTitles) . ";";
+                ?>
+                if (bookTitlesLibraryBooks[value]) {
+                    source = 'library_books';
+                    bookId = bookTitlesLibraryBooks[value];
+                } else {
+                    // Check if the title exists in author_books table
+                    <?php
+                    $authorBooksTitles = array();
+                    $sqlAuthorBooks = "SELECT id, title FROM author_books";
+                    $resultAuthorBooks = $conn->query($sqlAuthorBooks);
+                    if ($resultAuthorBooks && $resultAuthorBooks->num_rows > 0) {
+                        while ($row = $resultAuthorBooks->fetch_assoc()) {
+                            $authorBooksTitles[$row['title']] = $row['id'];
+                        }
+                    }
+                    echo "var bookTitlesAuthorBooks = " . json_encode($authorBooksTitles) . ";";
+                    ?>
+                    if (bookTitlesAuthorBooks[value]) {
+                        source = 'author_books';
+                        bookId = bookTitlesAuthorBooks[value];
+                    }
+                }
+            }
+
+            // Redirect to transaction.php with book_title, source, and book_id parameters
+            if (source && bookId) {
+                window.location.href = 'transaction.php?book_title' + encodeURIComponent(value) + '&source=' + source + '&book_id=' + bookId;
+            } else {
+                alert("Book not found!");
+            }
+        }
+    </script>
 </body>
 </html>

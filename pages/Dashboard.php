@@ -1,10 +1,5 @@
 <?php
 include '../validate/db.php';
-<<<<<<< HEAD
-
-// Function to fetch featured books
-function getFeaturedBooks($conn, $limit = 10) {
-=======
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -18,18 +13,13 @@ if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
 }
 
 function getFeaturedBooks($conn, $limit = 5) {
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
     $sql = "SELECT * FROM books ORDER BY id ASC LIMIT $limit";
     $result = $conn->query($sql);
     return $result;
 }
 
 // Function to fetch recently added books
-<<<<<<< HEAD
-function getRecentBooks($conn, $limit = 10) {
-=======
 function getRecentBooks($conn, $limit = 5) {
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
     $sql = "SELECT * FROM books ORDER BY id DESC LIMIT $limit";
     $result = $conn->query($sql);
     return $result;
@@ -41,9 +31,6 @@ function displayBooks($result, $source) {
         while ($row = $result->fetch_assoc()) {
             ?>
             <div class="book-item">
-<<<<<<< HEAD
-                <img src="booksicon.png" alt="Book Icon" class="book-icon">
-=======
                 <div class="book-image-container">
                     <?php if (!empty($row['cover_image'])) { ?>
                         <img src="<?php echo htmlspecialchars($row['cover_image']); ?>" alt="Book Cover" class="book-cover">
@@ -57,7 +44,6 @@ function displayBooks($result, $source) {
                         <p><strong>Subject:</strong> <?php echo htmlspecialchars($row['subject']); ?></p>
                     </div>
                 </div>
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
                 <p class="book-title"><?php echo htmlspecialchars($row['title']); ?></p>
                 <form action="transaction.php" method="get">
                     <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($row['id']); ?>">
@@ -71,8 +57,6 @@ function displayBooks($result, $source) {
         echo "<p>No books found.</p>";
     }
 }
-<<<<<<< HEAD
-=======
 
 // Function to fetch top authors (you might need to adjust this based on your data)
 function getTopAuthors($conn, $limit = 5) {
@@ -234,7 +218,6 @@ function getBookTitles($conn) {
 
     return $titles;
 }
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 ?>
 
 <!DOCTYPE html>
@@ -244,213 +227,6 @@ function getBookTitles($conn) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Dashboard</title>
     <style>
-<<<<<<< HEAD
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-
-    .container {
-        width: 75%;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        margin-left: 200px;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    header {
-        background-color: #3498db;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
-        border-radius: 0;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-    }
-
-    .logo {
-        width: 60px;
-        margin-right: 10px;
-    }
-
-    .system-title {
-        font-size: 2.1em; /* Increased font size */
-        font-weight: 600;
-        white-space: nowrap; /* Prevent text wrapping */
-    }
-
-    .search-container {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-        justify-content: flex-end;
-    }
-
-    .search-bar {
-        width: 55%;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 14px;
-        margin-right: 15px;
-    }
-
-    .nav-links {
-        display: flex;
-        align-items: center;
-    }
-
-    .nav-links ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-    }
-
-    .nav-links ul li {
-        margin-left: 15px;
-    }
-
-    .nav-links ul li a {
-        text-decoration: none;
-        color: white;
-        font-weight: 600;
-        font-size: 20px; /* Increased font size */
-        transition: color 0.3s ease;
-    }
-
-    .nav-links ul li a:hover {
-        color: #ecf0f1;
-    }
-  
-    .book-section {
-        margin-top: 20px;
-    }
-
-    .book-section h2 {
-        margin-bottom: 15px;
-        color: #333;
-        font-size: 20px;
-        font-weight: 600;
-    }
-
-    .book-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 15px;
-    }
-
-    .book-item {
-        background-color: #3498db;
-        color: white;
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .book-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-    }
-
-    .book-icon {
-        width: 80px;
-        height: 80px;
-        margin-bottom: 10px;
-    }
-
-    .book-title {
-        margin-bottom: 10px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .borrow-btn {
-        background-color: #2ecc71;
-        color: white;
-        padding: 8px 15px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-    }
-
-    .borrow-btn:hover {
-        background-color: #27ae60;
-    }
-
-    
-    .dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color:#3498db;
-        min-width: 150px;
-        box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 6px;
-        padding: 8px 0;
-    }
-
-    .dropdown-content a {
-        color: black;
-        padding: 10px 15px;
-        text-decoration: none;
-        display: block;
-        transition: background-color 0.3s ease;
-        font-size: 15px;
-    }
-
-    .dropdown-content a:hover {
-        background-color:rgb(30, 90, 131);
-    }
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-
-    .down-arrow {
-        display: inline-block;
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 5px solid #333;
-        margin-left: 5px;
-    }
-    @media (max-width: 768px) {
-    /* Styles for mobile devices */
-    .book-grid {
-        grid-template-columns: 1fr; /* Stack books vertically */
-    }
-    .book-item {
-        padding: 10px; /* Adjust padding */
-    }
-    /* Add more adjustments as needed */
-}
-</style>
-=======
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -1006,7 +782,6 @@ function getBookTitles($conn) {
     transition: transform 0.3s ease;
 }
     </style>
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </head>
 <body>
 
@@ -1016,53 +791,6 @@ function getBookTitles($conn) {
         <span class="system-title">AklatURSM Management System</span>
     </div>
     <div class="search-container">
-<<<<<<< HEAD
-        <input type="text" class="search-bar" placeholder="Search...">
-        <div class="nav-links">
-            <ul>
-                <li><a href="dashboard.php">Dashboard</a></li>
-                <li class="dropdown">
-                    <a href="categories.php">Categories <span class="down-arrow"></span></a>
-                    <div class="dropdown-content">
-                        <a href="genre/math.php">Math</a>
-                        <a href="genre/english.php">English</a>
-                        <a href="genre/science.php">Science</a>
-                        <a href="genre/ap.php">Araling Panlipunan</a>
-                        <a href="genre/esp.php">Edukasyon Sa Pagpapakatao</a>
-                        <a href="genre/physical-education.php">Physical Education</a>
-                        <a href="genre/filipino.php">Filipino</a>
-                        <a href="genre/tle.php">Technology and livelihood Education</a>
-                    </div>
-                </li>
-                <li><a href="Authors.php">Authors</a></li>
-            </ul>
-        </div>
-    </div>
-</header>
-
-<div class="container">
-    <section class="book-section">
-        <h2 style="font-size: 30px;">Featured Books</h2>
-        <div class="book-grid">
-            <?php
-            $featuredBooks = getFeaturedBooks($conn, 10);
-            displayBooks($featuredBooks, 'books');
-            
-            ?>
-        </div>
-    </section>
-
-    <section class="book-section">
-        <h2 style="font-size: 30px;">Recently Added Books</h2>
-        <div class="book-grid">
-            <?php
-            $recentBooks = getRecentBooks($conn, 10);
-            displayBooks($recentBooks, 'books');
-            
-            ?>
-        </div>
-    </section>
-=======
         <input type="text" class="search-bar" placeholder="Search..." id="search-input" onkeyup="showSuggestions(this.value)">
         <div class="suggestions-box" id="suggestions-box"></div>
     </div>
@@ -1265,7 +993,6 @@ function getBookTitles($conn) {
             </div>
             </section>
     </div>
->>>>>>> parent of ac23151 (Merge pull request #3 from Kawtsun/admin)
 </div>
 
 </body>
