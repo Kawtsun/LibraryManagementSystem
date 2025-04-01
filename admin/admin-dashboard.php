@@ -18,17 +18,46 @@ if ($result_users->num_rows > 0) {
     $total_users = 0;
 }
 
-// Get the total number of books
+// Get the total number of books and total quantity
 $sql_books = "SELECT 
-                (SELECT COUNT(*) FROM unified_books) + 
-                (SELECT COUNT(*) FROM author_books) AS total_books";
+                (SELECT COUNT(*) FROM books) AS total_count_books, 
+                (SELECT COUNT(*) FROM library_books) AS total_count_library_books, 
+                (SELECT COUNT(*) FROM author_books) AS total_count_author_books,
+                (SELECT SUM(quantity) FROM books) AS total_quantity_books, 
+                (SELECT SUM(quantity) FROM library_books) AS total_quantity_library_books, 
+                (SELECT SUM(quantity) FROM author_books) AS total_quantity_author_books";
+
 $result_books = $conn->query($sql_books);
 
 if ($result_books->num_rows > 0) {
     $row_books = $result_books->fetch_assoc();
-    $total_books = $row_books['total_books'];
+    $total_count_books = $row_books['total_count_books']
+        + $row_books['total_count_library_books']
+        + $row_books['total_count_author_books'];
+    $total_quantity_books = $row_books['total_quantity_books']
+        + $row_books['total_quantity_library_books']
+        + $row_books['total_quantity_author_books'];
 } else {
-    $total_books = 0;
+    $total_count_books = 0;
+    $total_quantity_books = 0;
+}
+
+// Count complete and incomplete transactions
+$sql_transactions = "SELECT 
+                        SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) AS complete_transactions,
+                        SUM(CASE WHEN completed = 0 THEN 1 ELSE 0 END) AS incomplete_transactions
+                    FROM transactions";
+
+// Execute the query
+$result_transactions = $conn->query($sql_transactions);
+
+if ($result_transactions->num_rows > 0) {
+    $row_transactions = $result_transactions->fetch_assoc();
+    $complete_transactions = $row_transactions['complete_transactions'];
+    $incomplete_transactions = $row_transactions['incomplete_transactions'];
+} else {
+    $complete_transactions = 0;
+    $incomplete_transactions = 0;
 }
 
 // Get the current page for pagination
@@ -291,6 +320,10 @@ $conn->close();
             cursor: not-allowed;
         }
 
+        .quanti {
+            display: inline;
+            font-weight: normal;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -350,12 +383,16 @@ $conn->close();
                     <p>Total Users</p>
                 </div>
                 <div class="stat-box">
-                    <h2><?php echo $total_books; ?></h2>
+                    <h2><?php echo $total_count_books . " <p class='quanti'>(" . $total_quantity_books . ") </p>"; ?></h2>
                     <p>Total Books</p>
                 </div>
                 <div class="stat-box">
-                    <h2>167</h2>
+                    <h2><?php echo $complete_transactions ?></h2>
                     <p>Completed Transactions</p>
+                </div>
+                <div class="stat-box">
+                    <h2><?php echo $incomplete_transactions ?></h2>
+                    <p>Incomplete Transactions</p>
                 </div>
             </div>
 
