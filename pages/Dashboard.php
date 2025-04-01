@@ -745,6 +745,7 @@ function getBookTitles($conn)
             background-color: #f0f0f0;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -961,7 +962,24 @@ function getBookTitles($conn)
             </section>
         </div>
     </div>
-
+    <script>
+        // Alert for zero availability of books 
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('status') === 'unavailable') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Book Not Available',
+                    text: 'The selected book is currently unavailable. Please choose another.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Optional: Remove the status parameter from the URL
+                    urlParams.delete('status');
+                    window.history.replaceState({}, document.title, `${location.pathname}?${urlParams}`);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
