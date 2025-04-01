@@ -164,7 +164,35 @@ $conn->close();
             font-weight: bold;
         }
 
-        /* Sidebar - Fixed Below the Header */
+        .sidebar img {
+            border-radius: 50%;
+            width: 80px;
+            display: block;
+            margin: 30px auto 10px;
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+        .sidebar ul a .lucide {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .logout .lucide {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+
+        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 60px;
@@ -179,26 +207,14 @@ $conn->close();
             z-index: 1000;
         }
 
-        .sidebar img {
-            border-radius: 50%;
-            width: 80px;
-            display: block;
-            margin: 30px auto 10px;
-        }
-
-        .sidebar h3 {
-            text-align: center;
-            margin: 15px 0;
-            font-size: 18px;
-        }
-
-        /* Sidebar Links - Updated for 'a' Wrapping */
+        /* Main Navigation Links */
         .sidebar ul {
             padding: 0;
             margin: 0;
             list-style: none;
         }
 
+        /* General Navigation Links */
         .sidebar ul a {
             display: block;
             margin: 10px 0;
@@ -224,13 +240,38 @@ $conn->close();
             padding-left: 15px;
         }
 
-        /* Icons inside the links */
-        .sidebar ul a .lucide {
+        /* Logout Button - Positioned at the Bottom */
+        .logout {
+            list-style: none;
+            position: absolute;
+            bottom: 50px;
+            /* Offset from the bottom */
+            left: 20px;
+            /* Offset from the left */
+            right: 20px;
+            /* Offset from the right */
+            display: block;
+            padding: 15px;
+            background-color: #0056b3;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .logout:hover {
+            background-color: #004080;
+        }
+
+        .logout i {
             width: 20px;
             height: 20px;
             margin-right: 10px;
             vertical-align: middle;
         }
+
 
         /* Main Content */
         .main-content {
@@ -367,12 +408,12 @@ $conn->close();
                         <i class="lucide" data-lucide="file-text"></i> Transactions
                     </li>
                 </a>
-                <a href="logoutAdmin.php" class="logout">
-                    <li>
-                        <i class="lucide" data-lucide="log-out"></i> Logout
-                    </li>
-                </a>
             </ul>
+            <a href="logoutAdmin.php" class="logout">
+                <li>
+                    <i class="lucide" data-lucide="log-out"></i> Logout
+                </li>
+            </a>
         </div>
 
         <!-- Main Content -->
