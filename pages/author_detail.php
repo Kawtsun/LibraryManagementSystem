@@ -388,29 +388,6 @@ function getBookTitles($conn) {
         .suggestions-box a:hover {
             background-color: #f0f0f0;
         }
-    .book-details {
-    display: none;
-    position: absolute;
-    background-color: rgb(85, 161, 212);
-    color: white;
-    padding: 15px; /* Dagdagan ang padding para sa mas maluwag na loob */
-    border-radius: 8px; /* Bahagyang dagdagan ang border-radius */
-    width: 250px; /* Dagdagan ang lapad ng container */
-    height: 200px; /* Dagdagan ang taas ng container */
-    box-sizing: border-box;
-    text-align: left;
-    z-index: 1000 !important;
-    top: -80%;
-    left: 0%;
-    margin-top: 15px; /* Dagdagan ang margin-top */
-    box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5); /* Dagdagan ang box-shadow */
-    font-size: 16px; /* Dagdagan ang laki ng font */
-    line-height: 1.5; /* Dagdagan ang line-height para sa mas maluwag na spacing */
-}
-
-.book-item:hover .book-details {
-    display: block;
-}
     </style>
 </head>
 <body>
@@ -559,14 +536,6 @@ if (!empty($books)) {
         echo '<div class="book-item">';
         echo '<img src="authorbook-icon.png" alt="Book Icon" class="book-icon">';
         echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
-
-        // Book Details Div
-        echo '<div class="book-details">';
-        echo '<p>Author: ' . htmlspecialchars($book['author']) . '</p>';
-        echo '<p>Publication Year: ' . htmlspecialchars($book['publication_year']) . '</p>';
-        echo '<p>Subject: ' . htmlspecialchars($book['subject']) . '</p>';
-        echo '</div>';
-
         echo '<form action="transaction.php" method="get">';
         echo '<input type="hidden" name="book_id" value="' . htmlspecialchars($book['id']) . '">'; 
         echo '<input type="hidden" name="book_title" value="' . htmlspecialchars($book['title']) . '">';

@@ -320,31 +320,6 @@ function getBookTitles($conn) {
             width: 30px;
             height: 30px;
         }
-        .book-item {
-            position: relative;
-            z-index: 1;
-        }
-
-        .book-details {
-            display: none;
-            position: absolute;
-            background-color: rgb(85, 161, 212);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            width: 250px;
-            box-sizing: border-box;
-            text-align: left;
-            z-index: 1000 !important;
-            top: -50%;
-            left: 0%;
-            margin-top: 10px;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .book-item:hover .book-details {
-            display: block;
-        }
     </style>
 </head>
 
@@ -396,33 +371,25 @@ function getBookTitles($conn) {
         <section class="book-section">
             <h2>Edukasyon sa Pagpapakatao BOOKS</h2>
             <div class="book-grid">
-    <?php
-    if (!empty($books)) {
-        foreach ($books as $book) {
-            echo '<div class="book-item">';
-            echo '<img src="./esp-icon.png" alt="Book Icon" class="book-icon">';
-            echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
-            echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
-            echo '<form action="../transaction.php" method="get">';
-            echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">';
-            echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
-            echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
-            echo '</form>';
-
-            // Add book details div
-            echo '<div class="book-details">';
-            echo '<p><strong>Title:</strong> ' . htmlspecialchars($book['title']) . '</p>';
-            echo '<p><strong>Topic:</strong> ' . htmlspecialchars($book['topic']) . '</p>';
-            echo '<p><strong>Source:</strong> ' . htmlspecialchars($book['source']) . '</p>';
-            echo '</div>';
-
-            echo '</div>';
-        }
-    } else {
-        echo "<p>No books found in this category.</p>";
-    }
-    ?>
-</div>
+                <?php
+                if (!empty($books)) {
+                    foreach ($books as $book) {
+                        echo '<div class="book-item">';
+                        echo '<img src="./esp-icon.png" alt="Book Icon" class="book-icon">';
+                        echo '<p class="book-title">' . htmlspecialchars($book['title']) . '</p>';
+                        echo '<p class="book-topic">Topic: ' . htmlspecialchars($book['topic']) . '</p>';
+                        echo '<form action="../transaction.php" method="get">';
+                        echo '<input type="hidden" name="book_id" value="' . urlencode($book['id']) . '">';
+                        echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
+                        echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
+                        echo '</form>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo "<p>No books found in this category.</p>";
+                }
+                ?>
+            </div>
         </section>
     </div>
 

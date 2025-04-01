@@ -321,32 +321,6 @@ function getBookTitles($conn) {
             width: 30px;
             height: 30px;
         }
-
-        .book-item {
-            position: relative;
-            z-index: 1;
-        }
-
-        .book-details {
-            display: none;
-            position: absolute;
-            background-color: rgb(85, 161, 212);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            width: 250px;
-            box-sizing: border-box;
-            text-align: left;
-            z-index: 1000 !important;
-            top: -50%;
-            left: 0%;
-            margin-top: 10px;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .book-item:hover .book-details {
-            display: block;
-        }
     </style>
 </head>
 
@@ -397,7 +371,7 @@ function getBookTitles($conn) {
     <div class="container">
         <section class="book-section">
             <h2>Science BOOKS</h2>
-           <div class="book-grid">
+            <div class="book-grid">
                 <?php
                 if (!empty($books)) {
                     foreach ($books as $book) {
@@ -410,11 +384,6 @@ function getBookTitles($conn) {
                         echo '<input type="hidden" name="source" value="' . htmlspecialchars($book['source']) . '">';
                         echo '<button type="submit" class="borrow-btn">Borrow Book</button>';
                         echo '</form>';
-                        echo '<div class="book-details">';
-                        echo '<p><strong>Title:</strong> ' . htmlspecialchars($book['title']) . '</p>';
-                        echo '<p><strong>Topic:</strong> ' . htmlspecialchars($book['topic']) . '</p>';
-                        echo '<p><strong>Source:</strong> ' . htmlspecialchars($book['source']) . '</p>';
-                        echo '</div>';
                         echo '</div>';
                     }
                 } else {
