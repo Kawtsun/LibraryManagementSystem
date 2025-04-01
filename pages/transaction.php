@@ -7,6 +7,7 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
+// Initialize variables
 $bookTitle = "";
 $bookCoverImage = "";
 $email = "";
@@ -16,7 +17,7 @@ $name = "";
 $address = "";
 $contact_number = "";
 $course = "";
-$authorName = ""; // Added author name variable
+$authorName = "";
 
 // Get user session details
 if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
@@ -41,14 +42,9 @@ if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
     }
 }
 
-// Get book title from URL if borrowed from author_detail.php
-if (isset($_GET['book_title'])) {
-    $bookTitle = htmlspecialchars($_GET['book_title']);
-}
-
-// Get book details from the database if book_id is provided
+// Get book details using numeric id and source from GET parameters
 if (isset($_GET['book_id']) && isset($_GET['source'])) {
-    $bookId = $_GET['book_id'];
+    $bookId = $_GET['book_id']; // numeric id
     $source = $_GET['source'];
 
     if ($source === 'books') {
@@ -56,7 +52,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     } elseif ($source === 'library_books') {
         $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
     } elseif ($source === 'author_books') {
-        $sql = "SELECT title, NULL AS cover_image, author FROM author_books WHERE id = ?";
+        $sql = "SELECT title, NULL as cover_image, author FROM author_books WHERE id = ?";
     } else {
         die("Invalid source.");
     }
@@ -68,6 +64,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        // Use the book title from the database for display and for insertion into transactions
         $bookTitle = $row['title'];
         $bookCoverImage = $row['cover_image'];
         if (isset($row['author'])) {
@@ -80,18 +77,17 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
     die("Book ID or source is missing.");
 }
 
-// Check if user has any transactions
-$sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+// Check if the user has any incomplete transactions
+$sql = "SELECT COUNT(*) FROM transactions WHERE email = ? AND completed = 0";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($hasTransactions);
+$stmt->bind_result($incompleteTransactions);
 $stmt->fetch();
 $stmt->close();
 
-// Check the number of books already borrowed (using email) if user has transactions
-if ($hasTransactions > 0) {
-    $sql = "SELECT COUNT(*) FROM transactions WHERE email = ?";
+if ($incompleteTransactions > 0) {
+    $sql = "SELECT COUNT(*) FROM transactions WHERE email = ? AND completed = 0";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -100,7 +96,38 @@ if ($hasTransactions > 0) {
     $stmt->close();
 
     if ($bookCount >= 2) {
-        $errorMessage = "Under AklatURSM rules, you have already borrowed the maximum of 2 books.";
+        $errorMessage = "Under AklatURSM rules, you have already borrowed the maximum of 2 books with incomplete transactions.";
+    }
+}
+
+if (isset($_GET['book_id']) && isset($_GET['source'])) {
+    $bookId = intval($_GET['book_id']);
+    $source = $_GET['source'];
+
+    // Determine the table based on the source parameter
+    if ($source === 'books') {
+        $sql = "SELECT Available FROM books WHERE id = ?";
+    } elseif ($source === 'library_books') {
+        $sql = "SELECT Available FROM library_books WHERE id = ?";
+    } elseif ($source === 'author_books') {
+        $sql = "SELECT Available FROM author_books WHERE id = ?";
+    } else {
+        die("Invalid source parameter.");
+    }
+
+    // Check availability
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $bookId);
+    $stmt->execute();
+    $stmt->bind_result($availability);
+    $stmt->fetch();
+    $stmt->close();
+
+    // If availability is 0, output SweetAlert2 JavaScript
+    if ($availability === 0) {
+        // Redirect to the dashboard with a status query parameter
+        header("Location: dashboard.php?status=unavailable");
+        exit();
     }
 }
 
@@ -108,12 +135,13 @@ if ($hasTransactions > 0) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Transaction</title>
     <style>
-        /* Your existing styles */
+        /* Your provided styles */
         body {
             font-family: sans-serif;
             margin: 0;
@@ -128,17 +156,17 @@ if ($hasTransactions > 0) {
         }
 
         .header {
-        background-color: #3498db;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 10px 20px;
-        position: fixed; /* Add this line */
-        top: 0; /* Add this line */
-        width: 100%; /* Add this line */
-        z-index: 10;
-    }
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
 
         .logo {
             width: 60px;
@@ -152,12 +180,10 @@ if ($hasTransactions > 0) {
             color: white;
         }
 
-
         .container {
             width: 90%;
             max-width: 800px;
-            margin: auto;
-            margin-bottom: 10px;
+            margin: 80px auto 10px;
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 12px;
@@ -177,7 +203,7 @@ if ($hasTransactions > 0) {
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 250px;
-            margin-left: 290px;
+            margin: auto;
         }
 
         .book-display img {
@@ -294,8 +320,8 @@ if ($hasTransactions > 0) {
         }
     </style>
 </head>
+
 <body>
-<<body>
     <div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         <h2>AklatURSM Management System</h2>
@@ -305,10 +331,8 @@ if ($hasTransactions > 0) {
         <div class="book-display">
             <img src="<?php echo $bookCoverImage ? $bookCoverImage : 'booksicon.png'; ?>" alt="Book Cover">
             <p class="book-title"><?php echo $bookTitle; ?></p>
-            <?php if (!empty($authorName)) { ?>
-                <?php } ?>
         </div>
-        
+
         <h2>Transaction Details</h2>
         <form id="transactionForm" method="POST" action="print.php">
             <div class="info-row">
@@ -341,11 +365,15 @@ if ($hasTransactions > 0) {
                     <input type="text" id="author" name="author" value="<?php echo $authorName; ?>" readonly>
                 </div>
             </div>
-
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
-            <label for="book_id">Book Title:</label>
-            <input type="text" id="book_id" name="book_id" value="<?php echo $bookTitle; ?>" readonly>
+
+            <label for="book_title">Book Title:</label>
+            <input type="text" id="book_title" name="book_title" value="<?php echo $bookTitle; ?>" readonly>
+            <!-- Pass the numeric id and the source via hidden fields -->
+            <input type="hidden" name="book_id" value="<?php echo $bookId; ?>">
+            <input type="hidden" name="source" value="<?php echo $source; ?>">
+
             <div class="info-row">
                 <div>
                     <label for="date_borrowed">Date Borrowed:</label>
@@ -368,39 +396,34 @@ if ($hasTransactions > 0) {
                 </div>
             </div>
         <?php } ?>
-</div>
+    </div>
 
-<script>
-    // Your existing JavaScript code
-</script>
-</body>
-</html>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let today = new Date().toISOString().split('T')[0];
+            let dateBorrowed = document.getElementById("date_borrowed");
+            let returnDate = document.getElementById("return_date");
+            dateBorrowed.value = today;
+            dateBorrowed.min = today;
+            returnDate.min = today;
+            dateBorrowed.addEventListener("change", function() {
+                returnDate.min = dateBorrowed.value;
+            });
+            returnDate.addEventListener("change", function() {
+                if (returnDate.value < dateBorrowed.value) {
+                    alert("Return date cannot be earlier than the borrowed date!");
+                    returnDate.value = dateBorrowed.value;
+                }
+            });
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let today = new Date().toISOString().split('T')[0];
-        let dateBorrowed = document.getElementById("date_borrowed");
-        let returnDate = document.getElementById("return_date");
-        dateBorrowed.value = today;
-        dateBorrowed.min = today;
-        returnDate.min = today;
-        dateBorrowed.addEventListener("change", function () {
-            returnDate.min = dateBorrowed.value;
+            <?php if (!empty($errorMessage)) { ?>
+                document.querySelector(".container").classList.add("blurred");
+                setTimeout(function() {
+                    document.getElementById("errorModal").style.display = "flex";
+                }, 100);
+            <?php } ?>
         });
-        returnDate.addEventListener("change", function () {
-            if (returnDate.value < dateBorrowed.value) {
-                alert("Return date cannot be earlier than the borrowed date!");
-                returnDate.value = dateBorrowed.value;
-            }
-        });
-
-        <?php if (!empty($errorMessage)) { ?>
-            document.querySelector(".container").classList.add("blurred");
-            setTimeout(function() {
-                document.getElementById("errorModal").style.display = "flex";
-            }, 100);
-        <?php } ?>
-    });
-</script>
+    </script>
 </body>
+
 </html>
