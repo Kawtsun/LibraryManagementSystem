@@ -85,19 +85,19 @@ $total_pages = ceil($total_recent_books / $records_per_page);
 
 // Query to fetch recently added books with pagination
 $sql_recent_books = "
-SELECT `id`, `title`, `author`, `date_added` 
-FROM `books` 
+SELECT CONCAT('B-B-', `id`) AS id, `title`, `author`, `date_added`
+FROM `books`
 WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
 UNION ALL
 
-SELECT `id`, `title`, 'N/A' AS `author`, `date_added` 
-FROM `library_books` 
+SELECT CONCAT('B-L-', `id`) AS id, `title`, 'N/A' AS `author`, `date_added`
+FROM `library_books`
 WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
 UNION ALL
 
-SELECT `id`, `title`, `author`, `date_added`
+SELECT CONCAT('B-A-', `id`) AS id, `title`, `author`, `date_added`
 FROM `author_books`
 WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
@@ -190,7 +190,7 @@ $conn->close();
             margin-right: 10px;
             vertical-align: middle;
         }
-        
+
 
         /* Sidebar */
         .sidebar {
@@ -455,7 +455,7 @@ $conn->close();
                     <?php else: ?>
                         <?php foreach ($recent_books as $book): ?>
                             <tr>
-                                <td>B-<?php echo htmlspecialchars($book['id']); ?></td>
+                                <td><?php echo htmlspecialchars($book['id']); ?></td>
                                 <td><?php echo htmlspecialchars($book['title']); ?></td>
                                 <td><?php echo htmlspecialchars($book['author']); ?></td>
                                 <td><?php echo htmlspecialchars($book['date_added']); ?></td>
