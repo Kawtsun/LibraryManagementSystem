@@ -420,7 +420,7 @@ $conn->close();
             /* Matches the transactions table border radius */
             padding: 20px;
             width: 90%;
-            max-width: 1200px;
+            max-width: 1400px;
             /* Increased width for larger display */
             max-height: 80%;
             /* Restrict height to fit viewport */
