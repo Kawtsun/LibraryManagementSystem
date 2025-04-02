@@ -189,6 +189,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             text-align: left;
+            margin-top: 120px;
         }
 
         .book-display {
@@ -235,23 +236,58 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             font-size: 1em;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            font-size: 1.1em;
-        }
+        .button-row {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    align-items: center; /* Align buttons vertically in the center */
+    margin-top: 10px; /* Add some space above the buttons */
+}
 
-        button:hover {
-            background-color: #2980b9;
-            transform: scale(1.02);
-        }
+.button-row button {
+    margin: 0 10px; /* Add equal spacing on both sides */
+}
+
+/* Style for the "Proceed to Print Transaction" button */
+.button-row button[type="submit"] {
+    padding: 12px 85px; /* Larger padding for "Proceed" button */
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: 600;
+}
+
+.button-row button[type="submit"]:hover {
+    background-color: #2980b9;
+    transform: scale(1.03);
+}
+
+/* Style for the "Back to Dashboard" button */
+.back-button {
+    padding: 12px 25px; /* Smaller padding for "Back" button */
+    background-color: rgb(224, 50, 50);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: 600;
+}
+
+.back-button:hover {
+    background-color: rgb(163, 0, 0);
+    transform: scale(1.03);
+}
+
+/* General button hover style */
+button:hover {
+    background-color: #2980b9;
+    transform: scale(1.02);
+}
 
         .info-row {
             display: flex;
@@ -318,6 +354,9 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         .error-modal-content button:hover {
             background-color: #2980b9;
         }
+        .cancel-borrowing-button { /* Replace with the actual class */
+    display: none;
+}
     </style>
 </head>
 
@@ -384,7 +423,16 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
                     <input type="date" id="return_date" name="return_date" required>
                 </div>
             </div>
-            <button type="submit">Proceed to Print Transaction</button>
+            <div class="button-row">
+    <button class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
+    <button type="submit">Proceed to Print Transaction</button>
+</div>
+
+<script>
+    function cancelBorrowing() {
+        window.location.href = "Dashboard.php";
+    }
+</script>
         </form>
         <?php if (!empty($errorMessage)) { ?>
             <div id="errorModal" class="error-modal">

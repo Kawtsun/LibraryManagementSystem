@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 01, 2025 at 04:06 PM
+-- Generation Time: Apr 02, 2025 at 01:25 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,7 +67,7 @@ INSERT INTO `author_books` (`id`, `title`, `author`, `subject`, `publication_yea
 (1, 'John Doe: The Quantum Paradox', 'John Doe', 'Science Fiction', 2023, '2025-03-31 05:21:29', 5, 5),
 (2, 'John Doe: Echoes of Eternity', 'John Doe', 'Fantasy', 2022, '2025-04-01 16:30:37', 5, 5),
 (3, 'John Doe: Silent Shadows', 'John Doe', 'Mystery', 2021, '2025-04-01 01:28:18', 5, 5),
-(4, 'John Doe: Crimson Tide', 'John Doe', 'Thriller', 2020, '2025-04-01 23:22:24', 5, 5),
+(4, 'John Doe: Crimson Tide', 'John Doe', 'Thriller', 2020, '2025-04-01 23:22:24', 5, 4),
 (5, 'John Doe: A Tale of Two Worlds', 'John Doe', 'Adventure', 2019, '2025-03-29 22:50:52', 5, 5),
 (6, 'John Doe: The Lost City', 'John Doe', 'Historical Fiction', 2018, '2025-03-31 07:45:01', 5, 5),
 (7, 'John Doe: Whispers of the Wind', 'John Doe', 'Poetry', 2023, '2025-03-31 13:37:26', 5, 5),
@@ -77,7 +77,7 @@ INSERT INTO `author_books` (`id`, `title`, `author`, `subject`, `publication_yea
 (11, 'Jane Smith: The Enigma Code', 'Jane Smith', 'Mystery', 2023, '2025-03-30 13:39:25', 5, 5),
 (12, 'Jane Smith: Beneath the Surface', 'Jane Smith', 'Thriller', 2022, '2025-03-28 13:35:41', 5, 5),
 (13, 'Jane Smith: The River\'s Secret', 'Jane Smith', 'Adventure', 2021, '2025-03-31 15:23:18', 5, 5),
-(14, 'Jane Smith: A Journey Through Time', 'Jane Smith', 'Historical Fiction', 2020, '2025-03-29 02:01:35', 5, 5),
+(14, 'Jane Smith: A Journey Through Time', 'Jane Smith', 'Historical Fiction', 2020, '2025-03-29 02:01:35', 5, 4),
 (15, 'Jane Smith: Melodies of the Heart', 'Jane Smith', 'Romance', 2023, '2025-04-01 20:00:32', 5, 5),
 (16, 'Jane Smith: Galactic Explorers', 'Jane Smith', 'Science Fiction', 2022, '2025-03-31 01:56:03', 5, 5),
 (17, 'Jane Smith: Realm of the Dragons', 'Jane Smith', 'Fantasy', 2021, '2025-03-29 00:40:06', 5, 5),
@@ -300,11 +300,11 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`, `category_id`, `date_added`, `quantity`, `Available`) VALUES
-(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-28 10:31:43', 5, 5),
-(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL, '2025-03-28 00:22:42', 5, 5),
-(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL, '2025-04-01 08:25:59', 5, 5),
-(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL, '2025-03-28 12:49:31', 5, 5),
-(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL, '2025-03-29 23:47:10', 5, 5),
+(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-28 10:31:43', 5, 3),
+(36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL, '2025-03-28 00:22:42', 5, 3),
+(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL, '2025-04-01 08:25:59', 5, 4),
+(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL, '2025-03-28 12:49:31', 5, 3),
+(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL, '2025-03-29 23:47:10', 5, 4),
 (40, 'Biology: The Living World', 'Science', 'Charles Darwin', 2023, '', NULL, '2025-04-01 00:30:29', 5, 5),
 (41, 'Mastering Grammar', 'English', 'Emily White', 2020, '', NULL, '2025-03-28 11:34:46', 5, 5),
 (42, 'Shakespeare’s Classics', 'English', 'William S.', 2017, '', NULL, '2025-03-28 23:26:21', 5, 5),
@@ -316,11 +316,11 @@ INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `co
 (48, 'Entrepreneurship 101', 'TLE', 'Mark Cuban', 2021, '', NULL, '2025-04-01 15:18:45', 5, 5),
 (49, 'Computer Hardware Basics', 'TLE', 'Steve Jobs', 2022, '', NULL, '2025-03-29 02:35:34', 5, 5),
 (50, 'Fitness and Health', 'Physical Education', 'Arnold Fitman', 2019, '', NULL, '2025-04-01 07:27:03', 5, 5),
-(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, '', NULL, '2025-03-31 22:13:55', 5, 5),
-(52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, '', NULL, '2025-03-29 19:20:58', 5, 5),
+(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, '', NULL, '2025-03-31 22:13:55', 5, 4),
+(52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, '', NULL, '2025-03-29 19:20:58', 5, 3),
 (53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, '', NULL, '2025-03-28 23:33:09', 5, 5),
-(54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, '', NULL, '2025-03-31 09:21:20', 5, 5),
-(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '', NULL, '2025-04-01 13:47:00', 5, 5);
+(54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, '', NULL, '2025-03-31 09:21:20', 5, 4),
+(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '', NULL, '2025-04-01 13:47:00', 5, 4);
 
 -- --------------------------------------------------------
 
@@ -369,7 +369,7 @@ CREATE TABLE `library_books` (
 --
 
 INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image`, `date_added`, `quantity`, `Available`) VALUES
-(1, 'Algebra Fundamentals', 1, 'Algebra', NULL, '2025-03-28 09:41:03', 5, 5),
+(1, 'Algebra Fundamentals', 1, 'Algebra', NULL, '2025-03-28 09:41:03', 5, 4),
 (2, 'Geometry Basics', 1, 'Shapes and Theorems', NULL, '2025-04-01 11:56:55', 5, 5),
 (3, 'Trigonometry Explained', 1, 'Angles and Functions', NULL, '2025-03-31 19:52:08', 5, 5),
 (4, 'Probability & Statistics', 1, 'Data Analysis', NULL, '2025-03-28 05:58:27', 5, 5),
@@ -395,7 +395,7 @@ INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image
 (24, 'Public Speaking', 3, 'Speech and Communication', NULL, '2025-03-31 17:19:23', 5, 5),
 (25, 'Essay Writing', 3, 'Persuasive and Analytical Essays', NULL, '2025-03-30 21:41:13', 5, 5),
 (26, 'Syntax and Semantics', 3, 'Language Analysis', NULL, '2025-03-29 16:08:52', 5, 5),
-(27, 'English for Beginners', 3, 'Basic Vocabulary', NULL, '2025-03-30 15:37:36', 5, 5),
+(27, 'English for Beginners', 3, 'Basic Vocabulary', NULL, '2025-03-30 15:37:36', 5, 4),
 (28, 'Shakespearean Works', 3, 'Plays and Sonnets', NULL, '2025-03-31 07:34:47', 5, 5),
 (29, 'Modern English Usage', 3, 'Idioms and Expressions', NULL, '2025-03-31 03:22:34', 5, 5),
 (30, 'Critical Thinking in Literature', 3, 'Analyzing Texts', NULL, '2025-04-01 19:55:49', 5, 5),
@@ -470,32 +470,31 @@ CREATE TABLE `transactions` (
   `course` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `completed` tinyint(1) NOT NULL DEFAULT 0,
-  `source` varchar(20) NOT NULL DEFAULT ''
+  `source` varchar(20) NOT NULL DEFAULT '',
+  `barcode` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_title`, `date_borrowed`, `return_date`, `date_returned`, `course`, `author`, `completed`, `source`) VALUES
-(1, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Advanced Algebra', '2025-03-31 19:20:38', '2025-04-30', '2025-03-31 20:09:49', 'BSCS', 'John Doe', 1, 'books'),
-(2, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Statistics for Beginners', '2025-03-31 07:23:10', '2025-04-16', '2025-03-31 21:11:12', 'BSCS', 'Robert Brown', 1, 'books'),
-(3, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Beginners', '2025-03-31 02:53:55', '2025-04-09', '2025-03-31 16:05:25', 'BSCS', 'Robert Brown', 1, 'books'),
-(4, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Advanced Algebra', '2025-03-31 16:20:05', '2025-05-02', '2025-03-31 21:11:34', 'BSCS', 'John Doe', 1, 'books'),
-(5, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Statistics for Beginners', '2025-03-31 00:58:40', '2025-04-28', '2025-03-31 07:44:09', 'BSCS', 'Robert Brown', 1, 'books'),
-(6, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Advanced Algebra', '2025-03-31 03:53:08', '2025-05-15', '2025-03-31 15:16:37', 'BSCS', 'John Doe', 1, 'books'),
-(7, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Statistics for Beginners', '2025-03-31 16:29:41', '2025-05-08', '2025-03-31 23:37:56', 'BSCS', 'Robert Brown', 1, 'books'),
-(8, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Advanced Algebra', '2025-03-31 22:48:59', '2025-04-16', '2025-03-31 22:52:57', 'BSCS', 'John Doe', 1, 'books'),
-(9, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Statistics for Beginners', '2025-03-31 16:35:54', '2025-04-19', '2025-03-31 19:45:39', 'BSCS', 'Robert Brown', 1, 'books'),
-(10, 'anon@gmail.com', 'Anon Chihaya', 'Japan', '123', 'M2025-0011', 'Advanced Algebra', '2025-03-31 14:32:35', '2025-04-22', '2025-03-31 23:41:56', 'BSCS', 'John Doe', 1, 'books'),
-(11, 'anon@gmail.com', 'Anon Chihaya', 'Japan', '123', 'M2025-0011', 'The Wonders of Chemistry', '2025-03-31 22:55:13', '2025-05-02', '2025-03-31 23:31:25', 'BSCS', 'Marie Curie', 1, 'books'),
-(12, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Advanced Algebra', '2025-04-01 22:58:21', '2025-04-30', '2025-04-01 23:53:15', 'BSCS', 'John Doe', 1, 'books'),
-(13, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Philippine History', '2025-04-01 22:06:08', '2025-04-22', '2025-04-01 23:34:29', 'BSCS', 'Carlos Garcia', 1, 'books'),
-(14, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Physics for Everyone', '2025-04-01 17:35:34', '2025-04-29', '2025-04-01 18:55:38', 'BSCS', 'Albert Newton', 1, 'books'),
-(15, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Calculus Essentials', '2025-04-01 21:39:29', '2025-05-02', '2025-04-01 23:19:43', 'BSCS', 'Jane Smith', 1, 'books'),
-(16, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Advanced Algebra', '2025-04-01 07:30:44', '2025-04-17', '2025-04-01 23:02:23', 'BSCS', 'John Doe', 1, 'books'),
-(17, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Statistics for Beginners', '2025-04-01 20:35:12', '2025-04-30', '2025-04-01 22:31:41', 'BSCS', 'Robert Brown', 1, 'books'),
-(18, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Calculus Essentials', '2025-04-01 08:23:49', '2025-04-23', '2025-04-01 08:41:31', 'BSCS', 'Jane Smith', 1, 'books');
+INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_title`, `date_borrowed`, `return_date`, `date_returned`, `course`, `author`, `completed`, `source`, `barcode`) VALUES
+(1, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Advanced Algebra', '2025-03-31 19:20:38', '2025-04-30', '2025-03-31 20:09:49', 'BSCS', 'John Doe', 1, 'books', ''),
+(2, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Statistics for Beginners', '2025-03-31 07:23:10', '2025-04-16', '2025-03-31 21:11:12', 'BSCS', 'Robert Brown', 1, 'books', ''),
+(3, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Beginners', '2025-03-31 02:53:55', '2025-04-09', '2025-03-31 16:05:25', 'BSCS', 'Robert Brown', 1, 'books', ''),
+(4, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Advanced Algebra', '2025-03-31 16:20:05', '2025-05-02', '2025-03-31 21:11:34', 'BSCS', 'John Doe', 1, 'books', ''),
+(5, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Statistics for Beginners', '2025-03-31 00:58:40', '2025-04-28', '2025-03-31 07:44:09', 'BSCS', 'Robert Brown', 1, 'books', ''),
+(6, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Advanced Algebra', '2025-03-31 03:53:08', '2025-05-15', '2025-03-31 15:16:37', 'BSCS', 'John Doe', 1, 'books', ''),
+(7, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Statistics for Beginners', '2025-03-31 16:29:41', '2025-05-08', '2025-03-31 23:37:56', 'BSCS', 'Robert Brown', 1, 'books', ''),
+(8, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Advanced Algebra', '2025-03-31 22:48:59', '2025-04-16', '2025-03-31 22:52:57', 'BSCS', 'John Doe', 1, 'books', ''),
+(9, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Statistics for Beginners', '2025-03-31 16:35:54', '2025-04-19', '2025-03-31 19:45:39', 'BSCS', 'Robert Brown', 1, 'books', ''),
+(60, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'The Wonders of Chemistry', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 00:00:00', 'BSA', 'Marie Curie', 1, 'books', '67ed0bdeaa988'),
+(62, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Algebra Fundamentals', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 00:00:00', 'BSA', '', 1, 'library_books', '67ed0e526d088'),
+(64, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Calculus Essentials', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 18:20:11', 'BSCS', 'Jane Smith', 1, 'books', '67ed0f22705ef'),
+(65, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'World Geography', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 18:20:52', 'BSCS', 'Marco Polo', 1, 'books', '67ed0f66c76a9'),
+(66, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'John Doe: Crimson Tide', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 18:22:01', 'BSA', 'John Doe', 1, 'author_books', '67ed0faccee8d'),
+(67, 'billy12@gmail.com', 'Billy Crowford', 'Angono', '093425233415', 'T2023-2323', 'Statistics for Beginners', '2025-04-02 00:00:00', '2025-05-01', '2025-04-02 18:25:02', 'BSIT', 'Robert Brown', 1, 'books', '67ed103f42626'),
+(68, 'billy12@gmail.com', 'Billy Crowford', 'Angono', '093425233415', 'T2023-2323', 'Character Development', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 18:25:16', 'BSIT', 'Xavier Morals', 1, 'books', '67ed10534dd26');
 
 -- --------------------------------------------------------
 
@@ -537,12 +536,13 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `stud
 (3, 'austria', '$2y$10$FfIfsHKTe20mPifUr5Hhaeh9GiMYUhV0iXd.v4seyf/GpPTOuA20.', 'johnluizaustria@gmail.com', 'BSCS', 'M2022-0234', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121'),
 (4, 'dizon', '$2y$10$nJSJ0BVD0RB9Rlad5dsDYevFM5E16.XJNwHusCNLMDf5t8uPtKIcm', 'dizon@gmail.com', 'BSIT', 'B2022-0423', 'Carlos Joseph Dizon', 'Teresa BANGBANG', '09224232424'),
 (5, 'Kawtsun', '$2y$10$qpedbbZhRdDO.HF.ViVv4ucEZ8Sr1ufld2nG4u4QF4aqCc.jxjM2q', 'kawtsun@gmail.com', 'BSCS', 'M2025-0005', 'Morpheus Francisco', 'Morong', '123'),
-(6, 'Kita', '$2y$10$4Ci5NvVWudIPJQN38bTABuTBrBowIc3v/okMOkJOCr6avChzVmlZ.', 'kita@gmail.com', 'BSCS', 'M2025-0006', 'Ikuyo Kita', 'Japan', '123'),
 (7, 'Chisato', '$2y$10$8HBOXBMvC1DFproX.dMYa.zA65JzMcHvwXWqJzOUTNjI7N3jxTSpq', 'chisato@gmail.com', 'BSCS', 'M2025-0007', 'Chisato Arashi', 'Japan', '123'),
 (8, 'Momoka', '$2y$10$MviHDL/gXmTbBK89ofZ7peAknbEsYticaCy1QxfNR6J09O6xk//vq', 'momoka@gmail.com', 'BSCS', 'M2025-0008', 'Momoka Sakurai', 'Japan', '123'),
 (9, 'Rika', '$2y$10$XiYJdIID2jcBxgjTOC6vZe9ieY43rjOVD/8mV4K1xNol.uVUbkpxu', 'rika@gmail.com', 'BSCS', 'M2025-0009', 'Rika Furude', 'Japan', '123'),
 (10, 'Mikoto', '$2y$10$HBZP5RGPwpEOUxiuaHkX1uhOGTWOOe14hgX5WFd.a7i2HLZC8AsgS', 'mikoto@gmail.com', 'BSCS', 'M2025-0010', 'Mikoto Misaka', 'Japan', '123'),
-(11, 'Anon', '$2y$10$VmarTr/5XKTlbJPrL8SOxu8pNFBmckK0jfKQ6o3DsRjoKTklGYbHm', 'anon@gmail.com', 'BSCS', 'M2025-0011', 'Anon Chihaya', 'Japan', '123');
+(11, 'Anon', '$2y$10$VmarTr/5XKTlbJPrL8SOxu8pNFBmckK0jfKQ6o3DsRjoKTklGYbHm', 'anon@gmail.com', 'BSCS', 'M2025-0011', 'Anon Chihaya', 'Japan', '123'),
+(12, 'migs', '$2y$10$0KRHwdxOaQZR2E3aJMnRZ.1Y44xchaBTF09hPmQkY6T4.N7602asa', 'migs123@gmail.com', 'BSA', 'B2023-2034', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131'),
+(13, 'billy', '$2y$10$dk.U2p1.QjN5Pm.37AIO3.hyT/0LuNi3zLYNuA2kVYW.bLeNH30qO', 'billy12@gmail.com', 'BSIT', 'T2023-2323', 'Billy Crowford', 'Angono', '093425233415');
 
 -- --------------------------------------------------------
 
@@ -639,13 +639,13 @@ ALTER TABLE `library_books`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables

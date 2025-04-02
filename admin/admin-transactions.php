@@ -629,9 +629,18 @@ $conn->close();
                 transform: translateY(0);
             }
         }
+        #button-container {
+    display: flex;
+    align-items: center; /* Optional: Align buttons vertically */
+}
+
+#startScanBtn, #openCompletedBtn {
+    margin-left: 1030px; /* Adjust spacing as needed */
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
 </head>
 
@@ -696,6 +705,12 @@ $conn->close();
                     <?php endif; ?>
                     <ul id="suggestions" class="suggestions-list"></ul>
                 </div>
+                <div id="barcode-scanner-container" style="background-color: transparent;">
+    <button id="startScanBtn" onclick="startScan()">Start Scan</button>
+    <button id="stopScanBtn" onclick="stopScan()" style="display: none;">Stop Scan</button>
+    <video id="scanner" width="640" height="480" style="display: none;"></video>
+    <p id="scanResult"></p>
+</div>
                 <button id="openCompletedTransactions" class="open-completed-button">
                     Open Completed
                 </button>
@@ -959,45 +974,128 @@ $conn->close();
                 });
             }
         </script>
-        <script>
-            // Deleting transactions
-            function confirmDeleteTransaction(transactionId) {
-                // Retrieve current page for maintaining pagination context
-                const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This action cannot be undone!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#3498db',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to the delete-transaction.php script, passing the transaction ID and current page
-                        window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&status=success`;
+<script>
+    function startScan() {
+        document.getElementById("startScanBtn").style.display = "none";
+        document.getElementById("stopScanBtn").style.display = "inline-block";
+        document.getElementById("scanner").style.display = "block";
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                const scanner = document.getElementById("scanner");
+                scanner.srcObject = stream;
+                scanner.play();
+
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: scanner,
+                        constraints: {
+                            width: 640,
+                            height: 480,
+                            facingMode: "environment"
+                        }
+                    },
+                    locator: {
+                        halfSample: true,
+                        patchSize: "medium"
+                    },
+                    numOfWorkers: 2, // Adjust as needed
+                    decoder: {
+                        readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader", "upc_reader", "upc_e_reader"],
+                        multiple: false,
+                        debug: {
+                            drawBoundingBox: true,
+                            showFrequency: true,
+                            drawScanline: true,
+                            showPattern: true
+                        }
+                    }
+                }, function (err) {
+                    if (err) {
+                        console.error("Quagga initialization error:", err);
+                        Swal.fire('Error', "Could not initialize the barcode scanner. Please check the console for details.", 'error');
+                        stopScan();
+                        return;
+                    }
+                    Quagga.start();
+                });
+
+                let scanAttempts = 0;
+                const maxScanAttempts = 3; // Retry scanning up to 3 times
+
+                Quagga.onDetected(function (result) {
+                    if (result && result.codeResult && result.codeResult.code) {
+                        const barcode = result.codeResult.code;
+                        document.getElementById("scanResult").innerText = "Barcode: " + barcode;
+                        stopScan();
+                        processScannedBarcode(barcode);
+                    } else {
+                        console.warn("No barcode detected. Attempt:", scanAttempts + 1);
+                        if (scanAttempts < maxScanAttempts) {
+                            scanAttempts++;
+                            setTimeout(() => Quagga.start(), 500); // Retry after 500ms
+                        } else {
+                            Swal.fire('Warning', "Could not detect barcode after multiple attempts. Please try again.", 'warning');
+                            stopScan();
+                        }
                     }
                 });
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('status') === 'success') {
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'The transaction has been successfully deleted.',
-                        icon: 'success',
-                        confirmButtonColor: '#3498db',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Optional: Remove the status parameter from the URL to prevent duplicate alerts
-                        urlParams.delete('status');
-                        window.history.replaceState({}, document.title, `${location.pathname}?${urlParams}`);
-                    });
-                }
+            })
+            .catch(function (err) {
+                console.error("Camera access denied:", err);
+                Swal.fire('Error', "Camera access denied. Please allow camera permissions.", 'error');
+                stopScan();
             });
-        </script>
-</body>
+    }
+        function stopScan() {
+            Quagga.stop();
+            const scanner = document.getElementById("scanner");
+            if (scanner) {
+                scanner.pause();
+                if (scanner.srcObject) {
+                    scanner.srcObject.getTracks().forEach(track => track.stop());
+                }
+                scanner.srcObject = null;
+            }
+            document.getElementById("scanner").style.display = "none";
+            document.getElementById("startScanBtn").style.display = "inline-block";
+            document.getElementById("stopScanBtn").style.display = "none";
+            document.getElementById("scanResult").innerText = "";
+        }
 
+        function processScannedBarcode(barcode) {
+            console.log("processScannedBarcode called with:", barcode);
+
+            fetch('return_book_barcode.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'barcode=' + encodeURIComponent(barcode)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success!', data.message, 'success')
+                        .then(() => location.reload());
+                } else {
+                    Swal.fire('Error!', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error processing barcode:', error);
+                Swal.fire('Error!', 'An error occurred while processing the barcode. Please check the console.', 'error');
+            });
+        }
+    </script>
+
+</body>
 </html>

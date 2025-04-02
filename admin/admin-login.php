@@ -33,8 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html>
 
@@ -42,10 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Admin Login</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-image: url('admin-background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,96 +54,123 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .login-container {
-            width: 800px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            width: 450px; /* Increased container width */
+            background-color: #3498db; /* Blue container background */
+            border-radius: 15px; /* More rounded corners */
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+            padding: 40px; /* Increased padding */
+            text-align: center;
+            color: #fff; /* White text */
+            box-shadow: 0 10px 25px rgba(0, 120, 175, 0.5);
         }
 
-        .login-header {
-            background-color: #98d8ef;
-            /* Blue banner color */
-            padding: 20px;
-            text-align: center;
+        .login-logo img {
+            width: 150px; /* Increased logo size */
+            margin-bottom: -30px;
         }
 
         .login-header h1 {
-            margin: 0;
-            color: #ffffff;
-            font-size: 22px;
+            font-size: 35px; /* Larger header font */
+            margin-bottom: -20px;
         }
 
-        .login-body {
-            padding: 15px;
+        .login-header p {
+            font-size: 20px; /* Larger paragraph font */
+            margin-bottom: 40px;
         }
 
         .login-body input {
-            display: block;
-            width: calc(100% - 30px);
-            /* Adjust width to stay within container padding */
-            padding: 12px;
-            margin: 0 auto 15px;
-            /* Center the input and add space below */
+            width: calc(100% - 50px);
+            padding: 15px; /* Increased input padding */
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px; /* More rounded input corners */
+            background-color: rgba(255, 255, 255, 0.2); /* Transparent white input background */
+            color: #fff;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            transition: all 0.3s ease-in-out;
-            box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-
-        .login-body input:focus {
-            background-color: #ffffff;
-            border: 1px solid #007BFF;
-            box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
-            outline: none;
+        .login-body input::placeholder {
+            color: rgba(231, 231, 231, 0.7);
         }
 
         .login-body button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            color: #ffffff;
-            background-color: #007BFF;
+            width: 150px; /* Reduced button width */
+            padding: 15px; /* Increased button padding */
             border: none;
-            border-radius: 5px;
+            border-radius: 8px; /* More rounded button corners */
+            background-color: #ff9800;
+            color: #fff;
+            font-size: 18px; /* Larger button font */
             cursor: pointer;
             transition: background-color 0.3s ease-in-out;
+            margin: 0 auto; /* Center the button */
         }
 
         .login-body button:hover {
-            background-color: #0056b3;
+            background-color:rgb(245, 139, 1);
+        }
+
+        .login-body .username-icon,
+        .login-body .password-icon {
+            position: relative;
+        }
+
+        .login-body .username-icon::before,
+        .login-body .password-icon::before {
+            position: absolute;
+            left: 15px; /* Increased icon spacing */
+            top: 15px; /* Increased icon spacing */
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+        }
+
+        .login-body .username-icon::before {
+            content: "\f007";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        .login-body .password-icon::before {
+            content: "\f023";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
         }
 
         .login-body label {
+            color: rgba(255, 255, 255, 0.8);
             display: block;
-            margin: 15px 0;
-            color: #737373;
+            text-align: left;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .login-body input {
+            padding-left: 45px; /* Increased padding for icon space */
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
-    <header>
-        <div class="logo">
-            <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
-        </div>
-    </header>
-
     <div class="login-container">
-        <!-- Blue header banner -->
-        <div class="login-header">
-            <h1>ADMIN LOGIN</h1>
+        <div class="login-logo">
+            <img src="../img/LMS_logo.png" alt="Library Logo">
         </div>
-        <!-- Login form -->
+        <div class="login-header">
+            <h1>ADMINISTRATOR LOGIN</h1>
+            <p>AklatURSM Management System</p>
+        </div>
         <div class="login-body">
             <form method="POST" action="">
                 <label for="username">Username</label>
-                <input type="text" name="username" id="username" required>
+                <div class="username-icon">
+                    <input type="text" name="username" id="username" placeholder="username" required>
+                </div>
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
+                <div class="password-icon">
+                    <input type="password" name="password" id="password" placeholder="password" required>
+                </div>
                 <button type="submit">Login</button>
             </form>
         </div>

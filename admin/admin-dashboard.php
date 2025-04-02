@@ -1,5 +1,7 @@
 <?php
 include '../validate/db.php';
+require '../vendor/autoload.php';
+
 session_start();
 
 if (!isset($_SESSION['admin'])) {
@@ -365,6 +367,72 @@ $conn->close();
             display: inline;
             font-weight: normal;
         }
+        .modern-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 1430px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            margin-bottom: -100px;
+        }
+
+        .modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modal-icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.modal-button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 30px; /* Pinalaki ang padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px; /* Pinalaki ang font size */
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.modal-button.cancel {
+    background-color: red !important;
+    padding: 15px 30px; /* Pinalaki din ang padding para sa cancel button */
+    font-size: 16px; /* Pinalaki din ang font size para sa cancel button */
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -437,7 +505,26 @@ $conn->close();
                 </div>
             </div>
 
-            <h2>Recently Added Books</h2>
+<div id="confirmationModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <img src="admin-print.png" alt="Export Icon" class="modal-icon">
+        <p>You are about to export all registered users, registered books, and transactions. Do you want to continue?</p>
+        <button id="confirmExportButton" class="modal-button" onclick="redirectToExportReports()">Continue</button>
+        <button class="modal-button cancel" onclick="redirectToDashboard()">Cancel</button>
+        </div>
+</div>
+<script>
+function redirectToDashboard() {
+    window.location.href = "admin-dashboard.php";
+}
+function redirectToExportReports() {
+    window.location.href = "export_reports.php";
+}
+</script>
+
+<button id="printAllReportsButton" class="modern-button">Print All Reports</button>
+<h2 style="margin-top: -20px;">Recently Added Books</h2>
+
             <table class="recent-table">
                 <thead>
                     <tr>
@@ -489,6 +576,32 @@ $conn->close();
     <script>
         lucide.createIcons();
     </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const printAllButton = document.getElementById('printAllReportsButton');
+    const modal = document.getElementById('confirmationModal');
+    const confirmButton = document.getElementById('confirmExportButton');
+    const cancelButton = document.getElementById('cancelExportButton');
+
+    // Function to show the modal
+    const showModal = () => {
+        modal.style.display = 'flex';
+    };
+
+    // Function to hide the modal
+    const hideModal = () => {
+        modal.style.display = 'none';
+    };
+
+    printAllButton.addEventListener('click', showModal);
+    cancelButton.addEventListener('click', hideModal);
+
+    confirmButton.addEventListener('click', () => {
+        hideModal();
+        window.location.href = 'export_reports.php'; // Navigate to export script
+    });
+});
+</script>
 </body>
 
 </html>
