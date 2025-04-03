@@ -775,12 +775,29 @@ $conn->close();
                                         Return
                                     </button>
                                     <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
-
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
+
+                <script>window.confirmDeleteTransaction = function(transactionId) {
+    const currentPage = 1; // Default page if undefined
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Deleting this transaction cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#3498db',
+        confirmButtonText: 'Yes, delete it!'
+    }).then(result => {
+        if (result.isConfirmed) {
+            window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
+        }
+    });
+};</script>
+                
             </table>
             <div class="pagination">
                 <?php if ($page > 1): ?>
