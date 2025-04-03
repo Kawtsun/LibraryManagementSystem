@@ -423,8 +423,8 @@ button:hover {
                     <input type="date" id="return_date" name="return_date" required>
                 </div>
             </div>
-            <div class="button-row">
-    <button class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
+   <div class="button-row">
+    <button type="button" class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
     <button type="submit">Proceed to Print Transaction</button>
 </div>
 

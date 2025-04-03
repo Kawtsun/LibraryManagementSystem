@@ -30,18 +30,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
  * and then updates the available count for the book in the proper table using the numeric book ID.
  */
 function insertTransaction($conn, $data, $barcode) {
-    $email          = $data['email'];
+    $email         = $data['email'];
     $student_id     = $data['student_id'];
-    $name           = $data['name'];
+    $name         = $data['name'];
     $contact_number = $data['contact'];
-    $address        = $data['address'];
+    $address         = $data['address'];
     $book_title     = $data['book_title'];
-    $date_borrowed  = $data['date_borrowed'];
-    $return_date    = $data['return_date'];
+    $date_borrowed = $data['date_borrowed'];
+    $return_date     = $data['return_date'];
     $course         = $data['course'];
     $author         = $data['author'];
     $source         = $data['source'];
-    $book_id        = $data['book_id'];
+    $book_id         = $data['book_id'];
 
     $conn->begin_transaction();
 
@@ -92,6 +92,7 @@ function insertTransaction($conn, $data, $barcode) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -209,7 +210,8 @@ function insertTransaction($conn, $data, $barcode) {
             margin-top: 30px;
         }
 
-        .back-button, .print-button {
+        .back-button,
+        .print-button {
             padding: 12px 25px;
             background-color: #3498db;
             color: white;
@@ -222,7 +224,8 @@ function insertTransaction($conn, $data, $barcode) {
             margin: 10px;
         }
 
-        .back-button:hover, .print-button:hover {
+        .back-button:hover,
+        .print-button:hover {
             background-color: #2980b9;
             transform: scale(1.03);
         }
@@ -241,7 +244,8 @@ function insertTransaction($conn, $data, $barcode) {
             display: none;
         }
 
-        .success-message, .error-message {
+        .success-message,
+        .error-message {
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -258,10 +262,125 @@ function insertTransaction($conn, $data, $barcode) {
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 300px; /* Increased top value */
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+.modal-content {
+    margin-top: 50px;
+    background-color: #ffffff;
+    margin: 0 auto; /* Center the modal */
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    width: clamp(300px, 80%, 600px); /* Responsive width */
+    text-align: center;
+    position: relative; /* For close button positioning */
+    animation: fadeIn 0.3s ease-out; /* Fade-in animation */
+}
+
+.modal-content .success-text {
+    color: green;
+    font-weight: bold;
+    margin-top: -20px;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #aaa;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.close:hover,
+.close:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+/* Success Icon (Image) */
+.modal-icon {
+    width: clamp(50px, 20%, 100px); /* Responsive image size */
+    height: auto;
+    margin-bottom: -1.2rem;
+}
+
+/* Message Text */
+.modal-content p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media Query for smaller screens */
+@media screen and (max-width: 480px) {
+    .modal-content {
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+    }
+
+    .modal-content p {
+        font-size: 1rem;
+    }
+
+    .close {
+        font-size: 1.25rem;
+        top: 0.25rem;
+        right: 0.25rem;
+    }
+}
+
+.dashboard-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-button:hover {
+    background-color: #2980b9;
+}
     </style>
-    </head>
+</head>
+
 <body>
-<div class="header">
+    <div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
         <h2>AklatURSM Management System</h2>
     </div>
@@ -307,17 +426,43 @@ function insertTransaction($conn, $data, $barcode) {
             echo '<form action="../validate/generate-pdf.php" method="post">';
             echo '<input type="hidden" name="source" value="' . htmlspecialchars($data['source']) . '">';
             echo '<input type="hidden" name="book_title" value="' . htmlspecialchars($data['book_title']) . '">';
-            echo '<button type="submit" class="print-button" onclick="showMessage()">Print PDF</button>';
+            echo '<button type="submit" class="print-button">Print PDF</button>';
             echo '</form>';
             echo '</div>';
         }
         ?>
+      <div id="successModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <img src="Thankyou-icon.png" alt="Success Icon" class="modal-icon">
+                <p><span class="success-text">Transaction completed successfully.</span><br>Thank you for using AklatURSM for your academic needs!</p>
+                <a href="dashboard.php" class="dashboard-button">Back to Dashboard</a>
+            </div>
+        </div>
     </div>
     <script>
-        function showMessage() {
-            document.getElementById("messageContent").style.display = "block";
-            document.getElementById("messageContainer").style.display = "block";
-        }
-    </script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("successModal");
+        var printButton = document.querySelector(".print-button");
+        var closeButton = document.querySelector(".close");
+
+        modal.style.display = "none"; // Ensure modal is hidden on page load
+
+        printButton.onclick = function() {
+            modal.style.display = "block";
+        };
+
+        closeButton.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    });
+</script>
 </body>
+
 </html>
