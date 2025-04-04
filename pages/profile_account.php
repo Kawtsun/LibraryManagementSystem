@@ -38,17 +38,25 @@ function displayRecentTransactions($result)
                 </tr>
             </thead>
             <tbody>
-                <?php
+            <?php
                 while ($row = $result->fetch_assoc()) {
-                ?>
+                    // Calculate Status (same logic as admin side)
+                    $returnDateTimestamp = strtotime($row['return_date']);
+
+                    if ($returnDateTimestamp === false) {
+                        $status = 'Invalid Date';
+                        error_log("Invalid return_date: " . $row['return_date'] . " for transaction ID: " . $row['transaction_id']);
+                    } else {
+                        $nowTimestamp = time();
+                        $status = ($nowTimestamp > $returnDateTimestamp) ? 'Late Return' : 'Active';
+                    }
+                    ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['book_title']); ?></td>
                         <td><?php echo htmlspecialchars($row['date_borrowed']); ?></td>
                         <td><?php echo htmlspecialchars($row['return_date']); ?></td>
-                        <td>
-                            <?php
-                            echo $row['completed'] ? "Inactive" : "Active";
-                            ?> <!-- Status based on completed -->
+                        <td class="<?php echo ($status === 'Late Return') ? 'late' : 'active'; ?>">
+                            <?php echo htmlspecialchars($status); ?>
                         </td>
                     </tr>
                 <?php
@@ -56,7 +64,7 @@ function displayRecentTransactions($result)
                 ?>
             </tbody>
         </table>
-<?php
+        <?php
     } else {
         echo "<p>No incomplete transactions</p>";
     }
@@ -161,6 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Account</title>
     <style>
+       
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -746,6 +755,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .modal-content .transactions-table tr:hover {
             background-color: #f9f9f9;
         }
+        .late {
+    color: red !important;
+    font-weight: bold;
+}
+
+.active {
+    color: green !important;
+    font-weight: bold;
+}
     </style>
 </head>
 

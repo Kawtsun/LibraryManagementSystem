@@ -862,6 +862,15 @@ function getBookTitles($conn)
             /* Slight scale on hover */
             transition: transform 0.3s ease;
         }
+        .late {
+    color: red !important;
+    font-weight: bold;
+}
+
+.active {
+    color: green !important;
+    font-weight: bold;
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -1062,19 +1071,61 @@ function getBookTitles($conn)
             </section>
 
             <section class="transaction-section">
-                <h2 style="font-size: 26px; margin-top: 30px; text-align:center">Recent Incomplete Transactions</h2>
-                <div class="transaction-grid">
-                    <?php
-                    if (isset($_SESSION['email'])) { // Check for email in session
-                        $email = $_SESSION['email'];
-                        $recentTransactions = getRecentTransactions($conn, $email, 10); // Use email
-                        displayRecentTransactions($recentTransactions);
-                    } else {
-                        echo "<p>Please log in to see your transactions.</p>";
-                    }
-                    ?>
-                </div>
-            </section>
+    <h2 style="font-size: 26px; margin-top: 30px; text-align:center">Recent Incomplete Transactions</h2>
+    <div class="transaction-grid">
+        <?php
+        if (isset($_SESSION['email'])) { // Check for email in session
+            $email = $_SESSION['email'];
+            $recentTransactions = getRecentTransactions($conn, $email, 10); // Use email
+
+            if ($recentTransactions->num_rows > 0) {
+                ?>
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Date Borrowed</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        while ($row = $recentTransactions->fetch_assoc()) {
+                            // Calculate Status (same logic as admin side)
+                            $returnDateTimestamp = strtotime($row['return_date']);
+
+                            if ($returnDateTimestamp === false) {
+                                $status = 'Invalid Date';
+                                error_log("Invalid return_date: " . $row['return_date'] . " for transaction ID: " . $row['transaction_id']);
+                            } else {
+                                $nowTimestamp = time();
+                                $status = ($nowTimestamp > $returnDateTimestamp) ? 'Late Return' : 'Active';
+                            }
+                            ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['book_title']); ?></td>
+                                <td><?php echo htmlspecialchars($row['date_borrowed']); ?></td>
+                                <td><?php echo htmlspecialchars($row['return_date']); ?></td>
+                                <td class="<?php echo ($status === 'Late Return') ? 'late' : 'active'; ?>">
+                                    <?php echo htmlspecialchars($status); ?>
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <?php
+            } else {
+                echo "<p>No incomplete transactions</p>";
+            }
+        } else {
+            echo "<p>Please log in to see your transactions.</p>";
+        }
+        ?>
+    </div>
+</section>
         </div>
     </div>
     <script>

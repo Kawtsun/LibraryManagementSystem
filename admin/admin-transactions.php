@@ -1,12 +1,25 @@
 <?php
 // Include your database connection.
 include '../validate/db.php';
+
 session_start();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+// *** CRITICAL: Adjust these paths to match your setup! ***
+require '../PHPMailer-master/PHPMailer-master/src/Exception.php';
+require '../PHPMailer-master/PHPMailer-master/src/PHPMailer.php';
+require '../PHPMailer-master/PHPMailer-master/src/SMTP.php';
+
+include_once 'email_functions.php'; // Include the file containing send_email()
 
 if (!isset($_SESSION['admin'])) {
     header("Location: admin-login.php");
     exit;
 }
+
 // Get the search query (if any) for transactions.
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
 
@@ -30,13 +43,13 @@ if ($searchQuery !== "") {
 
 // Main UNION query: Fetch incomplete transactions and their source tables.
 $sql_transactions = "
-    SELECT t.transaction_id, t.email, t.name, t.book_title, t.date_borrowed, t.return_date,
-           CASE
-               WHEN b.title IS NOT NULL THEN 'books'
-               WHEN ab.title IS NOT NULL THEN 'author_books'
-               WHEN lb.title IS NOT NULL THEN 'library_books'
-               ELSE NULL
-           END AS source
+    SELECT t.transaction_id, t.email, t.name, t.book_title, t.date_borrowed, t.return_date, t.date_returned,
+        CASE
+            WHEN b.title IS NOT NULL THEN 'books'
+            WHEN ab.title IS NOT NULL THEN 'author_books'
+            WHEN lb.title IS NOT NULL THEN 'library_books'
+            ELSE NULL
+        END AS source
     FROM transactions t
     LEFT JOIN books b ON t.book_title = b.title
     LEFT JOIN author_books ab ON t.book_title = ab.title
@@ -51,6 +64,23 @@ $transactions = [];
 if ($result_transactions && $result_transactions->num_rows > 0) {
     while ($row = $result_transactions->fetch_assoc()) {
         $transactions[] = $row;
+
+        // *** Late Return Email Logic (Calculated in PHP) ***
+        $returnDate = strtotime($row['return_date']);
+        $dateReturned = strtotime($row['date_returned']);
+
+        // Check if the book has been returned and if it was returned late.
+        // Also check if date_returned is not NULL (to avoid errors if not returned yet)
+        if ($row['date_returned'] !== null && $dateReturned !== false && $dateReturned > $returnDate) {
+            $email_address = $row['email'];
+            $name = $row['name'];
+            $book_title = $row['book_title'];
+
+            if (!send_email(email_address: $email_address, name: $name, book_title: $book_title)) {
+                error_log("Failed to send late return email to: " . $email_address);
+            }
+        }
+        // *** End Late Return Email Logic ***
     }
 }
 
@@ -637,6 +667,7 @@ $conn->close();
 #startScanBtn, #openCompletedBtn {
     margin-left: 1030px; /* Adjust spacing as needed */
 }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -743,254 +774,301 @@ $conn->close();
 
 
             <table class="transactions-table">
-                <thead>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Book Title</th>
-                        <th>Date Borrowed</th>
-                        <th>Return Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($transactions)): ?>
-                        <tr>
-                            <td colspan="7" style="text-align: center;">No incomplete transactions found.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($transactions as $transaction): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['email']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['name']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['book_title']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
-                                <td>
-                                    <button
-                                        class="return-btn"
-                                        onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
-                                        Return
-                                    </button>
-                                    <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
+    <thead>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Book Title</th>
+            <th>Date Borrowed</th>
+            <th>Return Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (empty($transactions)): ?>
+            <tr>
+                <td colspan="8" style="text-align: center;">No incomplete transactions found.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($transactions as $transaction): ?>
+                <?php
+                // Calculate Status
+                $returnDateTimestamp = strtotime($transaction['return_date']);
 
-                <script>window.confirmDeleteTransaction = function(transactionId) {
-    const currentPage = 1; // Default page if undefined
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "Deleting this transaction cannot be undone!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e74c3c',
-        cancelButtonColor: '#3498db',
-        confirmButtonText: 'Yes, delete it!'
-    }).then(result => {
-        if (result.isConfirmed) {
-            window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
-        }
-    });
-};</script>
-                
-            </table>
-            <div class="pagination">
-                <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">← Previous</a>
-                <?php else: ?>
-                    <a class="disabled">← Previous</a>
-                <?php endif; ?>
-
-                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
-
-                <?php if ($page < $total_pages): ?>
-                    <a href="?page=<?php echo $page + 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next →</a>
-                <?php else: ?>
-                    <a class="disabled">Next →</a>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <script>
-            lucide.createIcons();
-        </script>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const searchInput = document.getElementById("searchInput");
-                const suggestionsList = document.getElementById("suggestions");
-
-                if (searchInput) {
-                    searchInput.addEventListener("input", function() {
-                        const query = this.value.trim();
-                        if (query.length > 0) {
-                            fetch(`searchTransactions.php?q=${encodeURIComponent(query)}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    suggestionsList.innerHTML = "";
-                                    if (data.length > 0) {
-                                        data.forEach(transaction => {
-                                            const li = document.createElement("li");
-                                            li.textContent = `${transaction.name} - ${transaction.book_title}`;
-                                            li.addEventListener("click", function() {
-                                                searchInput.value = `${transaction.name}`;
-                                                window.location.href = `admin-transactions.php?search=${encodeURIComponent(transaction.name)}`;
-                                            });
-                                            suggestionsList.appendChild(li);
-                                        });
-                                    } else {
-                                        const li = document.createElement("li");
-                                        li.textContent = "No incomplete transactions found";
-                                        suggestionsList.appendChild(li);
-                                    }
-                                })
-                                .catch(error => console.error("Error fetching search results:", error));
-                        } else {
-                            suggestionsList.innerHTML = "";
-                        }
-                    });
-
-                    searchInput.addEventListener("keydown", function(e) {
-                        if (e.key === "Enter") {
-                            e.preventDefault();
-                            window.location.href = `admin-transactions.php?search=${encodeURIComponent(this.value.trim())}`;
-                        }
-                    });
+                // Check if strtotime was successful
+                if ($returnDateTimestamp === false) {
+                    $status = 'Invalid Date'; // Handle invalid date
+                    error_log("Invalid return_date: " . $transaction['return_date'] . " for transaction ID: " . $transaction['transaction_id']);
+                } else {
+                    $nowTimestamp = time();
+                    $status = ($nowTimestamp > $returnDateTimestamp) ? 'Late Return' : 'Active'; // Ternary operator for brevity
                 }
-            });
-        </script>
-        <script>
-            // Open Completed Transactions Modal and Load Data
-            document.addEventListener("DOMContentLoaded", function() {
-                const completedTransactionsModal = document.getElementById('completedTransactionsModal');
-                const completedTransactionsBody = document.getElementById('completedTransactionsBody');
+                ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
+                    <td><?php echo htmlspecialchars($transaction['email']); ?></td>
+                    <td><?php echo htmlspecialchars($transaction['name']); ?></td>
+                    <td><?php echo htmlspecialchars($transaction['book_title']); ?></td>
+                    <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
+                    <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
+                    <td class="status <?php echo ($status == 'Late Return') ? 'late' : (($status == 'Invalid Date') ? 'invalid' : 'active'); ?>">
+                        <?php echo htmlspecialchars($status); ?>
+                    </td>
+                    <td>
+                        <button
+                            class="return-btn"
+                            onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
+                            Return
+                        </button>
+                        <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
+                    </td>
+                </tr>
+                <?php
 
-                // Function to open the modal
-                window.openCompletedTransactionsModal = function() {
-                    if (!completedTransactionsModal) {
-                        console.error("Completed Transactions modal element not found");
-                        return;
-                    }
+// ... rest of your code ...
 
-                    // Show the modal
-                    completedTransactionsModal.style.display = "flex";
+if ($status == 'Late Return') {
+    $email_address = $transaction['email'];
+    $name = $transaction['name'];
+    $book_title = $transaction['book_title'];
 
-                    // Dynamically load completed transactions
-                    loadCompletedTransactions();
-                };
+    if (!send_email(email_address: $email_address, name: $name, book_title: $book_title)) {
+        error_log("Failed to send late return email to: " . $email_address);
+        // Optionally, you could add a message to the admin interface
+        // to indicate that the email failed to send.
+    }
+}
+?>
 
-                // Function to fetch and load completed transaction data
-                function loadCompletedTransactions() {
-                    fetch('fetch-completed-transactions.php') // Replace with your backend file path
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<style>
+    .late {
+        color: red;
+    }
+
+    .active {
+        color: green;
+    }
+</style>
+
+<div class="pagination">
+    <?php if ($page > 1): ?>
+        <a href="?page=<?php echo $page - 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">← Previous</a>
+    <?php else: ?>
+        <a class="disabled">← Previous</a>
+    <?php endif; ?>
+
+    <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+
+    <?php if ($page < $total_pages): ?>
+        <a href="?page=<?php echo $page + 1; ?><?php echo (isset($_GET['search']) && $_GET['search'] !== '' ? '&search=' . urlencode($_GET['search']) : ''); ?>">Next →</a>
+    <?php else: ?>
+        <a class="disabled">Next →</a>
+    <?php endif; ?>
+</div>
+
+<script>
+    window.confirmDeleteTransaction = function(transactionId) {
+        const currentPage = 1; // Default page if undefined
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Deleting this transaction cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#3498db',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(result => {
+            if (result.isConfirmed) {
+                window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
+            }
+        });
+    };
+</script>
+
+<script>
+    lucide.createIcons();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("searchInput");
+        const suggestionsList = document.getElementById("suggestions");
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function() {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    fetch(`searchTransactions.php?q=${encodeURIComponent(query)}`)
                         .then(response => response.json())
                         .then(data => {
-                            completedTransactionsBody.innerHTML = ''; // Clear previous content
-
+                            suggestionsList.innerHTML = "";
                             if (data.length > 0) {
                                 data.forEach(transaction => {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                            <td>${transaction.transaction_id}</td>
-                            <td>${transaction.email}</td>
-                            <td>${transaction.name}</td>
-                            <td>${transaction.book_title}</td>
-                            <td>${transaction.date_borrowed}</td>
-                            <td>${transaction.return_date}</td>
-                            <td>${transaction.date_returned}</td>
-                            <td>
-                                <button onclick="confirmDeleteTransactionCompleted(${transaction.transaction_id})" class="delete-button">Delete</button>
-                            </td>
-                        `;
-                                    completedTransactionsBody.appendChild(row);
+                                    const li = document.createElement("li");
+                                    li.textContent = `${transaction.name} - ${transaction.book_title}`;
+                                    li.addEventListener("click", function() {
+                                        searchInput.value = `${transaction.name}`;
+                                        window.location.href = `admin-transactions.php?search=${encodeURIComponent(transaction.name)}`;
+                                    });
+                                    suggestionsList.appendChild(li);
                                 });
                             } else {
-                                completedTransactionsBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No completed transactions found.</td></tr>';
+                                const li = document.createElement("li");
+                                li.textContent = "No incomplete transactions found";
+                                suggestionsList.appendChild(li);
                             }
                         })
-                        .catch(error => console.error('Error loading completed transactions:', error));
+                        .catch(error => console.error("Error fetching search results:", error));
+                } else {
+                    suggestionsList.innerHTML = "";
                 }
-
-                // Delete function for completed transactions
-                window.confirmDeleteTransactionCompleted = function(transactionId) {
-                    const currentPage = 1; // Default page if undefined
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "Deleting this transaction cannot be undone!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#e74c3c',
-                        cancelButtonColor: '#3498db',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then(result => {
-                        if (result.isConfirmed) {
-                            window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
-                        }
-                    });
-                };
-
-                // Bind click event to the button for opening the modal
-                const openButton = document.getElementById('openCompletedTransactions');
-                if (openButton) {
-                    openButton.addEventListener("click", function() {
-                        openCompletedTransactionsModal();
-                    });
-                }
-
-                // Close modal when clicking on any element with the `.close` class
-                document.querySelectorAll('#completedTransactionsModal .close').forEach(function(closeBtn) {
-                    closeBtn.addEventListener("click", function() {
-                        completedTransactionsModal.style.display = "none";
-                    });
-                });
-
-                // Close the modal if clicking outside its content
-                window.addEventListener("click", function(event) {
-                    if (event.target === completedTransactionsModal) {
-                        completedTransactionsModal.style.display = "none";
-                    }
-                });
             });
-        </script>
-        <script>
-            function markAsReturned(transactionId, source) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You are about to mark this transaction as returned.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, mark as returned!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        fetch('mark-as-returned.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: `transaction_id=${transactionId}&source=${source}`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire('Success', data.message, 'success').then(() => location.reload());
-                                } else {
-                                    Swal.fire('Error', data.message, 'error');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire('Error', 'An unexpected error occurred.', 'error');
-                            });
+
+            searchInput.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    window.location.href = `admin-transactions.php?search=${encodeURIComponent(this.value.trim())}`;
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    // Open Completed Transactions Modal and Load Data
+    document.addEventListener("DOMContentLoaded", function() {
+        const completedTransactionsModal = document.getElementById('completedTransactionsModal');
+        const completedTransactionsBody = document.getElementById('completedTransactionsBody');
+
+        // Function to open the modal
+        window.openCompletedTransactionsModal = function() {
+            if (!completedTransactionsModal) {
+                console.error("Completed Transactions modal element not found");
+                return;
+            }
+
+            // Show the modal
+            completedTransactionsModal.style.display = "flex";
+
+            // Dynamically load completed transactions
+            loadCompletedTransactions();
+        };
+
+        // Function to fetch and load completed transaction data
+        function loadCompletedTransactions() {
+            fetch('fetch-completed-transactions.php') // Replace with your backend file path
+                .then(response => response.json())
+                .then(data => {
+                    completedTransactionsBody.innerHTML = ''; // Clear previous content
+
+                    if (data.length > 0) {
+                        data.forEach(transaction => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${transaction.transaction_id}</td>
+                                <td>${transaction.email}</td>
+                                <td>${transaction.name}</td>
+                                <td>${transaction.book_title}</td>
+                                <td>${transaction.date_borrowed}</td>
+                                <td>${transaction.return_date}</td>
+                                <td>${transaction.date_returned}</td>
+                                <td>
+                                    <button onclick="confirmDeleteTransactionCompleted(${transaction.transaction_id})" class="delete-button">Delete</button>
+                                </td>
+                            `;
+                            completedTransactionsBody.appendChild(row);
+                        });
+                    } else {
+                        completedTransactionsBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No completed transactions found.</td></tr>';
                     }
+                })
+                .catch(error => console.error('Error loading completed transactions:', error));
+        }
+
+        // Delete function for completed transactions
+        window.confirmDeleteTransactionCompleted = function(transactionId) {
+            const currentPage = 1; // Default page if undefined
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Deleting this transaction cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#3498db',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
+                }
+            });
+        };
+
+        // Bind click event to the button for opening the modal
+        const openButton = document.getElementById('openCompletedTransactions');
+        if (openButton) {
+            openButton.addEventListener("click", function() {
+                openCompletedTransactionsModal();
+            });
+        }
+
+        // Close modal when clicking on any element with the `.close` class
+        document.querySelectorAll('#completedTransactionsModal .close').forEach(function(closeBtn) {
+            closeBtn.addEventListener("click", function() {
+                completedTransactionsModal.style.display = "none";
+            });
+        });
+
+        // Close the modal if clicking outside its content
+        window.addEventListener("click", function(event) {
+            if (event.target === completedTransactionsModal) {
+                completedTransactionsModal.style.display = "none";
+            }
+        });
+    });
+</script>
+
+<script>
+    function markAsReturned(transactionId, source) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to mark this transaction as returned.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, mark as returned!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('mark-as-returned.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `transaction_id=${transactionId}&source=${source}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Success', data.message, 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'An unexpected error occurred.', 'error');
                 });
             }
-        </script>
+        });
+    }
+</script>
 
 <script>
     function startScan() {
@@ -1067,52 +1145,52 @@ $conn->close();
                 stopScan();
             });
     }
-        function stopScan() {
-            Quagga.stop();
-            const scanner = document.getElementById("scanner");
-            if (scanner) {
-                scanner.pause();
-                if (scanner.srcObject) {
-                    scanner.srcObject.getTracks().forEach(track => track.stop());
-                }
-                scanner.srcObject = null;
+    function stopScan() {
+        Quagga.stop();
+        const scanner = document.getElementById("scanner");
+        if (scanner) {
+            scanner.pause();
+            if (scanner.srcObject) {
+                scanner.srcObject.getTracks().forEach(track => track.stop());
             }
-            document.getElementById("scanner").style.display = "none";
-            document.getElementById("startScanBtn").style.display = "inline-block";
-            document.getElementById("stopScanBtn").style.display = "none";
-            document.getElementById("scanResult").innerText = "";
+            scanner.srcObject = null;
         }
+        document.getElementById("scanner").style.display = "none";
+        document.getElementById("startScanBtn").style.display = "inline-block";
+        document.getElementById("stopScanBtn").style.display = "none";
+        document.getElementById("scanResult").innerText = "";
+    }
 
-        function processScannedBarcode(barcode) {
-            console.log("processScannedBarcode called with:", barcode);
+    function processScannedBarcode(barcode) {
+        console.log("processScannedBarcode called with:", barcode);
 
-            fetch('return_book_barcode.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'barcode=' + encodeURIComponent(barcode)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Success!', data.message, 'success')
-                        .then(() => location.reload());
-                } else {
-                    Swal.fire('Error!', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error processing barcode:', error);
-                Swal.fire('Error!', 'An error occurred while processing the barcode. Please check the console.', 'error');
-            });
-        }
-    </script>
+        fetch('return_book_barcode.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'barcode=' + encodeURIComponent(barcode)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Success!', data.message, 'success')
+                    .then(() => location.reload());
+            } else {
+                Swal.fire('Error!', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error processing barcode:', error);
+            Swal.fire('Error!', 'An error occurred while processing the barcode. Please check the console.', 'error');
+        });
+    }
+</script>
 
 </body>
 </html>
