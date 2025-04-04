@@ -2,6 +2,9 @@
 include '../validate/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['barcode'])) {
+    // date_default_timezone_set('Asia/Manila');
+
+    // $currentTime = date('H:i:s');
     $barcode = $conn->real_escape_string($_POST['barcode']);
 
     error_log("Received barcode: " . $barcode); // Log received barcode

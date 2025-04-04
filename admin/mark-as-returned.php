@@ -79,7 +79,8 @@ try {
     $stmtUpdate->close();
 
     // Mark the transaction as returned.
-    $current_date = date('Y-m-d');
+    date_default_timezone_set('Asia/Manila');
+    $current_date = date('Y-m-d H:i:s');
     $updateTransQuery = "UPDATE transactions SET completed = 1, date_returned = ? WHERE transaction_id = ?";
     $stmtTrans = $conn->prepare($updateTransQuery);
     if (!$stmtTrans) {
