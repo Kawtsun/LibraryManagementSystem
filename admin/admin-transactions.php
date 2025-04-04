@@ -995,6 +995,24 @@ $conn->close();
                             .catch(error => console.error('Error loading completed transactions:', error));
                     }
 
+                    // Delete function for completed transactions
+                    window.confirmDeleteTransactionCompleted = function(transactionId) {
+                        const currentPage = 1; // Default page if undefined
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Deleting this transaction cannot be undone!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#e74c3c',
+                            cancelButtonColor: '#3498db',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then(result => {
+                            if (result.isConfirmed) {
+                                window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
+                            }
+                        });
+                    };
+
                     // Bind click event to the button for opening the modal
                     const openButton = document.getElementById('openCompletedTransactions');
                     if (openButton) {
