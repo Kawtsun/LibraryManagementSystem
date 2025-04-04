@@ -79,21 +79,22 @@ try {
     $stmtUpdate->close();
 
     // Mark the transaction as returned.
+    // Ensure the timezone is set correctly
     date_default_timezone_set('Asia/Manila');
-    $current_date = date('Y-m-d H:i:s');
-    $updateTransQuery = "UPDATE transactions SET completed = 1, date_returned = ? WHERE transaction_id = ?";
-    $stmtTrans = $conn->prepare($updateTransQuery);
-    if (!$stmtTrans) {
-        throw new Exception("Failed to prepare transaction update query: " . $conn->error);
+
+    // Get the current date and time in the correct format
+    $current_date_time = date('Y-m-d H:i:s');
+
+    // Pass the full date and time to the database
+    $insertQuery = "UPDATE transactions SET date_borrowed = ?, completed = 1, date_returned = ? WHERE transaction_id = ?";
+    $stmt = $conn->prepare($insertQuery);
+    if (!$stmt) {
+        throw new Exception("Failed to prepare query: " . $conn->error);
     }
-    $stmtTrans->bind_param('si', $current_date, $transaction_id);
-    if (!$stmtTrans->execute()) {
-        throw new Exception("Execution failed for updating transaction: " . $stmtTrans->error);
+    $stmt->bind_param('ssi', $current_date_time, $current_date_time, $transaction_id);
+    if (!$stmt->execute()) {
+        throw new Exception("Query execution failed: " . $stmt->error);
     }
-    if ($stmtTrans->affected_rows === 0) {
-        throw new Exception("Transaction record not updated. Verify the transaction ID.");
-    }
-    $stmtTrans->close();
 
     // Commit the transaction.
     $conn->commit();
@@ -105,4 +106,3 @@ try {
 }
 
 $conn->close();
-?>
