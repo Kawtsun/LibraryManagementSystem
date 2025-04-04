@@ -2,16 +2,6 @@
 session_start();
 include '../validate/db.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer-master/PHPMailer-master/src/Exception.php';
-require 'PHPMailer-master/PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/PHPMailer-master/src/SMTP.php';
-
-include 'email_functions.php'; // Or the correct path to your file
-
 
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
