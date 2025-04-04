@@ -8,6 +8,7 @@ session_start();
 if (!isset($_SESSION["transaction_data"])) {
     die("No transaction data found.");
 }
+date_default_timezone_set('Asia/Manila');
 
 $data = $_SESSION["transaction_data"];
 $student_id = $data['student_id'] ?? 'Unknown';

@@ -36,7 +36,9 @@ function insertTransaction($conn, $data, $barcode) {
     $contact_number = $data['contact'];
     $address         = $data['address'];
     $book_title     = $data['book_title'];
-    $date_borrowed = $data['date_borrowed'];
+    date_default_timezone_set('Asia/Manila');
+    $currentTime = date('H:i:s'); // Current time in HH:MM:SS format for Philippine Time
+    $date_borrowed = $data['date_borrowed'] . ' ' . $currentTime;
     $return_date     = $data['return_date'];
     $course         = $data['course'];
     $author         = $data['author'];

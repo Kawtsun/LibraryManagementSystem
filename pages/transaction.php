@@ -238,57 +238,63 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         }
 
         .button-row {
-    display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    align-items: center; /* Align buttons vertically in the center */
-    margin-top: 10px; /* Add some space above the buttons */
-}
+            display: flex;
+            justify-content: center;
+            /* Center buttons horizontally */
+            align-items: center;
+            /* Align buttons vertically in the center */
+            margin-top: 10px;
+            /* Add some space above the buttons */
+        }
 
-.button-row button {
-    margin: 0 10px; /* Add equal spacing on both sides */
-}
+        .button-row button {
+            margin: 0 10px;
+            /* Add equal spacing on both sides */
+        }
 
-/* Style for the "Proceed to Print Transaction" button */
-.button-row button[type="submit"] {
-    padding: 12px 85px; /* Larger padding for "Proceed" button */
-    background-color: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-weight: 600;
-}
+        /* Style for the "Proceed to Print Transaction" button */
+        .button-row button[type="submit"] {
+            padding: 12px 85px;
+            /* Larger padding for "Proceed" button */
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: 600;
+        }
 
-.button-row button[type="submit"]:hover {
-    background-color: #2980b9;
-    transform: scale(1.03);
-}
+        .button-row button[type="submit"]:hover {
+            background-color: #2980b9;
+            transform: scale(1.03);
+        }
 
-/* Style for the "Back to Dashboard" button */
-.back-button {
-    padding: 12px 25px; /* Smaller padding for "Back" button */
-    background-color: rgb(224, 50, 50);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-weight: 600;
-}
+        /* Style for the "Back to Dashboard" button */
+        .back-button {
+            padding: 12px 25px;
+            /* Smaller padding for "Back" button */
+            background-color: rgb(224, 50, 50);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: 600;
+        }
 
-.back-button:hover {
-    background-color: rgb(163, 0, 0);
-    transform: scale(1.03);
-}
+        .back-button:hover {
+            background-color: rgb(163, 0, 0);
+            transform: scale(1.03);
+        }
 
-/* General button hover style */
-button:hover {
-    background-color: #2980b9;
-    transform: scale(1.02);
-}
+        /* General button hover style */
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.02);
+        }
 
         .info-row {
             display: flex;
@@ -355,9 +361,11 @@ button:hover {
         .error-modal-content button:hover {
             background-color: #2980b9;
         }
-        .cancel-borrowing-button { /* Replace with the actual class */
-    display: none;
-}
+
+        .cancel-borrowing-button {
+            /* Replace with the actual class */
+            display: none;
+        }
     </style>
 </head>
 
@@ -424,16 +432,16 @@ button:hover {
                     <input type="date" id="return_date" name="return_date" required>
                 </div>
             </div>
-   <div class="button-row">
-    <button type="button" class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
-    <button type="submit">Proceed to Print Transaction</button>
-</div>
+            <div class="button-row">
+                <button type="button" class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
+                <button type="submit">Proceed to Print Transaction</button>
+            </div>
 
-<script>
-    function cancelBorrowing() {
-        window.location.href = "Dashboard.php";
-    }
-</script>
+            <script>
+                function cancelBorrowing() {
+                    window.location.href = "Dashboard.php";
+                }
+            </script>
         </form>
         <?php if (!empty($errorMessage)) { ?>
             <div id="errorModal" class="error-modal">
@@ -449,21 +457,26 @@ button:hover {
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let today = new Date().toISOString().split('T')[0];
+            // Get the current date and time in UTC
+            let now = new Date();
+
+            // Adjust for Philippine Standard Time (UTC+8)
+            let utcOffset = 8; // UTC+8 offset
+            now.setHours(now.getHours() + utcOffset);
+
+            // Format the date for input field (YYYY-MM-DD) and time for backend (HH:mm:ss)
+            let todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            let currentTime = now.toTimeString().split(' ')[0]; // HH:mm:ss
+
             let dateBorrowed = document.getElementById("date_borrowed");
             let returnDate = document.getElementById("return_date");
-            dateBorrowed.value = today;
-            dateBorrowed.min = today;
-            returnDate.min = today;
-            dateBorrowed.addEventListener("change", function() {
-                returnDate.min = dateBorrowed.value;
-            });
-            returnDate.addEventListener("change", function() {
-                if (returnDate.value < dateBorrowed.value) {
-                    alert("Return date cannot be earlier than the borrowed date!");
-                    returnDate.value = dateBorrowed.value;
-                }
-            });
+
+            // Set the default value for 'date_borrowed'
+            dateBorrowed.value = todayDate; // Only sets the date (time will be appended in PHP)
+            dateBorrowed.min = todayDate;
+
+            // Set the min value for 'return_date'
+            returnDate.min = todayDate;
 
             <?php if (!empty($errorMessage)) { ?>
                 document.querySelector(".container").classList.add("blurred");
