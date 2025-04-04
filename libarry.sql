@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 02, 2025 at 01:25 PM
+-- Generation Time: Apr 04, 2025 at 12:07 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -300,11 +300,11 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `cover_image`, `category_id`, `date_added`, `quantity`, `Available`) VALUES
-(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-28 10:31:43', 5, 3),
+(35, 'Advanced Algebra', 'Mathematics', 'John Doe', 2020, '', NULL, '2025-03-28 10:31:43', 5, 1),
 (36, 'Calculus Essentials', 'Mathematics', 'Jane Smith', 2019, '', NULL, '2025-03-28 00:22:42', 5, 3),
-(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL, '2025-04-01 08:25:59', 5, 4),
-(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL, '2025-03-28 12:49:31', 5, 3),
-(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL, '2025-03-29 23:47:10', 5, 4),
+(37, 'Statistics for Beginners', 'Mathematics', 'Robert Brown', 2021, '', NULL, '2025-04-01 08:25:59', 5, 0),
+(38, 'Physics for Everyone', 'Science', 'Albert Newton', 2018, '', NULL, '2025-03-28 12:49:31', 5, 0),
+(39, 'The Wonders of Chemistry', 'Science', 'Marie Curie', 2022, '', NULL, '2025-03-29 23:47:10', 5, 1),
 (40, 'Biology: The Living World', 'Science', 'Charles Darwin', 2023, '', NULL, '2025-04-01 00:30:29', 5, 5),
 (41, 'Mastering Grammar', 'English', 'Emily White', 2020, '', NULL, '2025-03-28 11:34:46', 5, 5),
 (42, 'Shakespeare’s Classics', 'English', 'William S.', 2017, '', NULL, '2025-03-28 23:26:21', 5, 5),
@@ -316,11 +316,11 @@ INSERT INTO `books` (`id`, `title`, `subject`, `author`, `publication_year`, `co
 (48, 'Entrepreneurship 101', 'TLE', 'Mark Cuban', 2021, '', NULL, '2025-04-01 15:18:45', 5, 5),
 (49, 'Computer Hardware Basics', 'TLE', 'Steve Jobs', 2022, '', NULL, '2025-03-29 02:35:34', 5, 5),
 (50, 'Fitness and Health', 'Physical Education', 'Arnold Fitman', 2019, '', NULL, '2025-04-01 07:27:03', 5, 5),
-(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, '', NULL, '2025-03-31 22:13:55', 5, 4),
+(51, 'Sports Science Fundamentals', 'Physical Education', 'Michael Jordan', 2021, '', NULL, '2025-03-31 22:13:55', 5, 3),
 (52, 'Philippine History', 'Araling Panlipunan', 'Carlos Garcia', 2016, '', NULL, '2025-03-29 19:20:58', 5, 3),
-(53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, '', NULL, '2025-03-28 23:33:09', 5, 5),
+(53, 'World Geography', 'Araling Panlipunan', 'Marco Polo', 2020, '', NULL, '2025-03-28 23:33:09', 5, 4),
 (54, 'Ethics and Morality', 'ESP', 'Dr. John Ethics', 2019, '', NULL, '2025-03-31 09:21:20', 5, 4),
-(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '', NULL, '2025-04-01 13:47:00', 5, 4);
+(55, 'Character Development', 'ESP', 'Xavier Morals', 2022, '', NULL, '2025-04-01 13:47:00', 5, 3);
 
 -- --------------------------------------------------------
 
@@ -369,7 +369,7 @@ CREATE TABLE `library_books` (
 --
 
 INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image`, `date_added`, `quantity`, `Available`) VALUES
-(1, 'Algebra Fundamentals', 1, 'Algebra', NULL, '2025-03-28 09:41:03', 5, 4),
+(1, 'Algebra Fundamentals', 1, 'Algebra', NULL, '2025-03-28 09:41:03', 5, 0),
 (2, 'Geometry Basics', 1, 'Shapes and Theorems', NULL, '2025-04-01 11:56:55', 5, 5),
 (3, 'Trigonometry Explained', 1, 'Angles and Functions', NULL, '2025-03-31 19:52:08', 5, 5),
 (4, 'Probability & Statistics', 1, 'Data Analysis', NULL, '2025-03-28 05:58:27', 5, 5),
@@ -378,7 +378,7 @@ INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image
 (7, 'Linear Algebra Concepts', 1, 'Vectors and Matrices', NULL, '2025-03-29 13:08:04', 5, 5),
 (8, 'Mathematical Logic', 1, 'Proofs and Reasoning', NULL, '2025-03-31 21:33:14', 5, 5),
 (9, 'Graph Theory Overview', 1, 'Networks and Paths', NULL, '2025-03-29 03:18:46', 5, 5),
-(10, 'Advanced Calculus', 1, 'Multivariable Functions', NULL, '2025-03-30 12:57:35', 5, 5),
+(10, 'Advanced Calculus', 1, 'Multivariable Functions', NULL, '2025-03-30 12:57:35', 5, 4),
 (11, 'Physics Fundamentals', 2, 'Motion and Forces', NULL, '2025-04-01 00:25:09', 5, 5),
 (12, 'Chemistry Essentials', 2, 'Atoms and Molecules', NULL, '2025-03-29 11:19:43', 5, 5),
 (13, 'Biology Overview', 2, 'Cells and Organisms', NULL, '2025-03-30 19:28:27', 5, 5),
@@ -394,13 +394,13 @@ INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image
 (23, 'Creative Writing', 3, 'Poetry and Storytelling', NULL, '2025-03-28 23:29:40', 5, 5),
 (24, 'Public Speaking', 3, 'Speech and Communication', NULL, '2025-03-31 17:19:23', 5, 5),
 (25, 'Essay Writing', 3, 'Persuasive and Analytical Essays', NULL, '2025-03-30 21:41:13', 5, 5),
-(26, 'Syntax and Semantics', 3, 'Language Analysis', NULL, '2025-03-29 16:08:52', 5, 5),
+(26, 'Syntax and Semantics', 3, 'Language Analysis', NULL, '2025-03-29 16:08:52', 5, 3),
 (27, 'English for Beginners', 3, 'Basic Vocabulary', NULL, '2025-03-30 15:37:36', 5, 4),
 (28, 'Shakespearean Works', 3, 'Plays and Sonnets', NULL, '2025-03-31 07:34:47', 5, 5),
 (29, 'Modern English Usage', 3, 'Idioms and Expressions', NULL, '2025-03-31 03:22:34', 5, 5),
 (30, 'Critical Thinking in Literature', 3, 'Analyzing Texts', NULL, '2025-04-01 19:55:49', 5, 5),
 (31, 'Panitikan ng Pilipinas', 4, 'Kwentong Bayan', NULL, '2025-03-31 12:17:30', 5, 5),
-(32, 'Alamat at Mitolohiya', 4, 'Mga Sinaunang Kuwento', NULL, '2025-03-31 06:10:09', 5, 5),
+(32, 'Alamat at Mitolohiya', 4, 'Mga Sinaunang Kuwento', NULL, '2025-03-31 06:10:09', 5, 2),
 (33, 'Balagtasan at Tula', 4, 'Pagsusuri ng Panitikan', NULL, '2025-03-28 06:35:36', 5, 5),
 (34, 'Pagsulat ng Sanaysay', 4, 'Pagbuo ng Argumento', NULL, '2025-03-29 21:45:01', 5, 5),
 (35, 'Wika at Gramatika', 4, 'Balarila at Kayarian ng Wika', NULL, '2025-03-30 17:55:08', 5, 5),
@@ -446,7 +446,7 @@ INSERT INTO `library_books` (`id`, `title`, `category_id`, `topic`, `cover_image
 (75, 'Family and Community', 8, 'Roles in Society', NULL, '2025-03-31 05:07:50', 5, 5),
 (76, 'Decision Making and Consequences', 8, 'Ethical Choices', NULL, '2025-03-31 20:45:03', 5, 5),
 (77, 'Love and Respect', 8, 'Healthy Relationships', NULL, '2025-03-29 12:05:37', 5, 5),
-(78, 'Social Justice', 8, 'Fairness and Equality', NULL, '2025-04-01 19:01:23', 5, 5),
+(78, 'Social Justice', 8, 'Fairness and Equality', NULL, '2025-04-01 19:01:23', 5, 4),
 (79, 'Empathy and Kindness', 8, 'Understanding Others', NULL, '2025-03-29 12:35:51', 5, 5),
 (80, 'Personal Growth', 8, 'Self-Improvement and Reflection', NULL, '2025-03-30 20:08:38', 5, 5);
 
@@ -479,22 +479,31 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`transaction_id`, `email`, `name`, `address`, `contact_number`, `student_id`, `book_title`, `date_borrowed`, `return_date`, `date_returned`, `course`, `author`, `completed`, `source`, `barcode`) VALUES
-(1, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Advanced Algebra', '2025-03-31 19:20:38', '2025-04-30', '2025-03-31 20:09:49', 'BSCS', 'John Doe', 1, 'books', ''),
-(2, 'chisato@gmail.com', 'Chisato Arashi', 'Japan', '123', 'M2025-0007', 'Statistics for Beginners', '2025-03-31 07:23:10', '2025-04-16', '2025-03-31 21:11:12', 'BSCS', 'Robert Brown', 1, 'books', ''),
-(3, 'kawtsun@gmail.com', 'Morpheus Francisco', 'Morong', '123', 'M2025-0005', 'Statistics for Beginners', '2025-03-31 02:53:55', '2025-04-09', '2025-03-31 16:05:25', 'BSCS', 'Robert Brown', 1, 'books', ''),
-(4, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Advanced Algebra', '2025-03-31 16:20:05', '2025-05-02', '2025-03-31 21:11:34', 'BSCS', 'John Doe', 1, 'books', ''),
-(5, 'rika@gmail.com', 'Rika Furude', 'Japan', '123', 'M2025-0009', 'Statistics for Beginners', '2025-03-31 00:58:40', '2025-04-28', '2025-03-31 07:44:09', 'BSCS', 'Robert Brown', 1, 'books', ''),
-(6, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Advanced Algebra', '2025-03-31 03:53:08', '2025-05-15', '2025-03-31 15:16:37', 'BSCS', 'John Doe', 1, 'books', ''),
-(7, 'kita@gmail.com', 'Ikuyo Kita', 'Japan', '123', 'M2025-0006', 'Statistics for Beginners', '2025-03-31 16:29:41', '2025-05-08', '2025-03-31 23:37:56', 'BSCS', 'Robert Brown', 1, 'books', ''),
 (8, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Advanced Algebra', '2025-03-31 22:48:59', '2025-04-16', '2025-03-31 22:52:57', 'BSCS', 'John Doe', 1, 'books', ''),
 (9, 'mikoto@gmail.com', 'Mikoto Misaka', 'Japan', '123', 'M2025-0010', 'Statistics for Beginners', '2025-03-31 16:35:54', '2025-04-19', '2025-03-31 19:45:39', 'BSCS', 'Robert Brown', 1, 'books', ''),
-(60, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'The Wonders of Chemistry', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 00:00:00', 'BSA', 'Marie Curie', 1, 'books', '67ed0bdeaa988'),
-(62, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Algebra Fundamentals', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 00:00:00', 'BSA', '', 1, 'library_books', '67ed0e526d088'),
 (64, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'Calculus Essentials', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 18:20:11', 'BSCS', 'Jane Smith', 1, 'books', '67ed0f22705ef'),
-(65, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'World Geography', '2025-04-02 00:00:00', '2025-04-25', '2025-04-02 18:20:52', 'BSCS', 'Marco Polo', 1, 'books', '67ed0f66c76a9'),
-(66, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'John Doe: Crimson Tide', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 18:22:01', 'BSA', 'John Doe', 1, 'author_books', '67ed0faccee8d'),
 (67, 'billy12@gmail.com', 'Billy Crowford', 'Angono', '093425233415', 'T2023-2323', 'Statistics for Beginners', '2025-04-02 00:00:00', '2025-05-01', '2025-04-02 18:25:02', 'BSIT', 'Robert Brown', 1, 'books', '67ed103f42626'),
-(68, 'billy12@gmail.com', 'Billy Crowford', 'Angono', '093425233415', 'T2023-2323', 'Character Development', '2025-04-02 00:00:00', '2025-04-24', '2025-04-02 18:25:16', 'BSIT', 'Xavier Morals', 1, 'books', '67ed10534dd26');
+(72, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Advanced Algebra', '2025-04-03 00:00:00', '2025-04-23', '2025-04-03 00:00:00', 'BSA', 'John Doe', 1, 'books', '67ee8bc40ff98'),
+(97, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447122', 'M2022-0234', 'Alamat at Mitolohiya', '2025-04-03 00:00:00', '2025-04-24', '2025-04-03 00:00:00', 'BSCS', '', 1, 'library_books', '67eea400df716'),
+(98, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447122', 'M2022-0234', 'Physics for Everyone', '2025-04-03 00:00:00', '2025-04-25', '2025-04-03 23:08:17', 'BSCS', 'Albert Newton', 1, 'books', '67eea41806010'),
+(101, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447122', 'M2022-0234', 'Alamat at Mitolohiya', '2025-04-03 00:00:00', '2025-05-01', '2025-04-03 00:00:00', 'BSCS', '', 1, 'library_books', '67eea4c37ea14'),
+(104, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447122', 'M2022-0234', 'Alamat at Mitolohiya', '2025-04-03 00:00:00', '2025-04-24', '2025-04-03 00:00:00', 'BSCS', '', 1, 'library_books', '67eeabdd498ea'),
+(106, 'johnluizaustria@gmail.com', 'John Luiz S Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'M2022-0234', 'The Wonders of Chemistry', '2025-04-03 00:00:00', '2025-04-23', '2025-04-03 00:00:00', 'BSCS', 'Marie Curie', 1, 'books', '67eeacd51dc35'),
+(134, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Advanced Calculus', '2025-04-04 00:00:00', '2025-04-12', '2025-04-04 00:00:00', 'BSA', '', 1, 'library_books', '67ef8f48aa0e4'),
+(135, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Advanced Calculus', '2025-04-04 00:00:00', '2025-04-05', '2025-04-04 00:00:00', 'BSA', '', 1, 'library_books', '67ef8fb31cb25'),
+(136, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Advanced Algebra', '2025-04-04 00:00:00', '2025-04-12', '2025-04-04 00:00:00', 'BSA', 'John Doe', 1, 'books', '67ef8fb91cec6'),
+(137, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'Agriculture Basics', '2025-04-04 00:00:00', '2025-04-17', '2025-04-04 00:00:00', 'BSA', '', 1, 'library_books', '67ef928414040'),
+(139, 'migs123@gmail.com', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131', 'B2023-2034', 'The Wonders of Chemistry', '2025-04-04 00:00:00', '2025-04-05', '2025-04-04 00:00:00', 'BSA', 'Marie Curie', 1, 'books', '67ef96e00122c'),
+(140, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'Advanced Calculus', '2025-04-04 00:00:00', '2025-04-05', '2025-04-05 00:00:00', 'BSIT', '', 1, 'library_books', '67ef972c0606f'),
+(141, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'Advanced Calculus', '2025-04-05 00:00:00', '2025-04-06', '2025-04-04 00:00:00', 'BSIT', '', 1, 'library_books', '67f0ee139af27'),
+(142, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'Character Development', '2025-04-04 00:00:00', '2025-04-05', '2025-04-04 00:00:00', 'BSIT', 'Xavier Morals', 1, 'books', '67ef9e9856b86'),
+(143, 'matienzoandrews@gmail.com', 'Andrews Matienzo', 'Palangoy, Rizal', '0936244121', 'M2024-0235', 'Alamat at Mitolohiya', '2025-04-04 00:00:00', '2025-04-06', '2025-04-04 00:00:00', 'BSCS', '', 1, 'library_books', '67ef9f44aead5'),
+(145, 'matienzoandrews@gmail.com', 'Andrews Matienzo', 'Palangoy, Rizal', '0936244121', 'M2024-0235', 'Advanced Algebra', '2025-04-04 00:00:00', '2025-04-06', '2025-04-04 00:00:00', 'BSCS', 'John Doe', 1, 'books', '67efa098107d9'),
+(146, 'carlosjoseph.d19@gmail.com', 'CJ Dizon', 'Teresa, Rizal', '093423535', 'R2023-2345', 'Character Development', '2025-04-04 00:00:00', '2025-04-06', '2025-04-04 00:00:00', 'BSPT', 'Xavier Morals', 1, 'books', '67efa123205ff'),
+(149, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'John Doe: Echoes of Eternity', '2025-04-04 00:00:00', '2025-04-05', '2025-04-07 00:00:00', 'BSIT', 'John Doe', 1, 'author_books', '67efa40a68def'),
+(150, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'Agriculture Basics', '2025-04-04 00:00:00', '2025-04-06', '2025-04-04 00:00:00', 'BSIT', '', 1, 'library_books', '67efa4ebedfab'),
+(151, 'austriajohnluiz12@gmail.com', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121', 'A2022-0235', 'World Geography', '2025-04-04 00:00:00', '2025-04-05', '2025-04-04 00:00:00', 'BSIT', 'Marco Polo', 1, 'books', '67efa5f609601'),
+(152, 'carlosjosephdizon19@gmail.com', 'Carlos Dizon', 'Teresa, QT', '0935965D65', 'B2024-2331', 'Character Development', '2025-04-04 00:00:00', '2025-04-06', NULL, 'BSCS', 'Xavier Morals', 0, 'books', '67efae195d51f');
 
 -- --------------------------------------------------------
 
@@ -542,7 +551,11 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `course`, `stud
 (10, 'Mikoto', '$2y$10$HBZP5RGPwpEOUxiuaHkX1uhOGTWOOe14hgX5WFd.a7i2HLZC8AsgS', 'mikoto@gmail.com', 'BSCS', 'M2025-0010', 'Mikoto Misaka', 'Japan', '123'),
 (11, 'Anon', '$2y$10$VmarTr/5XKTlbJPrL8SOxu8pNFBmckK0jfKQ6o3DsRjoKTklGYbHm', 'anon@gmail.com', 'BSCS', 'M2025-0011', 'Anon Chihaya', 'Japan', '123'),
 (12, 'migs', '$2y$10$0KRHwdxOaQZR2E3aJMnRZ.1Y44xchaBTF09hPmQkY6T4.N7602asa', 'migs123@gmail.com', 'BSA', 'B2023-2034', 'Miguel Badtrip', 'Tanay, Rizal', '09362347131'),
-(13, 'billy', '$2y$10$dk.U2p1.QjN5Pm.37AIO3.hyT/0LuNi3zLYNuA2kVYW.bLeNH30qO', 'billy12@gmail.com', 'BSIT', 'T2023-2323', 'Billy Crowford', 'Angono', '093425233415');
+(13, 'billy', '$2y$10$dk.U2p1.QjN5Pm.37AIO3.hyT/0LuNi3zLYNuA2kVYW.bLeNH30qO', 'billy12@gmail.com', 'BSIT', 'T2023-2323', 'Billy Crowford', 'Angono', '093425233415'),
+(14, 'luiz', '$2y$10$wbkFCefflwAQj1Yve24RzO3h5p1hPPZkM/QH6yZIevLVatZ8DCltq', 'austriajohnluiz12@gmail.com', 'BSIT', 'A2022-0235', 'John Luiz Austria', '670 Notanggi St. Darangan Binangonan, Rizal', '09362447121'),
+(15, 'andrews', '$2y$10$Sc57zf2vF9/2TlHedmMatevGEY3qU7lNEfGl3TRecPW6Jg/E.oQmO', 'matienzoandrews@gmail.com', 'BSCS', 'M2024-0235', 'Andrews Matienzo', 'Palangoy, Rizal', '0936244121'),
+(16, 'moti', '$2y$10$zkAdSBjiNWKLJaZ4nBp97OiNn9YLaRrGyrx77LFTsD1YY3G8qtkku', 'carlosjoseph.d19@gmail.com', 'BSPT', 'R2023-2345', 'CJ Dizon', 'Teresa, Rizal', '093423535'),
+(18, 'carlos', '$2y$10$VCAaYY8F41lt9w4nnUY8ouQQb5W3ATZf7UArLoNupyIJelvDiOfa2', 'carlosjosephdizon19@gmail.com', 'BSCS', 'B2024-2331', 'Carlos Dizon', 'Teresa, QT', '0935965D65');
 
 -- --------------------------------------------------------
 
@@ -639,13 +652,13 @@ ALTER TABLE `library_books`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables
