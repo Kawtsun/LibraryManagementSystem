@@ -20,24 +20,21 @@ function send_email($email_address, $name, $book_title) {
         //Recipients
         $mail->setFrom('johnluizaustria@gmail.com', 'AklatURSM'); // Your Gmail address
         $mail->addAddress($email_address, $name); // Use the provided email_address
-        $mail->Subject = 'Reminder: Overdue Book Return – AklatURSM'; // Updated Subject
-        $mail->Body       = "Dear " . htmlspecialchars($name) . ",
+        $mail->Subject = 'Overdue Book Return'; // Corrected Subject
+        $mail->Body       = "Dear " . htmlspecialchars($name) . ",<br><br>
 
-This is a courteous reminder that the book '" . htmlspecialchars($book_title) . "' you borrowed from AklatURSM is now overdue. We kindly request that you return it as soon as possible.
+This is a courteous reminder that the <b>" . htmlspecialchars($book_title) . "</b> book you borrowed from AklatURSM is now overdue. We kindly request that you return it as soon as possible.<br><br>
 
-If you have any concerns or inquiries regarding the return, please feel free to contact our office.
+If you have any concerns or inquiries regarding the return, please feel free to contact our office. Thank you for your cooperation.<br><br><br>
 
-Thank you for your cooperation.
-
-Best regards,
+Best regards,<br>
 AklatURSM";
         $mail->AltBody = "Dear " . $name . ",
 
 This is a courteous reminder that the book '" . $book_title . "' you borrowed from AklatURSM is now overdue. We kindly request that you return it as soon as possible.
 
-If you have any concerns or inquiries regarding the return, please feel free to contact our office.
+If you have any concerns or inquiries regarding the return, please feel free to contact our office. Thank you for your cooperation.
 
-Thank you for your cooperation.
 
 Best regards,
 AklatURSM";
