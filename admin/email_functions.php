@@ -20,7 +20,7 @@ function send_email($email_address, $name, $book_title) {
         //Recipients
         $mail->setFrom('johnluizaustria@gmail.com', 'AklatURSM'); // Your Gmail address
         $mail->addAddress($email_address, $name); // Use the provided email_address
-        $mail->Subject = 'Overdue Book Return'; // Corrected Subject
+        $mail->Subject = 'Reminder: Overdue Book Return - AklatURSM'; // Corrected Subject
         $mail->Body       = "Dear " . htmlspecialchars($name) . ",<br><br>
 
 This is a courteous reminder that the <b>" . htmlspecialchars($book_title) . "</b> book you borrowed from AklatURSM is now overdue. We kindly request that you return it as soon as possible.<br><br>
