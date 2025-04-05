@@ -4,23 +4,23 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 function send_email($email_address, $name, $book_title) {
-    $mail = new PHPMailer(true); // `true` enables exceptions
+    $mail = new PHPMailer(true); 
 
     try {
-        //Server settings
-        $mail->SMTPDebug = SMTP::DEBUG_OFF; // Disable verbose debugging output
+        
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'johnluizaustria@gmail.com'; // Your Gmail address
-        $mail->Password   = 'uyxp gdzo dlir wbgz'; // IMPORTANT: Use an App Password!
+        $mail->Username   = 'johnluizaustria@gmail.com'; 
+        $mail->Password   = 'uyxp gdzo dlir wbgz'; 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
-        //Recipients
-        $mail->setFrom('johnluizaustria@gmail.com', 'AklatURSM'); // Your Gmail address
-        $mail->addAddress($email_address, $name); // Use the provided email_address
-        $mail->Subject = 'Reminder: Overdue Book Return - AklatURSM'; // Corrected Subject
+        
+        $mail->setFrom('johnluizaustria@gmail.com', 'AklatURSM'); 
+        $mail->addAddress($email_address, $name); 
+        $mail->Subject = 'Reminder: Overdue Book Return - AklatURSM'; 
         $mail->Body       = "Dear " . htmlspecialchars($name) . ",<br><br>
 
 This is a courteous reminder that the <b>" . htmlspecialchars($book_title) . "</b> book you borrowed from AklatURSM is now overdue. We kindly request that you return it as soon as possible.<br><br>
@@ -47,3 +47,4 @@ AklatURSM";
     }
 }
 ?>
+
