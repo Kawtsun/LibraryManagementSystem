@@ -12,7 +12,17 @@ date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine Standard
 
 $data = $_SESSION["transaction_data"];
 $student_id = $data['student_id'] ?? 'Unknown';
-$date_borrowed = $data['date_borrowed'] ?? date('Y-m-d H:i:s'); // Include time
+
+// Ensure date_borrowed includes both date and time
+if (isset($data['date_borrowed']) && strtotime($data['date_borrowed'])) {
+    $date_borrowed = date('Y-m-d H:i:s', strtotime($data['date_borrowed'])); // Format to include time
+} else {
+    $date_borrowed = date('Y-m-d H:i:s'); // Default to current date and time
+}
+
+// Update the session data to ensure consistency
+$data['date_borrowed'] = $date_borrowed;
+
 $book_title = $data['book_id'] ?? 'Unknown Book'; // Assuming book_id is the title
 
 // Retrieve barcode from the session
@@ -58,7 +68,11 @@ foreach ($keysToInclude as $key) {
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(60, 10, ucfirst(str_replace("_", " ", $key)) . ":", 1, 0, 'L', true);
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(130, 10, $data[$key], 1, 1, 'L');
+        if ($key === 'date_borrowed') {
+            $pdf->Cell(130, 10, htmlspecialchars($data['date_borrowed']), 1, 1, 'L'); // Use the updated date_borrowed
+        } else {
+            $pdf->Cell(130, 10, htmlspecialchars($data[$key]), 1, 1, 'L');
+        }
     }
 }
 

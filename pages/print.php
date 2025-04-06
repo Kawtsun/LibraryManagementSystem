@@ -10,6 +10,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
     $barcode = uniqid(); // Generate a unique barcode
 
+    // Define date_borrowed variable
+    date_default_timezone_set('Asia/Manila');
+    $currentTime = date('H:i:s'); // Current time in HH:MM:SS format for Philippine Time
+    $date_borrowed = $data['date_borrowed'] . ' ' . $currentTime;
+
     // Process the transaction: insert the record and update available count.
     $success = insertTransaction($conn, $data, $barcode); // Pass barcode
 
@@ -17,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Store transaction data in the session if needed.
         $data['book_id'] = $data['book_title'];
         $data['barcode'] = $barcode; // Store barcode in session
+        $data['date_borrowed'] = $date_borrowed; // Ensure full date_borrowed is stored
         $_SESSION["transaction_data"] = $data;
     } else {
         echo "Error saving transaction.";
@@ -409,7 +415,7 @@ function insertTransaction($conn, $data, $barcode) {
             echo '<div class="full-width-box"><strong>Book Title:</strong><p>' . htmlspecialchars($data['book_title']) . '</p></div>';
 
             echo '<div class="row">';
-            echo '<div class="info-box"><strong>Date Borrowed:</strong><p>' . htmlspecialchars($data['date_borrowed']) . '</p></div>';
+            echo '<div class="info-box"><strong>Date Borrowed:</strong><p>' . htmlspecialchars($date_borrowed) . '</p></div>';
             echo '<div class="info-box"><strong>Return Date:</strong><p>' . htmlspecialchars($data['return_date']) . '</p></div>';
             echo '</div>';
 
