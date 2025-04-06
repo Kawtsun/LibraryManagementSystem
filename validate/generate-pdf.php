@@ -8,7 +8,7 @@ session_start();
 if (!isset($_SESSION["transaction_data"])) {
     die("No transaction data found.");
 }
-date_default_timezone_set('Asia/Manila');
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine Standard Time
 
 $data = $_SESSION["transaction_data"];
 $student_id = $data['student_id'] ?? 'Unknown';
@@ -88,7 +88,7 @@ try {
 // Footer (Generated Date)
 $pdf->Ln(30); // Adjust spacing after barcode/error message
 $pdf->SetFont('Arial', 'I', 10);
-$pdf->Cell(190, 10, 'Generated on ' . date("Y-m-d H:i:s"), 0, 1, 'C');
+$pdf->Cell(190, 10, 'Generated on ' . date("Y-m-d H:i:s"), 0, 1, 'C'); // Use Philippine time
 
 // Save and Output PDF
 $pdf->Output('D', $pdf_filename);

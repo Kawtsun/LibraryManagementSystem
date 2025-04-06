@@ -35,6 +35,7 @@ function displayRecentTransactions($result)
                     <th>Date Borrowed</th>
                     <th>Return Date</th>
                     <th>Status</th> <!-- Added column -->
+                    <th>Action</th> <!-- Added column for Print PDF -->
                 </tr>
             </thead>
             <tbody>
@@ -57,6 +58,15 @@ function displayRecentTransactions($result)
                         <td><?php echo htmlspecialchars($row['return_date']); ?></td>
                         <td class="<?php echo ($status === 'Late Return') ? 'late' : 'active'; ?>">
                             <?php echo htmlspecialchars($status); ?>
+                        </td>
+                        <td>
+                            <form action="print_transaction.php" method="get" target="_blank">
+                                <input type="hidden" name="transaction_id" value="<?php echo $row['transaction_id']; ?>">
+                                <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($row['student_id']); ?>">
+                                <input type="hidden" name="book_title" value="<?php echo htmlspecialchars($row['book_title']); ?>">
+                                <input type="hidden" name="date_borrowed" value="<?php echo htmlspecialchars($row['date_borrowed']); ?>">
+                                <button type="submit" class="view-button">Print PDF</button> <!-- Updated to use the same class -->
+                            </form>
                         </td>
                     </tr>
                 <?php
@@ -992,10 +1002,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <th>Date Borrowed</th>
                             <th>Return Date</th>
                             <th>Date Returned</th>
+                            <th>Action</th> <!-- Added column for Print PDF -->
                         </tr>
                     </thead>
                     <tbody id="completedTransactionsBody">
                         <!-- Dynamic rows will be injected here -->
+                        <tr>
+                            <td>${transaction.transaction_id}</td>
+                            <td>${transaction.book_title}</td>
+                            <td>${transaction.date_borrowed}</td>
+                            <td>${transaction.return_date}</td>
+                            <td>${transaction.date_returned}</td>
+                            <td>
+                                <form action="print_transaction.php" method="get" target="_blank">
+                                    <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
+                                    <button type="submit" class="view-button">Print PDF</button> <!-- Updated to use the same class -->
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1037,6 +1061,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <td>${transaction.date_borrowed}</td>
                                 <td>${transaction.return_date}</td>
                                 <td>${transaction.date_returned}</td>
+                                <td>
+                                    <form action="print_transaction.php" method="get" target="_blank">
+                                        <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
+                                        <button type="submit" class="view-button">Print PDF</button>
+                                    </form>
+                                </td>
                             `;
                                     completedTransactionsBody.appendChild(row);
                                 });
