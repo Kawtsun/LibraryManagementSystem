@@ -10,7 +10,7 @@ if (!isset($_GET['transaction_id'])) {
 $transactionId = intval($_GET['transaction_id']);
 
 // Retrieve transaction details from the database
-$sql = "SELECT email, student_id, name, address, course, author, book_title, DATE_FORMAT(date_borrowed, '%Y-%m-%d %H:%i:%s') AS date_borrowed, return_date, barcode FROM transactions WHERE transaction_id = ?";
+$sql = "SELECT email, student_id, name, address, course, author, book_title, DATE_FORMAT(date_borrowed, '%Y-%m-%d %H:%i:%s') AS date_borrowed, return_date, DATE_FORMAT(date_returned, '%Y-%m-%d %H:%i:%s') AS date_returned, barcode FROM transactions WHERE transaction_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $transactionId);
 $stmt->execute();
@@ -53,7 +53,8 @@ $fields = [
     'Author' => $transaction['author'],
     'Book Title' => $transaction['book_title'],
     'Date Borrowed' => $transaction['date_borrowed'],
-    'Return Date' => $transaction['return_date']
+    'Return Date' => $transaction['return_date'],
+    'Date Returned' => $transaction['date_returned'] // Add Date Returned
 ];
 
 foreach ($fields as $label => $value) {
