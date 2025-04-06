@@ -435,6 +435,17 @@ $conn->close();
             transform: scale(1.05);
         }
 
+        /* Print Button */
+        .view-button {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .view-button:hover {
+            background-color: #2e84be;
+            transform: scale(1.05);
+        }
+
         /* Return Button */
         .return-btn {
             background-color: #2ecc71;
@@ -645,7 +656,6 @@ $conn->close();
             /* Improve readability with better spacing */
         }
 
-
         /* Fade-in Animation */
         @keyframes fadeIn {
             from {
@@ -820,12 +830,17 @@ $conn->close();
                                     <?php echo htmlspecialchars($status); ?>
                                 </td>
                                 <td>
+                                    <form action="../pages/print_transaction.php" method="get" target="_blank" style="display:inline;">
+                                        <input type="hidden" name="transaction_id" value="<?php echo $transaction['transaction_id']; ?>">
+                                        <button type="submit" class="view-button">Print PDF</button>
+                                    </form>
                                     <button
                                         class="return-btn"
                                         onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
                                         Return
                                     </button>
                                     <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
+
                                 </td>
                             </tr>
                             <?php
@@ -983,6 +998,10 @@ $conn->close();
                                 <td>${transaction.return_date}</td>
                                 <td>${transaction.date_returned}</td>
                                 <td>
+                                    <form action="../pages/print_transaction.php" method="get" target="_blank" style="display:inline;">
+                                        <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
+                                        <button type="submit" class="view-button">Print PDF</button>
+                                    </form>
                                     <button onclick="confirmDeleteTransactionCompleted(${transaction.transaction_id})" class="delete-button">Delete</button>
                                 </td>
                             `;
