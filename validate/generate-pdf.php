@@ -12,7 +12,7 @@ date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine Standard
 
 $data = $_SESSION["transaction_data"];
 $student_id = $data['student_id'] ?? 'Unknown';
-$date_borrowed = $data['date_borrowed'] ?? date('Y-m-d');
+$date_borrowed = $data['date_borrowed'] ?? date('Y-m-d H:i:s'); // Include time
 $book_title = $data['book_id'] ?? 'Unknown Book'; // Assuming book_id is the title
 
 // Retrieve barcode from the session
@@ -27,7 +27,7 @@ if (!$barcode) {
 }
 
 // Generate a unique filename
-$pdf_filename = "Transaction_{$student_id}_{$date_borrowed}.pdf";
+$pdf_filename = "Transaction_{$student_id}_" . date('Y-m-d', strtotime($date_borrowed)) . ".pdf"; // Filename with date only
 
 $pdf = new FPDF();
 $pdf->AddPage();

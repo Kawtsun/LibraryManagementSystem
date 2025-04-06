@@ -1056,22 +1056,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 data.forEach(transaction => {
                                     const row = document.createElement('tr');
                                     row.innerHTML = `
-                                <td>${transaction.transaction_id}</td>
-                                <td>${transaction.book_title}</td>
-                                <td>${transaction.date_borrowed}</td>
-                                <td>${transaction.return_date}</td>
-                                <td>${transaction.date_returned}</td>
-                                <td>
-                                    <form action="print_transaction.php" method="get" target="_blank">
-                                        <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
-                                        <button type="submit" class="view-button">Print PDF</button>
-                                    </form>
-                                </td>
-                            `;
+                        <td>${transaction.transaction_id}</td>
+                        <td>${transaction.book_title}</td>
+                        <td>${transaction.date_borrowed}</td>
+                        <td>${transaction.return_date}</td>
+                        <td>${transaction.date_returned}</td> <!-- Added date returned -->
+                        <td>
+                            <form action="print_transaction.php" method="get" target="_blank">
+                                <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
+                                <button type="submit" class="view-button">Print PDF</button>
+                            </form>
+                        </td>
+                    `;
                                     completedTransactionsBody.appendChild(row);
                                 });
                             } else {
-                                completedTransactionsBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No completed transactions found.</td></tr>';
+                                completedTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No completed transactions found.</td></tr>'; <!-- Updated colspan -->
                             }
                         })
                         .catch(error => console.error('Error loading completed transactions:', error));

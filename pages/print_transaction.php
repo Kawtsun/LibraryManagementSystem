@@ -10,7 +10,7 @@ if (!isset($_GET['transaction_id'])) {
 $transactionId = intval($_GET['transaction_id']);
 
 // Retrieve transaction details from the database
-$sql = "SELECT email, student_id, name, address, course, author, book_title, DATE(date_borrowed) AS date_borrowed, return_date, barcode FROM transactions WHERE transaction_id = ?";
+$sql = "SELECT email, student_id, name, address, course, author, book_title, DATE_FORMAT(date_borrowed, '%Y-%m-%d %H:%i:%s') AS date_borrowed, return_date, barcode FROM transactions WHERE transaction_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $transactionId);
 $stmt->execute();
@@ -23,7 +23,7 @@ if ($result->num_rows === 0) {
 $transaction = $result->fetch_assoc();
 
 // Generate a unique filename
-$pdfFilename = "Transaction_{$transaction['student_id']}_{$transaction['date_borrowed']}.pdf";
+$pdfFilename = "Transaction_{$transaction['student_id']}_" . date('Y-m-d', strtotime($transaction['date_borrowed'])) . ".pdf";
 
 $pdf = new FPDF();
 $pdf->AddPage();
