@@ -1071,7 +1071,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     completedTransactionsBody.appendChild(row);
                                 });
                             } else {
-                                completedTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No completed transactions found.</td></tr>'; <!-- Updated colspan -->
+                                completedTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No completed transactions found.</td></tr>';
                             }
                         })
                         .catch(error => console.error('Error loading completed transactions:', error));
