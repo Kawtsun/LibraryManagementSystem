@@ -79,19 +79,15 @@ try {
     $stmtUpdate->close();
 
     // Mark the transaction as returned.
-    // Ensure the timezone is set correctly
-    date_default_timezone_set('Asia/Manila');
+    date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine Standard Time
+    $current_date_time = date('Y-m-d H:i:s'); // Get the current date and time
 
-    // Get the current date and time in the correct format
-    $current_date_time = date('Y-m-d H:i:s');
-
-    // Pass the full date and time to the database
-    $insertQuery = "UPDATE transactions SET date_borrowed = ?, completed = 1, date_returned = ? WHERE transaction_id = ?";
-    $stmt = $conn->prepare($insertQuery);
+    $updateQuery = "UPDATE transactions SET completed = 1, date_returned = ? WHERE transaction_id = ?";
+    $stmt = $conn->prepare($updateQuery);
     if (!$stmt) {
         throw new Exception("Failed to prepare query: " . $conn->error);
     }
-    $stmt->bind_param('ssi', $current_date_time, $current_date_time, $transaction_id);
+    $stmt->bind_param('si', $current_date_time, $transaction_id);
     if (!$stmt->execute()) {
         throw new Exception("Query execution failed: " . $stmt->error);
     }

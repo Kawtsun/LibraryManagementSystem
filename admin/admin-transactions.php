@@ -1108,12 +1108,13 @@ $conn->close();
                         confirmButtonText: 'Yes, mark as returned!'
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            const currentTime = new Date().toISOString(); // Get current time in ISO format
                             fetch('mark-as-returned.php', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/x-www-form-urlencoded',
                                     },
-                                    body: `transaction_id=${transactionId}&source=${source}`
+                                    body: `transaction_id=${transactionId}&source=${source}&date_returned=${encodeURIComponent(currentTime)}`
                                 })
                                 .then(response => response.json())
                                 .then(data => {
