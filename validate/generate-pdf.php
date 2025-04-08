@@ -54,7 +54,7 @@ $pdf->Ln(10); // Extra space to prevent overlap
 // Transaction Details Heading (Fixed Position)
 $pdf->SetFillColor(200, 220, 255);
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(190, 10, 'Transaction Details', 1, 1, 'C', true);
+$pdf->Cell(190, 10, strtoupper('Transaction Details'), 1, 1, 'C', true); // Uppercase the heading
 $pdf->Ln(5);
 
 // Set font for table content
@@ -66,7 +66,17 @@ $keysToInclude = ['email', 'student_id', 'name', 'contact', 'address', 'course',
 foreach ($keysToInclude as $key) {
     if (isset($data[$key])) {
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, ucfirst(str_replace("_", " ", $key)) . ":", 1, 0, 'L', true);
+        $label = ucfirst(str_replace("_", " ", $key));
+        if ($key === 'student_id') {
+            $label = 'Student ID'; // Change label for student_id
+        } elseif ($key === 'book_id') {
+            $label = 'Book Title'; // Change label for book_id
+        } elseif ($key === 'date_borrowed') {
+            $label = 'Date Borrowed'; // Capitalize first letter for date_borrowed
+        } elseif ($key === 'return_date') {
+            $label = 'Return Date'; // Capitalize first letter for return_date
+        }
+        $pdf->Cell(60, 10, $label . ":", 1, 0, 'L', true);
         $pdf->SetFont('Arial', '', 12);
         if ($key === 'date_borrowed') {
             $pdf->Cell(130, 10, htmlspecialchars($data['date_borrowed']), 1, 1, 'L'); // Use the updated date_borrowed
