@@ -20,11 +20,48 @@ function getFeaturedBooks($conn, $limit = 5)
 }
 
 // Function to fetch recently added books
-function getRecentBooks($conn, $limit = 5)
-{
-    $sql = "SELECT * FROM books ORDER BY id DESC LIMIT $limit";
-    $result = $conn->query($sql);
-    return $result;
+// Function to fetch recently added books with publication year and subject
+function getRecentBooks($conn, $limit = 5) {
+    $sql_recent_books = "
+        SELECT
+            CONCAT('B-B-', b.id) AS id,
+            b.title,
+            b.author,
+            b.date_added,
+            b.publication_year,
+            b.subject
+        FROM `books` b
+        WHERE b.`date_added` >= NOW() - INTERVAL 7 DAY
+
+        UNION ALL
+
+        SELECT
+            CONCAT('B-L-', lb.id) AS id,
+            lb.title,
+            'N/A' AS author,
+            lb.date_added,
+            NULL AS publication_year, -- Library books might not have this
+            NULL AS subject         -- Library books might not have this
+        FROM `library_books` lb
+        WHERE lb.`date_added` >= NOW() - INTERVAL 7 DAY
+
+        UNION ALL
+
+        SELECT
+            CONCAT('B-A-', ab.id) AS id,
+            ab.title,
+            ab.author,
+            ab.date_added,
+            ab.publication_year,
+            ab.subject
+        FROM `author_books` ab
+        WHERE ab.`date_added` >= NOW() - INTERVAL 7 DAY
+
+        ORDER BY `date_added` DESC
+        LIMIT $limit";
+
+    $result_recent_books = $conn->query($sql_recent_books);
+    return $result_recent_books;
 }
 
 // Function to display books

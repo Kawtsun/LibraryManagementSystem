@@ -21,13 +21,13 @@ if ($result_users->num_rows > 0) {
 }
 
 // Get the total number of books and total quantity
-$sql_books = "SELECT 
-                (SELECT COUNT(*) FROM books) AS total_count_books, 
-                (SELECT COUNT(*) FROM library_books) AS total_count_library_books, 
-                (SELECT COUNT(*) FROM author_books) AS total_count_author_books,
-                (SELECT SUM(quantity) FROM books) AS total_quantity_books, 
-                (SELECT SUM(quantity) FROM library_books) AS total_quantity_library_books, 
-                (SELECT SUM(quantity) FROM author_books) AS total_quantity_author_books";
+$sql_books = "SELECT
+                    (SELECT COUNT(*) FROM books) AS total_count_books,
+                    (SELECT COUNT(*) FROM library_books) AS total_count_library_books,
+                    (SELECT COUNT(*) FROM author_books) AS total_count_author_books,
+                    (SELECT SUM(quantity) FROM books) AS total_quantity_books,
+                    (SELECT SUM(quantity) FROM library_books) AS total_quantity_library_books,
+                    (SELECT SUM(quantity) FROM author_books) AS total_quantity_author_books";
 
 $result_books = $conn->query($sql_books);
 
@@ -45,10 +45,10 @@ if ($result_books->num_rows > 0) {
 }
 
 // Count complete and incomplete transactions
-$sql_transactions = "SELECT 
-                        SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) AS complete_transactions,
-                        SUM(CASE WHEN completed = 0 THEN 1 ELSE 0 END) AS incomplete_transactions
-                    FROM transactions";
+$sql_transactions = "SELECT
+                                SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) AS complete_transactions,
+                                SUM(CASE WHEN completed = 0 THEN 1 ELSE 0 END) AS incomplete_transactions
+                             FROM transactions";
 
 // Execute the query
 $result_transactions = $conn->query($sql_transactions);
@@ -62,64 +62,49 @@ if ($result_transactions->num_rows > 0) {
     $incomplete_transactions = 0;
 }
 
-// Get the current page for pagination
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$page = max($page, 1); // Ensure the page number is at least 1
+// Get the current page for pagination of the top 20 books
+$page_top20 = isset($_GET['page_top20']) ? (int)$_GET['page_top20'] : 1;
+$page_top20 = max($page_top20, 1); // Ensure the page number is at least 1
 
-// Records per page and offset calculation
-$records_per_page = 10;
-$offset = ($page - 1) * $records_per_page;
+// Records per page for the top 20 books
+$records_per_page_top20 = 10;
+$offset_top20 = ($page_top20 - 1) * $records_per_page_top20;
 
-// Get the total number of recently added books for pagination
-$sql_count = "
-SELECT COUNT(*) AS total_books 
-FROM (
-    SELECT `id` FROM `books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
-    UNION ALL
-    SELECT `id` FROM `library_books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
-    UNION ALL
-    SELECT `id` FROM `author_books` WHERE `date_added` >= NOW() - INTERVAL 7 DAY
-) AS combined_books";
-$result_count = $conn->query($sql_count);
-$total_recent_books = $result_count->fetch_assoc()['total_books'];
-
-$total_pages = ceil($total_recent_books / $records_per_page);
-
-// Query to fetch recently added books with pagination
-$sql_recent_books = "
+// Query to fetch the top 20 recently added books
+$sql_top20_books = "
 SELECT CONCAT('B-B-', `id`) AS id, `title`, `author`, `date_added`
 FROM `books`
-WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
 UNION ALL
 
 SELECT CONCAT('B-L-', `id`) AS id, `title`, 'N/A' AS `author`, `date_added`
 FROM `library_books`
-WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
 UNION ALL
 
 SELECT CONCAT('B-A-', `id`) AS id, `title`, `author`, `date_added`
 FROM `author_books`
-WHERE `date_added` >= NOW() - INTERVAL 7 DAY
 
 ORDER BY `date_added` DESC
-LIMIT $records_per_page OFFSET $offset";
+LIMIT 20";
 
-$result_recent_books = $conn->query($sql_recent_books);
+$result_top20_books = $conn->query($sql_top20_books);
 
-$recent_books = [];
-if ($result_recent_books->num_rows > 0) {
-    while ($row = $result_recent_books->fetch_assoc()) {
-        $recent_books[] = $row;
+$top20_books = [];
+if ($result_top20_books->num_rows > 0) {
+    while ($row = $result_top20_books->fetch_assoc()) {
+        $top20_books[] = $row;
     }
 }
 
-// Close the database connection
-$conn->close();
+// Calculate total pages for the top 20 books
+$total_top20_books = count($top20_books);
+$total_pages_top20 = ceil($total_top20_books / $records_per_page_top20);
+
+// Get the specific subset of books for the current page
+$paged_top20_books = array_slice($top20_books, $offset_top20, $records_per_page_top20);
 
 ?>
-
 <!DOCTYPE html>
 <html>
 
@@ -538,83 +523,84 @@ $conn->close();
             <button id="printAllReportsButton" class="modern-button">Print All Reports</button>
             <h2 style="margin-top: -20px;">Recently Added Books</h2>
 
-            <table class="recent-table">
-                <thead>
-                    <tr>
-                        <th>Book ID</th>
-                        <th>Book Title</th>
-                        <th>Author</th>
-                        <th>Date Added</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($recent_books)): ?>
-                        <tr>
-                            <td colspan="4" style="text-align: center;">No recently added books found.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($recent_books as $book): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($book['id']); ?></td>
-                                <td><?php echo htmlspecialchars($book['title']); ?></td>
-                                <td><?php echo htmlspecialchars($book['author']); ?></td>
-                                <td><?php echo htmlspecialchars($book['date_added']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+<table class="recent-table">
+    <thead>
+        <tr>
+            <th>Book ID</th>
+            <th>Book Title</th>
+            <th>Author</th>
+            <th>Date Added</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (empty($paged_top20_books)): ?>
+            <tr>
+                <td colspan="4" style="text-align: center;">No recently added books found.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($paged_top20_books as $book): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($book['id']); ?></td>
+                    <td><?php echo htmlspecialchars($book['title']); ?></td>
+                    <td><?php echo htmlspecialchars($book['author']); ?></td>
+                    <td><?php echo htmlspecialchars($book['date_added']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+    </table>
 
-            <div class="pagination">
-                <?php if ($page > 1): ?>
-                    <!-- Previous button -->
-                    <a href="?page=<?php echo $page - 1; ?>">← Previous</a>
-                <?php else: ?>
-                    <a class="disabled">← Previous</a>
-                <?php endif; ?>
+<div class="pagination">
+    <?php if ($page_top20 > 1): ?>
+        <a href="?page_top20=<?php echo $page_top20 - 1; ?>">← Previous</a>
+    <?php else: ?>
+        <a class="disabled">← Previous</a>
+    <?php endif; ?>
 
-                <!-- Current page indicator -->
-                <span>Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+    <span>Page <?php echo $page_top20; ?> of <?php echo $total_pages_top20; ?></span>
 
-                <?php if ($page < $total_pages): ?>
-                    <!-- Next button -->
-                    <a href="?page=<?php echo $page + 1; ?>">Next →</a>
-                <?php else: ?>
-                    <a class="disabled">Next →</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <?php if ($page_top20 < $total_pages_top20): ?>
+        <a href="?page_top20=<?php echo $page_top20 + 1; ?>">Next →</a>
+    <?php else: ?>
+        <a class="disabled">Next →</a>
+    <?php endif; ?>
+</div>
+</div>
+</div>
 
-    <script>
-        lucide.createIcons();
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const printAllButton = document.getElementById('printAllReportsButton');
-            const modal = document.getElementById('confirmationModal');
-            const confirmButton = document.getElementById('confirmExportButton');
-            const cancelButton = document.getElementById('cancelExportButton');
+<script>
+lucide.createIcons();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const printAllButton = document.getElementById('printAllReportsButton');
+const modal = document.getElementById('confirmationModal');
+const confirmButton = document.getElementById('confirmExportButton');
+const cancelButton = document.getElementById('cancelExportButton');
 
-            // Function to show the modal
-            const showModal = () => {
-                modal.style.display = 'flex';
-            };
+// Function to show the modal
+const showModal = () => {
+    modal.style.display = 'flex';
+};
 
-            // Function to hide the modal
-            const hideModal = () => {
-                modal.style.display = 'none';
-            };
+// Function to hide the modal
+const hideModal = () => {
+    modal.style.display = 'none';
+};
 
-            printAllButton.addEventListener('click', showModal);
-            cancelButton.addEventListener('click', hideModal);
+printAllButton.addEventListener('click', showModal);
+cancelButton.addEventListener('click', hideModal);
 
-            confirmButton.addEventListener('click', () => {
-                hideModal();
-                window.location.href = 'export_reports.php'; // Navigate to export script
-            });
-        });
-    </script>
+confirmButton.addEventListener('click', () => {
+    hideModal();
+    window.location.href = 'export_reports.php'; // Navigate to export script
+});
+});
+</script>
 </body>
 
 </html>
+<?php
+// Close the database connection at the very end
+$conn->close();
+?>
