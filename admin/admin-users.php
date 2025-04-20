@@ -455,11 +455,13 @@ $conn->close();
             /* Slightly more rounded corners */
             padding: 24px;
             width: 400px;
+            height: 600px;
             /* Fixed width for modal */
             box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
             /* Enhanced shadow for depth */
             position: relative;
             text-align: left;
+            overflow: scroll;
         }
 
         /* Close Button Styling */
