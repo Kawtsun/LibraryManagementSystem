@@ -756,7 +756,7 @@ $conn->close();
                     <p id="scanResult"></p>
                 </div>
                 <button id="openCompletedTransactions" class="open-completed-button">
-                   Completed Transactions
+                   Open Completed
                 </button>
             </div>
             <!-- Completed Transactions Modal -->
