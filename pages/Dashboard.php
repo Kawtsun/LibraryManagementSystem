@@ -38,7 +38,7 @@ function getRecentBooks($conn, $limit = 5) {
         SELECT
             CONCAT('B-L-', lb.id) AS id,
             lb.title,
-            'N/A' AS author,
+             'N/A' AS author,
             lb.date_added,
             NULL AS publication_year, -- Library books might not have this
             NULL AS subject         -- Library books might not have this
@@ -97,6 +97,49 @@ function displayBooks($result, $source)
         echo "<p>No books found.</p>";
     }
 }
+
+// Function to display recent books on the dashboard with correct source
+function displayRecentDashboardBooks($result)
+{
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            ?>
+            <div class="book-item">
+                <div class="book-image-container">
+                    <?php if (!empty($row['cover_image'])) { ?>
+                        <img src="<?php echo htmlspecialchars($row['cover_image']); ?>" alt="Book Cover" class="book-cover">
+                    <?php } else { ?>
+                        <img src="booksicon.png" alt="Book Icon" class="book-icon">
+                    <?php } ?>
+                    <div class="book-details">
+                        <p><strong>Title:</strong> <?php echo htmlspecialchars($row['title']); ?></p>
+                        <p><strong>Author:</strong> <?php echo htmlspecialchars($row['author']); ?></p>
+                        <p><strong>Publication Year:</strong> <?php echo htmlspecialchars($row['publication_year']); ?></p>
+                        <p><strong>Subject:</strong> <?php echo htmlspecialchars($row['subject']); ?></p>
+                    </div>
+                </div>
+                <p class="book-title"><?php echo htmlspecialchars($row['title']); ?></p>
+                <form action="transaction.php" method="get">
+                    <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                    <input type="hidden" name="source" value="<?php
+                        if (strpos($row['id'], 'B-B-') === 0) {
+                            echo 'books';
+                        } elseif (strpos($row['id'], 'B-L-') === 0) {
+                            echo 'library_books';
+                        } elseif (strpos($row['id'], 'B-A-') === 0) {
+                            echo 'author_books';
+                        }
+                    ?>">
+                    <button type="submit" class="borrow-btn">Borrow Book</button>
+                </form>
+            </div>
+            <?php
+        }
+    } else {
+        echo "<p>No recent books found.</p>";
+    }
+}
+
 
 // Function to fetch top authors (you might need to adjust this based on your data)
 function getTopAuthors($conn, $limit = 5)
@@ -182,9 +225,9 @@ function displayTrendingBooks($result)
 }
 function getRecentTransactions($conn, $email, $limit = 10)
 {
-    $sql = "SELECT * FROM transactions 
-            WHERE email = ? AND completed = 0 
-            ORDER BY date_borrowed DESC LIMIT ?"; // Filter for incomplete transactions
+    $sql = "SELECT * FROM transactions
+                WHERE email = ? AND completed = 0
+                ORDER BY date_borrowed DESC LIMIT ?"; // Filter for incomplete transactions
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $email, $limit);
     $stmt->execute();
@@ -202,8 +245,7 @@ function displayRecentTransactions($result)
                     <th>Book Title</th>
                     <th>Date Borrowed</th>
                     <th>Return Date</th>
-                    <th>Status</th> <!-- Added column -->
-                </tr>
+                    <th>Status</th> </tr>
             </thead>
             <tbody>
                 <?php
@@ -216,8 +258,7 @@ function displayRecentTransactions($result)
                         <td>
                             <?php
                             echo $row['completed'] ? "Inactive" : "Active";
-                            ?> <!-- Status based on completed -->
-                        </td>
+                            ?> </td>
                     </tr>
                 <?php
                 }
@@ -1086,7 +1127,7 @@ function getBookTitles($conn)
                 <div class="book-grid">
                     <?php
                     $recentBooks = getRecentBooks($conn, 5);
-                    displayBooks($recentBooks, 'books');
+                    displayRecentDashboardBooks($recentBooks);
                     ?>
                 </div>
             </div>
