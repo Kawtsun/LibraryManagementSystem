@@ -715,35 +715,38 @@ $conn->close();
     }
 
     #barcode-scanner-container {
-        display: flex;
-        flex-wrap: wrap; /* Allow wrapping of scanner buttons */
-        gap: 9px; /* Bahagyang laki */
-        align-items: center; 
-    }
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of scanner buttons */
+    gap: 9px; /* Bahagyang laki */
+    align-items: center;
+    justify-content: center; /* Center buttons horizontally */
+    /* Align buttons vertically */
+}
 
-    #startScanBtn,
-    #stopScanBtn {
-        padding: 9px 18px; /* Bahagyang laki */
-        font-size: 15px; /* Bahagyang laki */
-        background-color: #3498db; /* Same background color */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer; /* Match font size of the completed button */
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        margin-left: 675px;
-    }
+#startScanBtn,
+#stopScanBtn {
+    padding: 9px 18px; /* Bahagyang laki */
+    font-size: 15px; /* Bahagyang laki */
+    background-color: #3498db; /* Same background color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer; /* Match font size of the completed button */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-left: 675px; 
+}
 
-    #startScanBtn:hover,
-    #stopScanBtn:hover {
-        background-color: rgb(46, 132, 190); /* Same hover color as the completed button */
-        transform: scale(1.04); /* Bahagyang laki */
-    }
+#startScanBtn:hover,
+#stopScanBtn:hover {
+    background-color: rgb(46, 132, 190); /* Same hover color as the completed button */
+    transform: scale(1.04); /* Bahagyang laki */
+}
 
-    #scanner {
-        margin-top: 9px; 
-        margin-left: 300px;/* Bahagyang laki */
-    }
+#scanner {
+    margin-top: 9px; /* Bahagyang laki */
+    display: flex;
+    justify-content: center; /* Center the video horizontally */
+}
 
     .transactions-table td {
         white-space: normal;
@@ -1290,7 +1293,7 @@ $conn->close();
                                     target: scanner,
                                     constraints: {
                                         width: 640,
-                                        height: 4380,
+                                        height: 480,
                                         facingMode: "environment"
                                     }
                                 },
