@@ -2,7 +2,6 @@
 session_start();
 include '../validate/db.php';
 
-
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
@@ -19,6 +18,7 @@ $address = "";
 $contact_number = "";
 $course = "";
 $authorName = "";
+$bookId = null; // Initialize $bookId
 
 // Get user session details
 if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
@@ -43,36 +43,68 @@ if (isset($_SESSION['email']) && isset($_SESSION['student_id'])) {
     }
 }
 
-// Get book details using numeric id and source from GET parameters
+// Get book details using book_id and source from GET parameters
 if (isset($_GET['book_id']) && isset($_GET['source'])) {
-    $bookId = $_GET['book_id']; // numeric id
+    $bookIdParam = $_GET['book_id'];
     $source = $_GET['source'];
+    $actualBookId = null; // Initialize $actualBookId
 
-    if ($source === 'books') {
-        $sql = "SELECT title, cover_image, author FROM books WHERE id = ?";
-    } elseif ($source === 'library_books') {
-        $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
+    echo "\n"; // Debug output
+
+    if ($source === 'library_books') {
+        if (strpos($bookIdParam, 'B-L-') === 0) {
+            $actualBookId = substr($bookIdParam, 4);
+        } else {
+            $actualBookId = $bookIdParam; // If no prefix, use the original
+        }
     } elseif ($source === 'author_books') {
-        $sql = "SELECT title, NULL as cover_image, author FROM author_books WHERE id = ?";
-    } else {
-        die("Invalid source.");
+        if (strpos($bookIdParam, 'B-A-') === 0) {
+            $actualBookId = substr($bookIdParam, 4);
+        } else {
+            $actualBookId = $bookIdParam; // If no prefix, use the original
+        }
+    } elseif ($source === 'books') {
+        if (strpos($bookIdParam, 'B-B-') === 0) {
+            $actualBookId = substr($bookIdParam, 4);
+        } else {
+            $actualBookId = $bookIdParam; // If no prefix, use the original
+        }
     }
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $bookId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    echo "\n"; // Debug output
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        // Use the book title from the database for display and for insertion into transactions
-        $bookTitle = $row['title'];
-        $bookCoverImage = $row['cover_image'];
-        if (isset($row['author'])) {
-            $authorName = $row['author'];
+    if (is_numeric($actualBookId)) {
+        $bookId = $actualBookId; // Assign the extracted numeric ID
+
+        if ($source === 'books') {
+            $sql = "SELECT title, cover_image, author FROM books WHERE id = ?";
+        } elseif ($source === 'library_books') {
+            $sql = "SELECT title, cover_image FROM library_books WHERE id = ?";
+        } elseif ($source === 'author_books') {
+            $sql = "SELECT title, NULL as cover_image, author FROM author_books WHERE id = ?";
+        } else {
+            die("Invalid source for database query.");
+        }
+
+        echo "\n"; // Debug output
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $bookId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $bookTitle = $row['title'];
+            $bookCoverImage = $row['cover_image'];
+            if (isset($row['author'])) {
+                $authorName = $row['author'];
+            }
+        } else {
+            die("Book not found.");
         }
     } else {
-        die("Book not found.");
+        die("Invalid Book ID format.");
     }
 } else {
     die("Book ID or source is missing.");
@@ -101,34 +133,54 @@ if ($incompleteTransactions > 0) {
     }
 }
 
+// Check book availability
 if (isset($_GET['book_id']) && isset($_GET['source'])) {
-    $bookId = intval($_GET['book_id']);
-    $source = $_GET['source'];
+    $bookIdParamAvailability = $_GET['book_id'];
+    $sourceAvailability = $_GET['source'];
+    $actualBookIdAvailability = null;
 
-    // Determine the table based on the source parameter
-    if ($source === 'books') {
-        $sql = "SELECT Available FROM books WHERE id = ?";
-    } elseif ($source === 'library_books') {
-        $sql = "SELECT Available FROM library_books WHERE id = ?";
-    } elseif ($source === 'author_books') {
-        $sql = "SELECT Available FROM author_books WHERE id = ?";
-    } else {
-        die("Invalid source parameter.");
+    if ($sourceAvailability === 'library_books') {
+        if (strpos($bookIdParamAvailability, 'B-L-') === 0) {
+            $actualBookIdAvailability = substr($bookIdParamAvailability, 4);
+        } else {
+            $actualBookIdAvailability = $bookIdParamAvailability;
+        }
+    } elseif ($sourceAvailability === 'author_books') {
+        if (strpos($bookIdParamAvailability, 'B-A-') === 0) {
+            $actualBookIdAvailability = substr($bookIdParamAvailability, 4);
+        } else {
+            $actualBookIdAvailability = $bookIdParamAvailability;
+        }
+    } elseif ($sourceAvailability === 'books') {
+        if (strpos($bookIdParamAvailability, 'B-B-') === 0) {
+            $actualBookIdAvailability = substr($bookIdParamAvailability, 4);
+        } else {
+            $actualBookIdAvailability = $bookIdParamAvailability;
+        }
     }
 
-    // Check availability
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $bookId);
-    $stmt->execute();
-    $stmt->bind_result($availability);
-    $stmt->fetch();
-    $stmt->close();
+    if (is_numeric($actualBookIdAvailability)) {
+        if ($sourceAvailability === 'books') {
+            $availabilitySql = "SELECT Available FROM books WHERE id = ?";
+        } elseif ($sourceAvailability === 'library_books') {
+            $availabilitySql = "SELECT Available FROM library_books WHERE id = ?";
+        } elseif ($sourceAvailability === 'author_books') {
+            $availabilitySql = "SELECT Available FROM author_books WHERE id = ?";
+        }
 
-    // If availability is 0, output SweetAlert2 JavaScript
-    if ($availability === 0) {
-        // Redirect to the dashboard with a status query parameter
-        header("Location: dashboard.php?status=unavailable");
-        exit();
+        if (!empty($availabilitySql)) {
+            $stmtAvailability = $conn->prepare($availabilitySql);
+            $stmtAvailability->bind_param("i", $actualBookIdAvailability);
+            $stmtAvailability->execute();
+            $stmtAvailability->bind_result($availability);
+            $stmtAvailability->fetch();
+            $stmtAvailability->close();
+
+            if ($availability === 0) {
+                header("Location: dashboard.php?status=unavailable");
+                exit();
+            }
+        }
     }
 }
 
@@ -136,7 +188,6 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -240,22 +291,17 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         .button-row {
             display: flex;
             justify-content: center;
-            /* Center buttons horizontally */
             align-items: center;
-            /* Align buttons vertically in the center */
             margin-top: 10px;
-            /* Add some space above the buttons */
         }
 
         .button-row button {
             margin: 0 10px;
-            /* Add equal spacing on both sides */
         }
 
         /* Style for the "Proceed to Print Transaction" button */
         .button-row button[type="submit"] {
             padding: 12px 85px;
-            /* Larger padding for "Proceed" button */
             background-color: #3498db;
             color: white;
             border: none;
@@ -274,7 +320,6 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         /* Style for the "Back to Dashboard" button */
         .back-button {
             padding: 12px 25px;
-            /* Smaller padding for "Back" button */
             background-color: rgb(224, 50, 50);
             color: white;
             border: none;
@@ -363,12 +408,10 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         }
 
         .cancel-borrowing-button {
-            /* Replace with the actual class */
             display: none;
         }
     </style>
 </head>
-
 <body>
     <div class="header">
         <img src="../img/LMS_logo.png" alt="Library Logo" class="logo">
@@ -406,86 +449,84 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             <div class="info-row">
                 <div>
                     <label for="course">Course:</label>
-                    <input type="text" id="course" name="course" value="<?php echo $course; ?>" readonly>
+                    <input type="text" id="course" name="course" value="<?php
+                    echo $course; ?>" readonly>
+                    </div>
+                    <div>
+                        <label for="author">Author:</label>
+                        <input type="text" id="author" name="author" value="<?php echo $authorName; ?>" readonly>
+                    </div>
                 </div>
-                <div>
-                    <label for="author">Author:</label>
-                    <input type="text" id="author" name="author" value="<?php echo $authorName; ?>" readonly>
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
+    
+                <label for="book_title">Book Title:</label>
+                <input type="text" id="book_title" name="book_title" value="<?php echo $bookTitle; ?>" readonly>
+                <input type="hidden" name="book_id" value="<?php echo $bookId; ?>">
+                <input type="hidden" name="source" value="<?php echo $source; ?>">
+    
+                <div class="info-row">
+                    <div>
+                        <label for="date_borrowed">Date Borrowed:</label>
+                        <input type="date" id="date_borrowed" name="date_borrowed" required>
+                    </div>
+                    <div>
+                        <label for="return_date">Return Date:</label>
+                        <input type="date" id="return_date" name="return_date" required>
+                    </div>
                 </div>
-            </div>
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
-
-            <label for="book_title">Book Title:</label>
-            <input type="text" id="book_title" name="book_title" value="<?php echo $bookTitle; ?>" readonly>
-            <!-- Pass the numeric id and the source via hidden fields -->
-            <input type="hidden" name="book_id" value="<?php echo $bookId; ?>">
-            <input type="hidden" name="source" value="<?php echo $source; ?>">
-
-            <div class="info-row">
-                <div>
-                    <label for="date_borrowed">Date Borrowed:</label>
-                    <input type="date" id="date_borrowed" name="date_borrowed" required>
+                <div class="button-row">
+                    <button type="button" class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
+                    <button type="submit">Proceed to Print Transaction</button>
                 </div>
-                <div>
-                    <label for="return_date">Return Date:</label>
-                    <input type="date" id="return_date" name="return_date" required>
-                </div>
-            </div>
-            <div class="button-row">
-                <button type="button" class="back-button" onclick="cancelBorrowing()">Cancel Borrowing</button>
-                <button type="submit">Proceed to Print Transaction</button>
-            </div>
-
-            <script>
-                function cancelBorrowing() {
-                    window.location.href = "Dashboard.php";
-                }
-            </script>
-        </form>
-        <?php if (!empty($errorMessage)) { ?>
-            <div id="errorModal" class="error-modal">
-                <div class="error-modal-content">
-                    <img src="books-rules.png" alt="Error Icon">
-                    <h2>Error!</h2>
-                    <p><?php echo $errorMessage; ?></p>
-                    <button onclick="location.href='dashboard.php'">Go to Dashboard</button>
-                </div>
-            </div>
-        <?php } ?>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Get the current date and time in UTC
-            let now = new Date();
-
-            // Adjust for Philippine Standard Time (UTC+8)
-            let utcOffset = 8; // UTC+8 offset
-            now.setHours(now.getHours() + utcOffset);
-
-            // Format the date for input field (YYYY-MM-DD) and time for backend (HH:mm:ss)
-            let todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-            let currentTime = now.toTimeString().split(' ')[0]; // HH:mm:ss
-
-            let dateBorrowed = document.getElementById("date_borrowed");
-            let returnDate = document.getElementById("return_date");
-
-            // Set the default value for 'date_borrowed'
-            dateBorrowed.value = todayDate; // Only sets the date (time will be appended in PHP)
-            dateBorrowed.min = todayDate;
-
-            // Set the min value for 'return_date'
-            returnDate.min = todayDate;
-
+    
+                <script>
+                    function cancelBorrowing() {
+                        window.location.href = "Dashboard.php";
+                    }
+                </script>
+            </form>
             <?php if (!empty($errorMessage)) { ?>
-                document.querySelector(".container").classList.add("blurred");
-                setTimeout(function() {
-                    document.getElementById("errorModal").style.display = "flex";
-                }, 100);
+                <div id="errorModal" class="error-modal">
+                    <div class="error-modal-content">
+                        <img src="books-rules.png" alt="Error Icon">
+                        <h2>Error!</h2>
+                        <p><?php echo $errorMessage; ?></p>
+                        <button onclick="location.href='dashboard.php'">Go to Dashboard</button>
+                    </div>
+                </div>
             <?php } ?>
-        });
-    </script>
-</body>
-
-</html>
+        </div>
+    
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get the current date and time in UTC
+                let now = new Date();
+    
+                // Adjust for Philippine Standard Time (UTC+8)
+                let utcOffset = 8; // UTC+8 offset
+                now.setHours(now.getHours() + utcOffset);
+    
+                // Format the date for input field (YYYY-MM-DD)
+                let todayDate = now.toISOString().split('T')[0];
+    
+                let dateBorrowed = document.getElementById("date_borrowed");
+                let returnDate = document.getElementById("return_date");
+    
+                // Set the default value for 'date_borrowed'
+                dateBorrowed.value = todayDate;
+                dateBorrowed.min = todayDate;
+    
+                // Set the min value for 'return_date' (at least today)
+                returnDate.min = todayDate;
+    
+                <?php if (!empty($errorMessage)) { ?>
+                    document.querySelector(".container").classList.add("blurred");
+                    setTimeout(function() {
+                        document.getElementById("errorModal").style.display = "flex";
+                    }, 100);
+                <?php } ?>
+            });
+        </script>
+    </body>
+    </html>
