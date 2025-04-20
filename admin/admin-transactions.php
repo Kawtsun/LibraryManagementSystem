@@ -267,9 +267,10 @@ $conn->close();
         /* Container for search bar and Add User button */
         .search-bar-container {
             display: flex;
+            flex-wrap: wrap; /* Allow wrapping of buttons */
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            gap: 10px; /* Add spacing between elements */
         }
 
         .search-bar-container button {
@@ -676,10 +677,33 @@ $conn->close();
             /* Optional: Align buttons vertically */
         }
 
+        #barcode-scanner-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping of scanner buttons */
+            gap: 10px; /* Add spacing between buttons */
+            align-items: center; /* Align buttons vertically */
+        }
+
         #startScanBtn,
-        #openCompletedBtn {
-            margin-left: 1030px;
-            /* Adjust spacing as needed */
+        #stopScanBtn {
+            padding: 10px 20px; /* Match padding of the completed button */
+            font-size: 16px; /* Match font size of the completed button */
+            background-color: #3498db; /* Same background color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #startScanBtn:hover,
+        #stopScanBtn:hover {
+            background-color: rgb(46, 132, 190); /* Same hover color as the completed button */
+            transform: scale(1.05); /* Same hover effect */
+        }
+
+        #scanner {
+            margin-top: 10px; /* Add spacing between buttons and video */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
