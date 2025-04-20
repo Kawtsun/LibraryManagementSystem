@@ -52,7 +52,7 @@
             transition: background-color 0.3s ease;
             text-decoration: none;
             font-weight: bold;
-            margin-bottom: 100px; /* Adjust vertical position */
+            margin-bottom: 30px; /* Adjust vertical position */
             margin-left: 60px; /* Adjust horizontal position */
             width: 150px;
             text-align: center;
