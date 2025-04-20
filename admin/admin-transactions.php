@@ -381,7 +381,7 @@ $conn->close();
         background-color: #007BFF;
         color: white;
         text-transform: uppercase;
-        font-size: 15px; /* Bahagyang laki */
+        font-size: 14px; /* Bahagyang laki */
     }
 
     .transactions-table tr:hover {
