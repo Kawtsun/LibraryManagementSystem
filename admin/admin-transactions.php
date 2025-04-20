@@ -363,7 +363,7 @@ $conn->close();
         }
 
         .transactions-table {
-            width: 100%;
+            width: 100%; /* Ensure the table fits within the container */
             background-color: white;
             border-collapse: collapse;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -377,6 +377,8 @@ $conn->close();
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #f4f4f4;
+            word-wrap: break-word; /* Allow wrapping of table cell content */
+            white-space: normal; /* Ensure wrapping for long text */
         }
 
         .transactions-table th {
@@ -387,6 +389,48 @@ $conn->close();
 
         .transactions-table tr:hover {
             background-color: #f9f9f9;
+        }
+
+        .transactions-table td .action-buttons {
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center align buttons */
+            gap: 10px; /* Add spacing between buttons */
+            flex-wrap: nowrap; /* Prevent wrapping of action buttons */
+            align-items: center; /* Vertically align buttons */
+        }
+
+        .transactions-table td button,
+        .transactions-table td form button {
+            padding: 10px 20px; /* Match earlier button styles */
+            font-size: 16px; /* Match earlier font size */
+            background-color: #3498db; /* Same background color */
+            color: white;
+            border: none;
+            border-radius: 5px; /* Match earlier button styles */
+            cursor: pointer; /* Match earlier font size */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .transactions-table td button:hover,
+        .transactions-table td form button:hover {
+            background-color: rgb(46, 132, 190); /* Same hover color */
+            transform: scale(1.05); /* Same hover effect */
+        }
+
+        .transactions-table td .return-btn {
+            background-color: #2ecc71; /* Green for return button */
+        }
+
+        .transactions-table td .return-btn:hover {
+            background-color: #28a860; /* Darker green on hover */
+        }
+
+        .transactions-table td .delete-btn {
+            background-color: #e74c3c; /* Red for delete button */
+        }
+
+        .transactions-table td .delete-btn:hover {
+            background-color: #c0392b; /* Darker red on hover */
         }
 
         /* New Pagination styling as provided */
@@ -664,7 +708,6 @@ $conn->close();
                 transform: translateY(-10px);
                 /* Slight slide effect */
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -691,8 +734,8 @@ $conn->close();
             background-color: #3498db; /* Same background color */
             color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 5px; /* Match padding of the completed button */
+            cursor: pointer; /* Match font size of the completed button */
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
@@ -705,11 +748,79 @@ $conn->close();
         #scanner {
             margin-top: 10px; /* Add spacing between buttons and video */
         }
+
+        .transactions-table td {
+            white-space: normal; /* Allow wrapping of table cell content */
+            text-align: center; /* Center align content for better layout */
+        }
+
+        .transactions-table td .action-buttons {
+            display: block; /* Match the block layout of modal buttons */
+        }
+
+        .transactions-table td .action-buttons button,
+        .transactions-table td .action-buttons form button {
+            padding: 12px 24px; /* Match the padding of modal buttons */
+            font-size: 16px; /* Match the font size of modal buttons */
+            background-color: #3498db; /* Same background color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .transactions-table td .action-buttons button:hover,
+        .transactions-table td .action-buttons form button:hover {
+            background-color: rgb(46, 132, 190); /* Same hover color */
+            transform: scale(1.05); /* Same hover effect */
+        }
+
+        .transactions-table td .action-buttons button.return-btn {
+            background-color: #2ecc71; /* Green for return button */
+        }
+
+        .transactions-table td .action-buttons button.return-btn:hover {
+            background-color: #28a860; /* Darker green on hover */
+        }
+
+        .transactions-table td .action-buttons button.delete-btn {
+            background-color: #e74c3c; /* Red for delete button */
+        }
+
+        .transactions-table td .action-buttons button.delete-btn:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
+
+        #completedTransactionsModal .action-buttons {
+            display: block; /* Revert to block layout for modal buttons */
+        }
+
+        #completedTransactionsModal .action-buttons button,
+        #completedTransactionsModal .action-buttons form button {
+            padding: 12px 24px; /* Original padding */
+            font-size: 16px; /* Original font size */
+        }
+
+        .transactions-table td .action-buttons button.return-btn {
+            background-color: #2ecc71; /* Green for return button */
+        }
+
+        .transactions-table td .action-buttons button.return-btn:hover {
+            background-color: #28a860; /* Darker green on hover */
+        }
+
+        .transactions-table td .action-buttons button.delete-btn {
+            background-color: #e74c3c; /* Red for delete button */
+        }
+
+        .transactions-table td .action-buttons button.delete-btn:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-
 </head>
 
 <body>
@@ -780,9 +891,10 @@ $conn->close();
                     <p id="scanResult"></p>
                 </div>
                 <button id="openCompletedTransactions" class="open-completed-button">
-                    Open Completed
+                    Completed Transactions
                 </button>
             </div>
+
             <!-- Completed Transactions Modal -->
             <div id="completedTransactionsModal" class="modal">
                 <div class="modal-content">
@@ -809,85 +921,82 @@ $conn->close();
                 </div>
             </div>
 
-
-            <table class="transactions-table">
-                <thead>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Book Title</th>
-                        <th>Date Borrowed</th>
-                        <th>Return Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($transactions)): ?>
+            <div class="transactions-table-container">
+                <table class="transactions-table">
+                    <thead>
                         <tr>
-                            <td colspan="8" style="text-align: center;">No incomplete transactions found.</td>
+                            <th>Transaction ID</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Book Title</th>
+                            <th>Date Borrowed</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($transactions as $transaction): ?>
-                            <?php
-                            // Calculate Status
-                            $returnDateTimestamp = strtotime($transaction['return_date']);
-
-                            // Check if strtotime was successful
-                            if ($returnDateTimestamp === false) {
-                                $status = 'Invalid Date'; // Handle invalid date
-                                error_log("Invalid return_date: " . $transaction['return_date'] . " for transaction ID: " . $transaction['transaction_id']);
-                            } else {
-                                $nowTimestamp = time();
-                                $status = ($nowTimestamp > $returnDateTimestamp) ? 'Late Return' : 'Active'; // Ternary operator for brevity
-                            }
-                            ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($transactions)): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['email']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['name']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['book_title']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
-                                <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
-                                <td class="status <?php echo ($status == 'Late Return') ? 'late' : (($status == 'Invalid Date') ? 'invalid' : 'active'); ?>">
-                                    <?php echo htmlspecialchars($status); ?>
-                                </td>
-                                <td>
-                                    <form action="../pages/print_transaction.php" method="get" target="_blank" style="display:inline;">
-                                        <input type="hidden" name="transaction_id" value="<?php echo $transaction['transaction_id']; ?>">
-                                        <button type="submit" class="view-button">Print PDF</button>
-                                    </form>
-                                    <button
-                                        class="return-btn"
-                                        onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
-                                        Return
-                                    </button>
-                                    <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
-
-                                </td>
+                                <td colspan="8" style="text-align: center;">No incomplete transactions found.</td>
                             </tr>
-                            <?php
-
-                            // ... rest of your code ...
-
-                            if ($status == 'Late Return') {
-                                $email_address = $transaction['email'];
-                                $name = $transaction['name'];
-                                $book_title = $transaction['book_title'];
-
-                                if (!send_email(email_address: $email_address, name: $name, book_title: $book_title)) {
-                                    error_log("Failed to send late return email to: " . $email_address);
-                                    // Optionally, you could add a message to the admin interface
-                                    // to indicate that the email failed to send.
+                        <?php else: ?>
+                            <?php foreach ($transactions as $transaction): ?>
+                                <?php
+                                // Calculate Status
+                                $returnDateTimestamp = strtotime($transaction['return_date']);
+                                // Check if strtotime was successful
+                                if ($returnDateTimestamp === false) {
+                                    $status = 'Invalid Date'; // Handle invalid date
+                                    error_log("Invalid return_date: " . $transaction['return_date'] . " for transaction ID: " . $transaction['transaction_id']);
+                                } else {
+                                    $nowTimestamp = time();
+                                    $status = ($nowTimestamp > $returnDateTimestamp) ? 'Late Return' : 'Active'; // Ternary operator for brevity
                                 }
-                            }
-                            ?>
+                                ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($transaction['transaction_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($transaction['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($transaction['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($transaction['book_title']); ?></td>
+                                    <td><?php echo htmlspecialchars($transaction['date_borrowed']); ?></td>
+                                    <td><?php echo htmlspecialchars($transaction['return_date']); ?></td>
+                                    <td class="status <?php echo ($status == 'Late Return') ? 'late' : (($status == 'Invalid Date') ? 'invalid' : 'active'); ?>">
+                                        <?php echo htmlspecialchars($status); ?>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <form action="../pages/print_transaction.php" method="get" target="_blank" style="display:inline;">
+                                            <input type="hidden" name="transaction_id" value="<?php echo $transaction['transaction_id']; ?>">
+                                            <button type="submit" class="view-button">Print PDF</button>
+                                        </form>
+                                        <button
+                                            class="return-btn"
+                                            onclick="markAsReturned(<?php echo $transaction['transaction_id']; ?>)">
+                                            Return
+                                        </button>
+                                        <button class="delete-btn" onclick="confirmDeleteTransaction(<?php echo $transaction['transaction_id']; ?>)">Delete</button>
+                                    </td>
+                                </tr>
+                                <?php
+                                // ... rest of your code ...
 
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                                if ($status == 'Late Return') {
+                                    $email_address = $transaction['email'];
+                                    $name = $transaction['name'];
+                                    $book_title = $transaction['book_title'];
+
+                                    if (!send_email(email_address: $email_address, name: $name, book_title: $book_title)) {
+                                        error_log("Failed to send late return email to: " . $email_address);
+                                        // Optionally, you could add a message to the admin interface
+                                        // to indicate that the email failed to send.
+                                    }
+                                }
+                                ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
             <style>
                 .late {
@@ -925,7 +1034,7 @@ $conn->close();
                         showCancelButton: true,
                         confirmButtonColor: '#e74c3c',
                         cancelButtonColor: '#3498db',
-                        confirmButtonText: 'Yes, delete it!'
+                        confirmButtonText: 'Yes, delete it!',
                     }).then(result => {
                         if (result.isConfirmed) {
                             window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
@@ -1021,7 +1130,7 @@ $conn->close();
                                 <td>${transaction.date_borrowed}</td>
                                 <td>${transaction.return_date}</td>
                                 <td>${transaction.date_returned}</td>
-                                <td>
+                                <td class="action-buttons">
                                     <form action="../pages/print_transaction.php" method="get" target="_blank" style="display:inline;">
                                         <input type="hidden" name="transaction_id" value="${transaction.transaction_id}">
                                         <button type="submit" class="view-button">Print PDF</button>
@@ -1048,7 +1157,7 @@ $conn->close();
                             showCancelButton: true,
                             confirmButtonColor: '#e74c3c',
                             cancelButtonColor: '#3498db',
-                            confirmButtonText: 'Yes, delete it!'
+                            confirmButtonText: 'Yes, delete it!',
                         }).then(result => {
                             if (result.isConfirmed) {
                                 window.location.href = `delete-transaction.php?id=${transactionId}&page=${currentPage}&completed=true&status=success`;
@@ -1079,6 +1188,7 @@ $conn->close();
                     });
                 });
             </script>
+
             <script>
                 // Deleting transactions
                 function confirmDeleteTransaction(transactionId) {
@@ -1092,7 +1202,7 @@ $conn->close();
                         showCancelButton: true,
                         confirmButtonColor: '#e74c3c',
                         cancelButtonColor: '#3498db',
-                        confirmButtonText: 'Yes, delete it!'
+                        confirmButtonText: 'Yes, delete it!',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Redirect to the delete-transaction.php script, passing the transaction ID and current page
@@ -1118,7 +1228,6 @@ $conn->close();
                     }
                 });
             </script>
-
 
             <script>
                 function markAsReturned(transactionId, source) {
@@ -1257,7 +1366,7 @@ $conn->close();
                     fetch('return_book_barcode.php', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
+                                'Content-Type': 'application/x-www-form-urlencoded',
                             },
                             body: 'barcode=' + encodeURIComponent(barcode)
                         })

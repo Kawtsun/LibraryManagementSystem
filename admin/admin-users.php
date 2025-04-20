@@ -334,7 +334,9 @@ $conn->close();
         }
 
         .users-table {
-            width: 100%;
+            width: 100%; /* Ensure the table fits within the container */
+            table-layout: auto; /* Allow columns to adjust width dynamically */
+            word-wrap: break-word; /* Allow wrapping of long text */
             background-color: white;
             border-collapse: collapse;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -586,6 +588,48 @@ $conn->close();
                 transform: translateY(0);
             }
         }
+
+        .users-table td {
+            white-space: normal; /* Allow wrapping of table cell content */
+            text-align: center; /* Center align content for better layout */
+        }
+
+        .users-table td .action-buttons {
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center align buttons */
+            gap: 10px; /* Add spacing between buttons */
+            flex-wrap: nowrap; /* Prevent wrapping of action buttons */
+            align-items: center; /* Vertically align buttons */
+        }
+
+        .users-table td .action-buttons button {
+            padding: 10px 20px; /* Uniform padding for buttons */
+            font-size: 14px; /* Uniform font size */
+            background-color: #3498db; /* Default background color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            min-width: 100px; /* Ensure buttons have the same width */
+            height: 40px; /* Ensure buttons have the same height */
+        }
+
+        .users-table td .action-buttons button.edit-btn {
+            background-color: #2ecc71; /* Green for edit button */
+        }
+
+        .users-table td .action-buttons button.edit-btn:hover {
+            background-color: #28a860; /* Darker green on hover */
+        }
+
+        .users-table td .action-buttons button.delete-btn {
+            background-color: #e74c3c; /* Red for delete button */
+        }
+
+        .users-table td .action-buttons button.delete-btn:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -690,8 +734,10 @@ $conn->close();
                             <td><?php echo htmlspecialchars($user['address']); ?></td>
                             <td><?php echo htmlspecialchars($user['contact_number']); ?></td>
                             <td>
-                                <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
-                                <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
+                                <div class="action-buttons">
+                                    <button class="edit-btn" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($user)); ?>)">Edit</button>
+                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Delete</button>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
