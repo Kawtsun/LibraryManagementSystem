@@ -363,7 +363,7 @@ $paged_top20_books = array_slice($top20_books, $offset_top20, $records_per_page_
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
-            margin-left: 1430px;
+            margin-left: 1030px;
             cursor: pointer;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
