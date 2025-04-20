@@ -294,10 +294,12 @@ function getBookTitles($conn)
         }
 
         .container {
-            width: 75%;
+            width: 80%; /* Slightly increase the width */
+            margin-left: auto; /* Center the container */
+            margin-right: auto; /* Center the container */
+            /* Adjusted to prevent overlap with other elements */
             margin-top: 30px;
             margin-bottom: 30px;
-            margin-left: 200px;
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -655,7 +657,8 @@ function getBookTitles($conn)
         }
 
         .container-author {
-            flex: 1;
+            flex: 0 0 380px; /* Explicitly set flex-basis to 400px */
+            width: 400px; /* Ensure the width is applied */
             margin-top: -80px;
             float: none;
             background-color: rgb(0, 56, 94);
@@ -667,7 +670,6 @@ function getBookTitles($conn)
             /* Add a minimum height */
             position: relative;
             z-index: 1;
-            width: 300px;
         }
 
         .container-author h2 {
@@ -749,14 +751,19 @@ function getBookTitles($conn)
             border-radius: 8px;
             overflow: hidden;
             /* Ensures rounded corners work with background */
+            table-layout: fixed; /* Ensure fixed table layout */
         }
 
         .modern-table th,
         .modern-table td {
-            padding: 12px 15px;
+            padding: 8px 10px; /* Reduce padding */
             text-align: left;
             border-bottom: 1px solid #ddd;
             background-color: white;
+            word-wrap: break-word; /* Allow text to wrap */
+            white-space: normal; /* Enable wrapping for long text */
+            word-break: break-word; /* Break long words */
+            hyphens: auto; /* Add hyphenation for better readability */
         }
 
         .modern-table th {
@@ -908,6 +915,10 @@ function getBookTitles($conn)
     color: green !important;
     font-weight: bold;
 }
+    .transaction-grid {
+        overflow-x: auto;
+        /* Enable horizontal scrolling */
+    }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
