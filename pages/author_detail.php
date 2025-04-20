@@ -99,6 +99,8 @@ function getBookTitles($conn) {
             padding: 10px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: visible; /* Ensure hover effects are not clipped */
         }
 
         header {
@@ -234,9 +236,11 @@ function getBookTitles($conn) {
 
         .book-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust columns to fit parent */
+            gap: 20px; /* Add spacing between grid items */
             justify-items: center;
+            position: relative; /* Ensure proper layering of child elements */
+            z-index: 1; /* Set a base z-index for the grid */
         }
 
         .book-item {
@@ -252,6 +256,8 @@ function getBookTitles($conn) {
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 1; /* Ensure the book item is layered properly */
         }
 
         .book-item:hover {transform: translateY(-3px);
@@ -276,7 +282,24 @@ function getBookTitles($conn) {
         }
 
         .book-details {
-            font-size: 14px;
+            display: none;
+            position: absolute;
+            background-color: rgb(85, 161, 212);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            width: 250px;
+            box-sizing: border-box;
+            text-align: left;
+            z-index: 1000 !important; /* Ensure it appears above other elements */
+            top: -50%; /* Adjust position to align properly */
+            left: 0;
+            margin-top: 10px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-item:hover .book-details {
+            display: block; /* Show details on hover */
         }
 
         .borrow-btn {
@@ -388,29 +411,6 @@ function getBookTitles($conn) {
         .suggestions-box a:hover {
             background-color: #f0f0f0;
         }
-    .book-details {
-    display: none;
-    position: absolute;
-    background-color: rgb(85, 161, 212);
-    color: white;
-    padding: 15px; /* Dagdagan ang padding para sa mas maluwag na loob */
-    border-radius: 8px; /* Bahagyang dagdagan ang border-radius */
-    width: 250px; /* Dagdagan ang lapad ng container */
-    height: 200px; /* Dagdagan ang taas ng container */
-    box-sizing: border-box;
-    text-align: left;
-    z-index: 1000 !important;
-    top: -80%;
-    left: 0%;
-    margin-top: 15px; /* Dagdagan ang margin-top */
-    box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.5); /* Dagdagan ang box-shadow */
-    font-size: 16px; /* Dagdagan ang laki ng font */
-    line-height: 1.5; /* Dagdagan ang line-height para sa mas maluwag na spacing */
-}
-
-.book-item:hover .book-details {
-    display: block;
-}
     </style>
 </head>
 <body>
