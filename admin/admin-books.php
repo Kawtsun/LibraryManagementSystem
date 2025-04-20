@@ -735,9 +735,9 @@ $conn->close();
                                 <td><?php echo htmlspecialchars($book['date_added']); ?></td>
                                 <td><?php echo htmlspecialchars($book['quantity']); ?></td>
                                 <td><?php echo $book['Available']; ?></td>
-                                <td class="action-buttons">
-                                    <button class="edit-btn" onclick="openEditBookModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
-                                    <button class="delete-btn" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
+                                <td class="action-buttons" style="display: flex; justify-content: center; gap: 10px;">
+                                    <button class="edit-btn" style="width: 100px; height: 40px;" onclick="openEditBookModal(<?php echo htmlspecialchars(json_encode($book)); ?>)">Edit</button>
+                                    <button class="delete-btn" style="width: 100px; height: 40px;" onclick="confirmDelete(<?php echo $book['id']; ?>)">Delete</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
