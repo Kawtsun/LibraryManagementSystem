@@ -146,15 +146,15 @@ function insertTransaction($conn, $data, $barcode) {
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
+            width: 100%;
+            max-width: 900px;
             margin: 80px auto 10px;
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             text-align: left;
-            margin-top: 120px;
+            margin-top: 100px;
 
         }
 
@@ -165,12 +165,13 @@ function insertTransaction($conn, $data, $barcode) {
             font-weight: 600;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
+            margin-top: -10px;
         }
 
         .row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .info-box {
@@ -193,7 +194,7 @@ function insertTransaction($conn, $data, $barcode) {
             border: 1px solid #cce0f5;
             width: 100%;
             box-sizing: border-box;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .info-box strong,
@@ -215,7 +216,7 @@ function insertTransaction($conn, $data, $barcode) {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 30px;
+            margin-top: 10px;
         }
 
         .back-button,
@@ -256,7 +257,7 @@ function insertTransaction($conn, $data, $barcode) {
         .error-message {
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: -30px;
         }
 
         .success-message {
@@ -277,7 +278,7 @@ function insertTransaction($conn, $data, $barcode) {
         position: fixed;
         z-index: 1000;
         left: 0;
-        top: 300px; /* Increased top value */
+        top: 250px; /* Increased top value */
         width: 100%;
         height: 100%;
         overflow: auto;
@@ -288,7 +289,7 @@ function insertTransaction($conn, $data, $barcode) {
     }
 
 .modal-content {
-    margin-top: 50px;
+    margin-top: -20px;
     background-color: #ffffff;
     margin: 0 auto; /* Center the modal */
     padding: 2rem;
@@ -303,7 +304,7 @@ function insertTransaction($conn, $data, $barcode) {
 .modal-content .success-text {
     color: green;
     font-weight: bold;
-    margin-top: -20px;
+    margin-top: -30px;
 }
 
 /* Close Button */
@@ -411,8 +412,10 @@ function insertTransaction($conn, $data, $barcode) {
             echo '<div class="info-box"><strong>Author:</strong><p>' . htmlspecialchars($data['author']) . '</p></div>';
             echo '</div>';
 
-            echo '<div class="full-width-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
-            echo '<div class="full-width-box"><strong>Book Title:</strong><p>' . htmlspecialchars($data['book_title']) . '</p></div>';
+            echo '<div class="row">';
+            echo '<div class="info-box"><strong>Address:</strong><p>' . htmlspecialchars($data['address']) . '</p></div>';
+            echo '<div class="info-box"><strong>Book Title:</strong><p>' . htmlspecialchars($data['book_title']) . '</p></div>';
+            echo '</div>';
 
             echo '<div class="row">';
             echo '<div class="info-box"><strong>Date Borrowed:</strong><p>' . htmlspecialchars($date_borrowed) . '</p></div>';

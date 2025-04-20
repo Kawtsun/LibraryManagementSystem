@@ -20,7 +20,7 @@ body {
 
 /* Login Container with Full Emboss Effect */
 .login-container {
-    width: 55%;
+    width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -31,7 +31,7 @@ body {
 
 /* Login Box with Larger Form */
 .login-box {
-    width: 90%;
+    width: 60%;
     max-width: 600px; /* Control width properly */
     margin: 0 auto; /* Center horizontally */
     padding: 50px;
@@ -51,7 +51,7 @@ body {
 
 /* Welcome Text */
 .welcome-text {
-    font-size: 60px;
+    font-size: 40px;
     color: #3498db;
     margin-bottom: 10px;
     font-weight: bold;
@@ -60,9 +60,9 @@ body {
 
 /* Adjusting h2 to center properly */
 h2 {
-    margin-bottom: 10px;
+    margin-bottom: -10px;
     color: #333;
-    font-size: 26px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -158,13 +158,13 @@ a:hover {
 
 /* Side Box Image */
 .side-box img {
-    width: 320px;
+    width: 220px;
 }
 
 /* Side Box Title - AklatURSM */
 .side-box h3:first-of-type {
     color: #002bec;
-    font-size: 70px; /* Bigger AklatURSM */
+    font-size: 60px; /* Bigger AklatURSM */
     font-weight: bold;
     margin-top: -20px;
 }
@@ -172,7 +172,7 @@ a:hover {
 /* Side Box Subtitle - Library Management System */
 .side-box h3:last-of-type {
     color: #000000;
-    font-size: 40px; /* Wider and larger subtitle */
+    font-size: 32px; /* Wider and larger subtitle */
     text-align: center;
     margin-top: -60px;
 }

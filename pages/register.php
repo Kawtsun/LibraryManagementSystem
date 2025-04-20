@@ -26,7 +26,7 @@
         background: rgba(255, 255, 255, 0.2);
         border-radius: 20px;
         padding: 40px;
-        width: 600px;
+        width: 800px;
         text-align: left;
         backdrop-filter: blur(10px);
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -205,10 +205,17 @@
                     <input type="text" id="contact_number" name="contact_number" placeholder="Enter contact number" required>
                 </div>
             </div>
-            <label for="name">Full Name:</label>
-            <input type="text" id="name" name="name" placeholder="Enter full name" required>
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" placeholder="Enter address" required>
+            
+            <div class="info-row">
+    <div>
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter full name" required>
+    </div>
+    <div>
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" placeholder="Enter address" required>
+    </div>
+</div>
 
             <div class="button-group">
                 <div class="btn-wrapper">

@@ -241,7 +241,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             text-align: left;
-            margin-top: 120px;
+            margin-top: 100px;
         }
 
         .book-display {
@@ -250,7 +250,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             padding: 10px;
             border-radius: 8px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -260,13 +260,13 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         }
 
         .book-display img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 8px;
+            width: 60px;
+            height: 60px;
+            margin-bottom: -20px;
         }
 
         .book-title {
-            font-size: 1em;
+            font-size: 1.2em;
             margin-bottom: 0;
             padding: 4px;
         }
@@ -274,7 +274,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
         label {
             font-weight: bold;
             display: block;
-            margin-top: 10px;
+            margin-top: -5px;
             font-size: 1em;
         }
 
@@ -424,7 +424,7 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
             <p class="book-title"><?php echo $bookTitle; ?></p>
         </div>
 
-        <h2>Transaction Details</h2>
+        <h2 style="margin-top: -2px;">Transaction Details</h2>
         <form id="transactionForm" method="POST" action="print.php">
             <div class="info-row">
                 <div>
@@ -457,11 +457,16 @@ if (isset($_GET['book_id']) && isset($_GET['source'])) {
                         <input type="text" id="author" name="author" value="<?php echo $authorName; ?>" readonly>
                     </div>
                 </div>
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
-    
-                <label for="book_title">Book Title:</label>
-                <input type="text" id="book_title" name="book_title" value="<?php echo $bookTitle; ?>" readonly>
+                <div class="info-row">
+                <div>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" value="<?php echo $address; ?>" readonly>
+                </div>
+                <div>
+                    <label for="book_title">Book Title:</label>
+                    <input type="text" id="book_title" name="book_title" value="<?php echo $bookTitle; ?>" readonly>
+                </div>
+            </div>
                 <input type="hidden" name="book_id" value="<?php echo $bookId; ?>">
                 <input type="hidden" name="source" value="<?php echo $source; ?>">
     

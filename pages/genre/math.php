@@ -195,26 +195,34 @@ function getBookTitles($conn) {
         .book-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 10px;
         }
 
         .book-item {
-            background-color: #3498db;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
+        background-color: #3498db;
+        color: white;
+        padding: 15px; /* Slightly smaller padding */
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 250px; /* Smaller width */
+        height: 180px; /* Smaller height */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
         .book-item img {
             width: 80px;
             height: 80px;
-            margin-bottom: 10px;
+            margin-bottom: -25px;
+            margin-top: -15px;
         }
 
         .book-title {
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: -10px;
         }
 
         .book-topic {
@@ -224,11 +232,16 @@ function getBookTitles($conn) {
 
         .borrow-btn {
             background-color: #2ecc71;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        color: white;
+        padding: 10px 55px; /* Smaller button padding */
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em; /* Smaller button font size */
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        margin-top: -50px;
         }
 
         .dropdown {
@@ -332,15 +345,16 @@ function getBookTitles($conn) {
             color: white;
             padding: 10px;
             border-radius: 6px;
-            width: 250px;
+            width: 280px;
             box-sizing: border-box;
             text-align: left;
             z-index: 1000 !important;
-            top: -50%;
+            top: -80%;
             left: 0%;
             margin-top: 10px;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
         }
+
 
         .book-item:hover .book-details {
             display: block;

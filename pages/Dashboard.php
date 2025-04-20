@@ -476,13 +476,13 @@ function getBookTitles($conn)
         }
 
         .book-section {
-            margin-top: 20px;
+            margin-top: 1px;
         }
 
         .book-section h2 {
             margin-bottom: 15px;
             color: #333;
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 600;
         }
 
@@ -515,9 +515,9 @@ function getBookTitles($conn)
 
         .book-icon,
         .book-cover {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
+            width: 60px;
+            height: 60px;
+            margin-bottom: -10px;
             display: block;
         }
 
@@ -542,7 +542,8 @@ function getBookTitles($conn)
 
         .book-title {
             margin-bottom: 10px;
-            font-size: 16px;
+            margin-top: -2px;
+            font-size: 15px;
             font-weight: 600;
         }
 
@@ -556,6 +557,7 @@ function getBookTitles($conn)
             font-size: 14px;
             font-weight: 600;
             transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
 
         .borrow-btn:hover {
@@ -638,8 +640,8 @@ function getBookTitles($conn)
 
         .trending-section h2 {
             margin-bottom: 15px;
-            margin-top: 5px;
-            font-size: 24px;
+            margin-top: -15px;
+            font-size: 20px;
             font-weight: 600;
         }
 
@@ -651,13 +653,13 @@ function getBookTitles($conn)
 
         .trending-item {
             text-align: center;
-            font-size: 20px;
+            font-size: 15px;
         }
 
         .trending-item img {
-            width: 100px;
+            width: 80px;
             /* Adjust as needed */
-            height: auto;
+            height: 80px;
             margin-bottom: -5px;
         }
 
@@ -698,7 +700,7 @@ function getBookTitles($conn)
         }
 
         .container-author {
-            flex: 0 0 380px; /* Explicitly set flex-basis to 400px */
+            flex: 0 0 300px; /* Explicitly set flex-basis to 400px */
             width: 400px; /* Ensure the width is applied */
             margin-top: -80px;
             float: none;
@@ -733,8 +735,8 @@ function getBookTitles($conn)
         }
 
         .container-author .author-grid .author-item img {
-            width: 120px;
-            height: 120px;
+            width: 80px;
+            height: 80px;
             margin-bottom: -20px;
         }
 
@@ -878,14 +880,14 @@ function getBookTitles($conn)
             color: white;
             padding: 10px;
             border-radius: 6px;
-            width: 250px;
+            width: 190px;
             /* Adjust as needed */
             box-sizing: border-box;
             text-align: left;
             z-index: 1000 !important;
-            top: -250%;
+            top: -450%;
             /* Position it below the book-item */
-            left: -100%;
+            left: -110%;
             /* Align with the left edge */
             margin-top: 10px;
             /* Add some space between the item and details */
@@ -1160,7 +1162,7 @@ function getBookTitles($conn)
             </section>
 
             <section class="transaction-section">
-    <h2 style="font-size: 26px; margin-top: 30px; text-align:center">Recent Incomplete Transactions</h2>
+    <h2 style="font-size: 20px; margin-top: 30px; text-align:center; ">Recent Incomplete Transactions</h2>
     <div class="transaction-grid">
         <?php
         if (isset($_SESSION['email'])) { // Check for email in session

@@ -38,15 +38,15 @@ $allTitlesJson = json_encode($allTitles);
         }
 
         .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 60px auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            align-self: center;
-        }
+        width: 80%;
+        max-width: 1000px;
+        margin: 40px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        align-self: center;
+    }
 
         header {
             background-color: #3498db;
@@ -181,26 +181,26 @@ $allTitlesJson = json_encode($allTitles);
         }
 
         .book-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            justify-items: center;
-        }
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Force 4 columns */
+        gap: 15px;
+        justify-items: center;
+    }
 
-        .book-item {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            width: 230px;
-            height: 220px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .book-item {
+        background-color: #3498db;
+        color: white;
+        padding: 15px; /* Slightly smaller padding */
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 210px; /* Smaller width */
+        height: 170px; /* Smaller height */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
         .book-item:hover {
             transform: translateY(-6px);
@@ -208,30 +208,32 @@ $allTitlesJson = json_encode($allTitles);
         }
 
         .book-icon {
-            width: 90px;
-            height: 90px;
-            margin-bottom: 10px;
-        }
+        width: 80px; /* Smaller icon */
+        height: 80px; /* Smaller icon */
+        margin-bottom: 8px; /* Slightly smaller margin */
+    }
 
-        .book-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            text-decoration: none;
-            color: white;
-        }
+    .book-title {
+        font-size: 1.2em; /* Slightly smaller title */
+        font-weight: 600;
+        text-decoration: none;
+        color: white;
+        margin-top: -15px;
+    }
 
-        .see-books-btn {
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px 35px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2em;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-        }
+    .see-books-btn {
+        background-color: #2ecc71;
+        color: white;
+        padding: 8px 25px; /* Smaller button padding */
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em; /* Smaller button font size */
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        margin-top: -80px;
+    }
 
         .see-books-btn:hover {
             background-color: #27ae60;
@@ -282,16 +284,17 @@ $allTitlesJson = json_encode($allTitles);
     margin-left: 5px;
 }
 
-        @media (max-width: 768px) {
-            .book-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .book-item {
-                padding: 15px;
-                width: 100%;
-            }
+@media (max-width: 768px) {
+        .book-grid {
+            grid-template-columns: 1fr;
         }
+
+        .book-item {
+            padding: 15px;
+            width: 80%; /* Make book items wider on smaller screens */
+            height: auto; /* Adjust height automatically */
+        }
+    }
 
         .account-icon-link {
             padding: 0;

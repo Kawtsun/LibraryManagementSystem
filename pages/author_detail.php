@@ -101,6 +101,7 @@ function getBookTitles($conn) {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: visible; /* Ensure hover effects are not clipped */
+            margin-top: 30px;
         }
 
         header {
