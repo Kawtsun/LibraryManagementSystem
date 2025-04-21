@@ -962,6 +962,102 @@ function getBookTitles($conn)
         overflow-x: auto;
         /* Enable horizontal scrolling */
     }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* Prevent page scrolling */
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #ffffff;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        width: 80%;
+        max-width: 400px; /* Reduced max-width */
+        max-height: 80vh; /* Added max-height */
+        overflow-y: auto; /* Allow modal content to scroll */
+        position: relative;
+    }
+
+    .modal-header {
+        text-align: center;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .modal-header h2 {
+        font-size: 1.5rem; /* Slightly smaller title */
+        color: blue;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-header img {
+        width: 100px; /* Smaller icon */
+        height: 100px;
+        margin-bottom: -10px;
+    }
+
+    .modal-body {
+        padding: 1rem 0;
+    }
+
+    .modal-body ol {
+        list-style-type: decimal;
+        padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+        font-size: 0.9rem; /* Smaller list text */
+        color: #555;
+        line-height: 1.4; /* Closer lines */
+        margin-bottom: 0.4rem;
+    }
+
+    .modal-footer {
+        padding-top: 1rem;
+        text-align: center;
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .continue-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px; /* Smaller button */
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .continue-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .close {
+        position: absolute;
+        top: 0.2rem;
+        right: 0.2rem;
+        color: #aaa;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #333;
+        text-decoration: none;
+    }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -1219,6 +1315,61 @@ function getBookTitles($conn)
 </section>
         </div>
     </div>
+
+    <div id="rulesModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+            <img src="rules_icon.png" alt="Rules Icon"> <h2>AklatURSM Library Policy</h2>
+        </div>
+        <div class="modal-body">
+            <ol>
+                <li>A User can borrow any book, however, a maximum of 2 books can be borrowed.</li>
+                <li>Each book has 5 copies. Once all 5 copies are borrowed and not yet returned, other people cannot borrow it.</li>
+                <li>If a user has not yet returned the book after the return date, there would be a temporary 3-day ban for the user.</li>
+            </ol>
+        </div>
+        <div class="modal-footer">
+            <button class="continue-btn" id="continueButton">Continue</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("rulesModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // Get the Continue button
+    var continueButton = document.getElementById("continueButton");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const showRules = localStorage.getItem('showRulesModal');
+
+    // Check if the user came from getstarted.php AND the localStorage flag is set
+    if (urlParams.get('first_visit') === 'true' && showRules === 'true') {
+        modal.style.display = "block";
+        localStorage.removeItem('showRulesModal'); // Clear the flag
+    }
+
+    // When the user clicks on <span> (x) or Continue, close the modal
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    span.onclick = closeModal;
+    continueButton.onclick = closeModal;
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
     <script>
         // Alert for zero availability of books 
         document.addEventListener('DOMContentLoaded', () => {

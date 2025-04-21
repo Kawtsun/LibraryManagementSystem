@@ -73,8 +73,14 @@
 </head>
 <body>
 
-    <div class="content">
-        <a href="Dashboard.php" class="modern-button">Get Started</a>
-    </div>
+<div class="content">
+    <a href="Dashboard.php?first_visit=true" class="modern-button" id="getStartedButton">Get Started</a>
+</div>
+
+<script>
+    document.getElementById('getStartedButton').addEventListener('click', function() {
+        localStorage.setItem('showRulesModal', 'true');
+    });
+</script>
 </body>
 </html>
